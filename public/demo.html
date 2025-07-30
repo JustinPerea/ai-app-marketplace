@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Connection Guides Demo - AI App Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-block bg-blue-500 text-white px-4 py-2 rounded-full mb-4 text-sm font-medium">
+                DEMO MODE - Visual Connection Guides
+            </div>
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">AI App Marketplace</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Experience consumer-friendly AI provider connections based on research from Stripe, Plaid, and fintech leaders
+            </p>
+        </div>
+
+        <!-- Benefits Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl">
+                <div class="w-12 h-12 bg-green-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <span class="text-white text-xl">💰</span>
+                </div>
+                <h3 class="text-lg font-semibold text-green-900 mb-2">Save 60-95% on Costs</h3>
+                <p class="text-green-700 text-sm">
+                    Use cheaper models for simple tasks, expensive ones only when needed
+                </p>
+            </div>
+            
+            <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl">
+                <div class="w-12 h-12 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <span class="text-white text-xl">🔒</span>
+                </div>
+                <h3 class="text-lg font-semibold text-blue-900 mb-2">Your Keys, Your Control</h3>
+                <p class="text-blue-700 text-sm">
+                    API keys encrypted with military-grade security, you stay in control
+                </p>
+            </div>
+            
+            <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl">
+                <div class="w-12 h-12 bg-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <span class="text-white text-xl">⚡</span>
+                </div>
+                <h3 class="text-lg font-semibold text-purple-900 mb-2">Best Model Selection</h3>
+                <p class="text-purple-700 text-sm">
+                    Automatically choose the optimal model for each task
+                </p>
+            </div>
+        </div>
+
+        <!-- Provider Cards -->
+        <div class="space-y-6 max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold text-center mb-8">Choose Your AI Providers</h2>
+
+            <!-- OpenAI Provider Card -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow cursor-pointer" onclick="showConnectionGuide('openai')">
+                <div class="p-6">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start space-x-4">
+                            <div class="p-4 rounded-full bg-green-500 text-white text-3xl">
+                                🤖
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <h3 class="text-2xl font-bold">OpenAI</h3>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Easy</span>
+                                </div>
+                                <p class="text-gray-600 text-base mb-3">Most popular AI models with excellent performance</p>
+                                
+                                <!-- Models -->
+                                <div class="mb-4">
+                                    <h4 class="font-medium text-sm text-gray-700 mb-2">Available Models:</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">GPT-4</span>
+                                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">GPT-3.5-Turbo</span>
+                                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">DALL-E 3</span>
+                                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">Whisper</span>
+                                    </div>
+                                </div>
+
+                                <!-- Pricing -->
+                                <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                    <h4 class="font-medium text-sm text-gray-700 mb-2">Pricing (1K tokens):</h4>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span class="text-gray-600">Input: </span>
+                                            <span class="font-medium">$0.01/1K</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Output: </span>
+                                            <span class="font-medium">$0.03/1K</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right space-y-2">
+                            <div class="text-2xl font-bold text-green-600">
+                                Save 60-75%
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                Setup: 5 min
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center">
+                        Connect OpenAI
+                        <span class="ml-2">→</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Anthropic Provider Card -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow cursor-pointer" onclick="showConnectionGuide('anthropic')">
+                <div class="p-6">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start space-x-4">
+                            <div class="p-4 rounded-full bg-orange-500 text-white text-3xl">
+                                🧠
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <h3 class="text-2xl font-bold">Anthropic</h3>
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Medium</span>
+                                </div>
+                                <p class="text-gray-600 text-base mb-3">Advanced reasoning with Claude models</p>
+                                
+                                <!-- Models -->
+                                <div class="mb-4">
+                                    <h4 class="font-medium text-sm text-gray-700 mb-2">Available Models:</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">Claude 3 Opus</span>
+                                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">Claude 3 Sonnet</span>
+                                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">Claude 3 Haiku</span>
+                                    </div>
+                                </div>
+
+                                <!-- Pricing -->
+                                <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                    <h4 class="font-medium text-sm text-gray-700 mb-2">Pricing (1K tokens):</h4>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span class="text-gray-600">Input: </span>
+                                            <span class="font-medium">$0.008/1K</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Output: </span>
+                                            <span class="font-medium">$0.024/1K</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right space-y-2">
+                            <div class="text-2xl font-bold text-green-600">
+                                Save 65-80%
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                Setup: 7 min
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center">
+                        Connect Anthropic
+                        <span class="ml-2">→</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Google AI Provider Card -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow cursor-pointer" onclick="showConnectionGuide('google')">
+                <div class="p-6">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start space-x-4">
+                            <div class="p-4 rounded-full bg-blue-500 text-white text-3xl">
+                                🔍
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <h3 class="text-2xl font-bold">Google AI</h3>
+                                    <span class="bg-green-500 text-white text-xs px-2 py-1 rounded flex items-center">
+                                        <span class="mr-1">✓</span> Connected
+                                    </span>
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Advanced</span>
+                                </div>
+                                <p class="text-gray-600 text-base mb-3">Cutting-edge Gemini models with multimodal capabilities</p>
+                                
+                                <!-- Models -->
+                                <div class="mb-4">
+                                    <h4 class="font-medium text-sm text-gray-700 mb-2">Available Models:</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">Gemini Pro</span>
+                                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">Gemini Vision</span>
+                                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">Gemini Flash</span>
+                                    </div>
+                                </div>
+
+                                <!-- Pricing -->
+                                <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                    <h4 class="font-medium text-sm text-gray-700 mb-2">Pricing (1K tokens):</h4>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span class="text-gray-600">Input: </span>
+                                            <span class="font-medium">$0.0005/1K</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Output: </span>
+                                            <span class="font-medium">$0.0015/1K</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right space-y-2">
+                            <div class="text-2xl font-bold text-green-600">
+                                Save 80-95%
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                Setup: 10 min
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-4 bg-gray-300 text-gray-600 font-medium py-3 px-4 rounded-lg flex items-center justify-center">
+                        <span class="mr-2">⚙️</span>
+                        Manage Connection
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Savings Simulation -->
+        <div class="max-w-4xl mx-auto mt-12 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-6">
+            <h3 class="text-xl font-bold mb-4 flex items-center">
+                <span class="text-green-600 mr-2">📈</span>
+                Projected Monthly Savings
+            </h3>
+            <p class="text-gray-600 mb-6">Based on typical usage patterns</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-red-600">$850</div>
+                    <div class="text-sm text-gray-600">Single Provider (GPT-4 only)</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-yellow-600">$420</div>
+                    <div class="text-sm text-gray-600">Mixed Usage (Manual)</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-600">$180</div>
+                    <div class="text-sm text-gray-600">Smart Routing (Optimized)</div>
+                    <div class="bg-green-500 text-white text-xs px-2 py-1 rounded mt-1 inline-block">79% Savings</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Modal Placeholder -->
+        <div id="demo-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <span class="text-white text-2xl">🎯</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Visual Connection Guide Demo</h3>
+                    <p class="text-gray-600">This demonstrates the consumer-friendly connection flow</p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h4 class="font-semibold">What You're Seeing:</h4>
+                        <ul class="text-sm text-gray-600 space-y-1 mt-2">
+                            <li>• <strong>Progressive disclosure</strong> - Steps expand to show details</li>
+                            <li>• <strong>Trust indicators</strong> - Security badges and encryption messaging</li>
+                            <li>• <strong>Interactive validation</strong> - Real-time API key testing</li>
+                            <li>• <strong>Mobile-optimized</strong> - Touch-friendly responsive design</li>
+                        </ul>
+                    </div>
+
+                    <div class="border-l-4 border-green-500 pl-4">
+                        <h4 class="font-semibold">Research-Based Design:</h4>
+                        <ul class="text-sm text-gray-600 space-y-1 mt-2">
+                            <li>• Based on Stripe, Plaid, and Zapier patterns</li>
+                            <li>• Fintech-inspired trust building</li>
+                            <li>• Consumer-friendly visual metaphors</li>
+                            <li>• Achievement celebrations upon success</li>
+                        </ul>
+                    </div>
+
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <h4 class="font-semibold">Implementation Features:</h4>
+                        <ul class="text-sm text-gray-600 space-y-1 mt-2">
+                            <li>• Complete React components built</li>
+                            <li>• BYOK security integration ready</li>
+                            <li>• Provider-specific step flows</li>
+                            <li>• Cost savings prominently featured</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button onclick="closeModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg mr-3">
+                        Close Demo
+                    </button>
+                    <a href="http://localhost:3000/demo/connection-guides" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg inline-block">
+                        View Full Implementation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showConnectionGuide(provider) {
+            document.getElementById('demo-modal').classList.remove('hidden');
+            document.getElementById('demo-modal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('demo-modal').classList.add('hidden');
+            document.getElementById('demo-modal').classList.remove('flex');
+        }
+
+        // Close modal on outside click
+        document.getElementById('demo-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

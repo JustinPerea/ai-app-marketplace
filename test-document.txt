@@ -1,0 +1,9 @@
+This is a test document for PDF generation testing.
+
+Key Points:
+- Test document for PDF Notes Generator
+- Simple content to verify AI processing
+- Used for debugging and validation
+
+Summary:
+This document serves as a test case for the PDF Notes Generator application to verify that PDF upload and AI processing functionality works correctly.

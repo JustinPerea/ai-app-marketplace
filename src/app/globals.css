@@ -1,26 +1,791 @@
 @import "tailwindcss";
 
+/* Import Inter Variable Font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@theme {
+  /* 
+   * COSMARA COSMIC DESIGN SYSTEM
+   * Deep Space foundation with cosmic gradients and stellar accents
+   * Premium AI marketplace branding with sophisticated cosmic elements
+   */
+  
+  /* Foundation Colors - Cosmara Deep Space System */
+  --color-background: #0B1426;      /* Deep Space - primary background */
+  --color-foreground: #ffffff;      /* Pure White - maximum contrast */
+  --color-card: #1e293b;            /* Space depth - elevated surfaces */
+  --color-card-foreground: #ffffff;
+  --color-popover: #334155;         /* Space medium - component backgrounds */
+  --color-popover-foreground: #ffffff;
+  
+  /* Primary Brand Colors - Cosmara Golden Nebula System */
+  --color-primary: #FFD700;         /* Golden Nebula - primary brand color */
+  --color-primary-foreground: #0B1426;
+  --color-secondary: #FFA500;       /* Golden Nebula darker - secondary elements */
+  --color-secondary-foreground: #0B1426;
+  
+  /* Cosmara Stellar Accents */
+  --color-accent: #3B82F6;          /* Cosmic Blue - interactive surfaces */
+  --color-accent-foreground: #ffffff;
+  --color-muted: #334155;           /* Space medium - UI elements */
+  --color-muted-foreground: #94A3B8; /* Stardust - muted text */
+  
+  /* Semantic Colors - Cosmara System */
+  --color-destructive: #FF6B35;     /* Solar Flare - destructive actions */
+  --color-destructive-foreground: #ffffff;
+  --color-border: #334155;          /* Space medium borders */
+  --color-input: #1e293b;           /* Space depth input backgrounds */
+  --color-ring: #FFD700;            /* Golden Nebula - focus rings */
+  
+  /* Cosmara Cosmic Palette */
+  --color-deep-space: #0B1426;          /* Deep Space - darkest backgrounds */
+  --color-space-depth: #1e293b;         /* Space Depth - elevated surfaces */  
+  --color-space-medium: #334155;        /* Space Medium - UI elements */
+  --color-space-light: #475569;         /* Space Light - borders & dividers */
+  
+  /* Cosmara Brand Colors - Golden Nebula System */
+  --color-golden-nebula: #FFD700;       /* Golden Nebula - primary brand */
+  --color-golden-nebula-dark: #FFA500;  /* Golden Nebula darker variant */
+  --color-cosmic-blue: #3B82F6;         /* Cosmic Blue - technology, trust */
+  --color-cosmic-blue-dark: #1D4ED8;    /* Cosmic Blue darker variant */
+  
+  /* Cosmara Stellar Accents */
+  --color-stellar-purple: #8B5CF6;      /* Stellar Purple - innovation, AI */
+  --color-stellar-purple-dark: #7C3AED; /* Stellar Purple darker variant */
+  --color-solar-flare: #FF6B35;         /* Solar Flare - energy, action */
+  --color-solar-flare-alt: #F59E0B;     /* Solar Flare alternative */
+  
+  /* Cosmara Text & Neutrals */
+  --color-stardust: #E2E8F0;            /* Stardust - light text */
+  --color-stardust-muted: #94A3B8;      /* Stardust muted - subtle text */
+  
+  /* Dark Theme Foundations - Neutral System */
+  --color-dark-obsidian: #0a0a0a;        /* Close to black - deepest backgrounds */
+  --color-dark-charcoal: #1a1a1a;        /* Dark charcoal - elevated surfaces */
+  --color-dark-graphite: #2a2a2a;        /* Medium charcoal - component backgrounds */
+  --color-dark-ash: #3a3a3a;             /* Light charcoal - borders & dividers */
+  
+  /* Enhanced Glass Effect Overlays - Dark & Light Glass System */
+  --color-glass-dark: rgba(0, 0, 0, 0.4);           /* Dark glass overlay - stronger */
+  --color-glass-light: rgba(255, 255, 255, 0.15);   /* Light glass overlay - subtle */
+  --color-glass-blue: rgba(0, 184, 255, 0.08);      /* Selective blue accent glass */
+  --color-glass-mint: rgba(0, 255, 159, 0.08);      /* Selective mint accent glass */
+  --color-glass-pink: rgba(214, 0, 255, 0.06);      /* Selective pink accent glass */
+  
+  /* Text & Content - Neutral System */
+  --color-text-primary: #ffffff;         /* Pure white - maximum contrast */
+  --color-text-secondary: #e0e0e0;       /* Light gray - medium contrast */
+  --color-text-muted: #a0a0a0;           /* Medium gray - low contrast */
+  --color-text-disabled: #808080;        /* Dark gray - minimal contrast */
+  
+  /* Glass Effect Utilities */
+  --glass-blur: blur(16px);
+  --glass-saturate: saturate(180%);
+  --glass-brightness: brightness(100%);
+  
+  /* Animation Timings */
+  --transition-glass: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease-out;
+  --transition-slow: all 0.5s ease-in-out;
+  
+  /* Typography Scale - Glass Optimized */
+  --font-primary: 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Inter Display', var(--font-primary);
+  --font-mono: 'JetBrains Mono Variable', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  
+  /* Border Radius - Sophisticated Glass Corners */
+  --radius: 0.75rem;
+}
+
+/* Light Mode - Neutral Glass System Override */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light mode glass system colors - Close to white primary */
+  --color-background-light: #fafafa;          /* Close to white backgrounds */
+  --color-foreground-light: #0a0a0a;          /* Close to black text */
+  --color-card-light: rgba(250, 250, 250, 0.9); /* Near-white transparent cards */
+  --color-card-foreground-light: #0a0a0a;
+  --color-popover-light: rgba(255, 255, 255, 0.95); /* Pure white transparent popover */
+  --color-popover-foreground-light: #0a0a0a;
+  
+  /* Light mode glass overlays - Enhanced Light/Dark Glass System */
+  --color-glass-light-mode: rgba(255, 255, 255, 0.6);      /* Strong light glass */
+  --color-glass-dark-mode: rgba(0, 0, 0, 0.15);            /* Subtle dark glass */
+  --color-glass-blue-light: rgba(0, 184, 255, 0.06);       /* Selective blue glass */
+  --color-glass-mint-light: rgba(0, 255, 159, 0.06);       /* Selective mint glass */
+  --color-glass-pink-light: rgba(214, 0, 255, 0.04);       /* Selective pink glass */
+  
+  /* Light mode text colors - Neutral system */
+  --color-text-primary-light: #0a0a0a;         /* Close to black primary text */
+  --color-text-secondary-light: #2a2a2a;       /* Dark charcoal secondary text */
+  --color-text-muted-light: #5a5a5a;           /* Medium gray muted text */
+  --color-text-disabled-light: #808080;        /* Gray disabled contrast */
+  
+  /* Light mode borders and surfaces - Neutral definition */
+  --color-border-light: rgba(0, 0, 0, 0.15);        /* Subtle dark borders */
+  --color-input-light: rgba(250, 250, 250, 0.9);    /* Near-white input background */
+  --color-secondary-light: rgba(245, 245, 245, 0.8); /* Light gray secondary */
+  --color-secondary-foreground-light: #2a2a2a;
+  --color-muted-light: rgba(240, 240, 240, 0.7);    /* Light gray muted */
+  --color-muted-foreground-light: #5a5a5a;
+  --color-accent-light: rgba(235, 235, 235, 0.8);   /* Medium gray accent */
+  --color-accent-foreground-light: #2a2a2a;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.light {
+  /* Override dark colors for light mode */
+  --color-background: var(--color-background-light);
+  --color-foreground: var(--color-foreground-light);
+  --color-card: var(--color-card-light);
+  --color-card-foreground: var(--color-card-foreground-light);
+  --color-popover: var(--color-popover-light);
+  --color-popover-foreground: var(--color-popover-foreground-light);
+  
+  --color-secondary: var(--color-secondary-light);
+  --color-secondary-foreground: var(--color-secondary-foreground-light);
+  --color-muted: var(--color-muted-light);
+  --color-muted-foreground: var(--color-muted-foreground-light);
+  --color-accent: var(--color-accent-light);
+  --color-accent-foreground: var(--color-accent-foreground-light);
+  
+  --color-border: var(--color-border-light);
+  --color-input: var(--color-input-light);
+  
+  /* Override glass overlays for light mode */
+  --color-glass-light: var(--color-glass-light-mode);
+  --color-glass-dark: var(--color-glass-dark-mode);
+  --color-glass-blue: var(--color-glass-blue-light);
+  --color-glass-mint: var(--color-glass-mint-light);
+  --color-glass-pink: var(--color-glass-pink-light);
+  
+  /* Override text colors for light mode */
+  --color-text-primary: var(--color-text-primary-light);
+  --color-text-secondary: var(--color-text-secondary-light);
+  --color-text-muted: var(--color-text-muted-light);
+  --color-text-disabled: var(--color-text-disabled-light);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  /* Dark mode uses the main theme colors (already defined above) */
+}
+
+* {
+  border-color: var(--color-border);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-primary);
+  font-feature-settings: "rlig" 1, "calt" 1;
+  line-height: 1.6;
+  
+  /* Cosmara Deep Space background with subtle stellar gradients */
+  background-image: 
+    radial-gradient(circle at 20% 20%, 
+      rgba(255, 215, 0, 0.08) 0%,
+      rgba(255, 165, 0, 0.04) 30%,
+      transparent 60%),
+    radial-gradient(circle at 80% 80%, 
+      rgba(59, 130, 246, 0.06) 0%,
+      rgba(139, 92, 246, 0.03) 40%,
+      transparent 70%),
+    radial-gradient(circle at 40% 60%, 
+      rgba(255, 107, 53, 0.04) 0%,
+      transparent 50%);
+}
+
+/* Light mode body background - Dark Aero */
+.light body {
+  /* Light mode glass background enhancement - Clean cyber color wash */
+  background: linear-gradient(135deg, 
+    #f8fafc 0%,
+    rgba(6, 137, 228, 0.02) 30%,
+    rgba(0, 50, 219, 0.015) 70%,
+    #f8fafc 100%);
+}
+
+/* Typography Hierarchy - Glass Design System */
+.text-hero {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--color-text-primary);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.text-hero-glass {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--color-text-primary);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.text-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+
+.text-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text-primary);
+}
+
+.text-h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text-primary);
+}
+
+.text-section-header {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text-primary);
+  margin-bottom: 1rem;
+}
+
+.text-section-header::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    var(--color-innovation-magenta), 
+    var(--color-accent-azure));
+  border-radius: 2px;
+  margin-top: 0.5rem;
+  box-shadow: 0 2px 8px rgba(189, 0, 255, 0.3);
+}
+
+.text-body-lg {
+  font-family: var(--font-primary);
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--color-text-primary);
+}
+
+.text-body {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.text-body-glass {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+  
+  /* Enhanced readability on glass backgrounds */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.text-small {
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* Enhanced Glass Effect Components - Dark/Light Glass System */
+.glass-card {
+  background: var(--color-glass-light);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.08), 
+    transparent
+  );
+  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(0, 184, 255, 0.2);
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 184, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.glass-card:hover::before {
+  left: 100%;
+}
+
+.glass-card-dark {
+  background: var(--color-glass-dark);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(16px)) {
+  .glass-card {
+    background: rgba(22, 27, 34, 0.85);
+  }
+  
+  .light .glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Light Mode Glass Components - Enhanced Light Glass System */
+.light .glass-card {
+  background: var(--color-glass-light);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.06),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.light .glass-card-dark {
+  background: var(--color-glass-dark);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.light .glass-nav {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.04),
+    0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.light .glass-modal {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 
+    0 16px 64px rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.light .glass-button-primary {
+  background: linear-gradient(135deg, var(--color-innovation-magenta), var(--color-bridge-violet));
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(192, 38, 211, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  color: white; /* Keep white text on gradient */
+}
+
+.light .glass-button-primary:hover {
+  backdrop-filter: blur(16px) brightness(105%);
+  box-shadow: 
+    0 8px 24px rgba(192, 38, 211, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.light .glass-button-secondary {
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: var(--color-accent-sapphire);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.light .glass-button-secondary:hover {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.glass-nav {
+  background: var(--color-glass-blue);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border-bottom: 1px solid rgba(6, 137, 228, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.glass-modal {
+  background: var(--color-glass-purple);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 16px;
+  box-shadow: 
+    0 16px 64px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-button-primary {
+  background: linear-gradient(135deg, var(--color-golden-nebula), var(--color-solar-flare));
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  box-shadow: 
+    0 4px 16px rgba(255, 215, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: var(--transition-glass);
+  color: var(--color-deep-space);
+  font-weight: 500;
+}
+
+.glass-button-primary:hover {
+  backdrop-filter: blur(12px) brightness(110%);
+  box-shadow: 
+    0 8px 24px rgba(255, 215, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.glass-button-secondary {
+  background: rgba(59, 130, 246, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  color: var(--color-cosmic-blue);
+  transition: var(--transition-glass);
+  font-weight: 500;
+}
+
+.glass-button-secondary:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+/* Utility Classes */
+.glass-base {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+
+.glass-light {
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+.glass-heavy {
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+}
+
+.text-glass-gradient {
+  background: linear-gradient(135deg, 
+    #FFD700 0%,
+    #FFA500 50%,
+    #FF6B35 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-stardust-muted {
+  color: #94A3B8; /* Stardust muted - subtle but visible */
+}
+
+/* Deep Space Background - Cosmara Foundation */
+body {
+  background: linear-gradient(135deg, #0B1426 0%, #1e293b 100%);
+  min-height: 100vh;
+}
+
+/* Ensure Deep Space background is applied to html and main elements */
+html {
+  background: linear-gradient(135deg, #0B1426 0%, #1e293b 100%);
+  min-height: 100vh;
+}
+
+main {
+  background: transparent;
+}
+
+/* Glass System Button Styles */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-golden-nebula), var(--color-solar-flare));
+  color: var(--color-deep-space);
+  padding: 0.75rem 1.5rem;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: var(--radius);
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  box-shadow: 
+    0 4px 16px rgba(255, 215, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: var(--transition-glass);
+}
+
+.btn-primary:hover {
+  backdrop-filter: blur(12px) brightness(110%);
+  box-shadow: 
+    0 8px 24px rgba(255, 215, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: var(--color-glass-blue);
+  border: 1px solid rgba(6, 137, 228, 0.3);
+  color: var(--color-accent-azure);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  transition: var(--transition-glass);
+}
+
+.btn-secondary:hover {
+  background: var(--color-glass-purple);
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Light Mode Button Overrides - Dark Aero */
+.light .btn-primary {
+  color: white; /* Keep white text on gradient background */
+  box-shadow: 
+    0 4px 16px rgba(189, 0, 255, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.light .btn-primary:hover {
+  box-shadow: 
+    0 8px 24px rgba(189, 0, 255, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.light .btn-secondary {
+  background: rgba(6, 137, 228, 0.08);
+  color: var(--color-primary);
+  border-color: rgba(6, 137, 228, 0.25);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.light .btn-secondary:hover {
+  background: rgba(6, 137, 228, 0.12);
+  border-color: rgba(6, 137, 228, 0.35);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Performance Optimizations */
+.glass-optimized {
+  will-change: backdrop-filter;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Abstract Background Performance Optimizations */
+.abstract-shape-optimized {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: layout style paint;
+}
+
+.abstract-shape-floating {
+  animation: abstractFloat 20s infinite linear;
+  transform-origin: center center;
+}
+
+@keyframes abstractFloat {
+  0% { transform: translateZ(0) rotate(0deg) scale(1); }
+  25% { transform: translateZ(0) rotate(90deg) scale(1.1); }
+  50% { transform: translateZ(0) rotate(180deg) scale(0.9); }
+  75% { transform: translateZ(0) rotate(270deg) scale(1.05); } 
+  100% { transform: translateZ(0) rotate(360deg) scale(1); }
+}
+
+/* Hardware accelerated morphing */
+.shape-morph {
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity, filter;
+}
+
+/* Twinkling Stars Animation */
+.star-twinkle {
+  animation: twinkle 3s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0% { 
+    opacity: 0.3; 
+    transform: scale(0.8);
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.2);
+  }
+  100% { 
+    opacity: 0.3; 
+    transform: scale(0.8);
+  }
+}
+
+/* Subtle Star Movement Animation */
+.star-drift {
+  animation: starDrift 20s ease-in-out infinite;
+}
+
+@keyframes starDrift {
+  0%, 100% { 
+    transform: translate(0px, 0px) scale(0.8);
+    opacity: 0.3;
+  }
+  25% { 
+    transform: translate(3px, -2px) scale(1.0);
+    opacity: 0.5;
+  }
+  50% { 
+    transform: translate(-2px, 4px) scale(1.2);
+    opacity: 1;
+  }
+  75% { 
+    transform: translate(4px, 1px) scale(1.0);
+    opacity: 0.5;
+  }
+}
+
+/* Combined twinkling and drifting animation */
+.star-cosmic {
+  animation: 
+    twinkle 3s ease-in-out infinite alternate,
+    starDrift 25s ease-in-out infinite;
+  animation-delay: var(--star-delay, 0s);
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .glass-button-primary,
+  .glass-button-secondary,
+  .btn-primary,
+  .btn-secondary {
+    transition: none;
+  }
+  
+  .glass-card {
+    backdrop-filter: none;
+    background: rgba(22, 27, 34, 0.9);
+  }
+  
+  .star-twinkle {
+    animation: none;
+  }
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .glass-card {
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+  }
+  
+  .glass-nav {
+    backdrop-filter: blur(12px) saturate(150%);  
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+  }
+}
+
+/* Progressive enhancement for backdrop-filter */
+@supports (backdrop-filter: blur(1px)) {
+  .glass-fallback {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-fallback {
+    background: rgba(22, 27, 34, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Custom scrollbar - Glass Theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-dark-graphite);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Light Mode Scrollbar */
+.light ::-webkit-scrollbar-track {
+  background: var(--color-muted-light);
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted-light);
+  border-radius: 4px;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary-light);
 }

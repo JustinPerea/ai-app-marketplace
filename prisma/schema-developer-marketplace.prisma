@@ -1,0 +1,780 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// AUTHENTICATION & USER MANAGEMENT
+// =============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  auth0Id       String?   @unique // Auth0 user ID
+  email         String    @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // User profile and preferences
+  bio           String?   @db.Text
+  company       String?
+  website       String?
+  
+  // Subscription and billing
+  plan          UserPlan  @default(FREE)
+  stripeCustomerId String? @unique
+  
+  // API key management (BYOK model)
+  apiKeys       ApiKey[]
+  localModels   LocalModel[] // NEW: Local AI models (Ollama, etc.)
+  
+  // Marketplace relationships
+  subscriptions AppSubscription[]
+  reviews       AppReview[]
+  developerProfile DeveloperProfile?
+  
+  // NEW: App runtime and execution tracking
+  appExecutions AppExecution[]
+  appInstalls   AppInstall[]
+  
+  // Legacy support for video-to-notes app
+  creditsUsed   Int       @default(0)
+  creditsLimit  Int       @default(3)
+  videos        Video[]
+  
+  @@index([auth0Id])
+  @@index([email])
+  @@index([plan])
+}
+
+model DeveloperProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Developer information
+  displayName   String
+  description   String?  @db.Text
+  website       String?
+  githubUrl     String?
+  linkedinUrl   String?
+  
+  // Verification and trust
+  verified      Boolean  @default(false)
+  verifiedAt    DateTime?
+  
+  // Revenue tracking
+  totalEarnings Decimal  @default(0) @db.Decimal(10, 2)
+  payoutEmail   String?
+  
+  // Developer metrics
+  totalApps     Int      @default(0)
+  totalDownloads Int     @default(0)
+  averageRating Float?
+  
+  // NEW: Developer marketplace features
+  sdkVersion    String?  // Latest SDK version they're using
+  preferredLanguage String? // JavaScript, Python, etc.
+  supportEmail  String?
+  supportUrl    String?
+  
+  apps          MarketplaceApp[]
+  appTemplates  AppTemplate[] // NEW: App templates for easy development
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([verified])
+  @@index([userId])
+}
+
+// =============================================================================
+// API KEY MANAGEMENT (BYOK Model) - EXTENDED FOR DEVELOPER MARKETPLACE
+// =============================================================================
+
+model ApiKey {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Key information
+  name          String      // User-friendly name for the key
+  provider      ApiProvider // OpenAI, Anthropic, etc.
+  keyHash       String      // Hashed version of the actual key
+  keyPreview    String      // Last 4 characters for display
+  
+  // Usage tracking
+  isActive      Boolean     @default(true)
+  lastUsed      DateTime?
+  totalRequests Int         @default(0)
+  totalCost     Decimal     @default(0) @db.Decimal(10, 4)
+  
+  // NEW: Enhanced for app marketplace
+  allowedApps   String[]    // App IDs that can use this key (empty = all apps)
+  usageLimit    Decimal?    @db.Decimal(10, 4) // Monthly spending limit
+  alertThreshold Decimal?   @db.Decimal(10, 4) // Alert when 80% of limit reached
+  
+  // Security
+  encryptedKey  String      @db.Text // Encrypted actual key
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Usage records
+  usageRecords  ApiUsageRecord[]
+  
+  @@index([userId])
+  @@index([provider])
+  @@index([isActive])
+}
+
+// NEW: Local AI Model Management (Ollama, local LLMs)
+model LocalModel {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Model information
+  name          String   // User-friendly name
+  modelId       String   // Actual model identifier (e.g., "llama2", "codellama")
+  provider      LocalModelProvider
+  version       String?  // Model version
+  
+  // Configuration
+  isActive      Boolean  @default(true)
+  configParams  Json?    // Model-specific configuration (temperature, max_tokens, etc.)
+  
+  // Performance tracking
+  lastUsed      DateTime?
+  totalRequests Int      @default(0)
+  avgLatency    Int?     // Average response time in ms
+  
+  // Hardware requirements
+  memoryUsage   Int?     // MB of RAM required
+  diskUsage     Int?     // MB of disk space used
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Usage tracking
+  usageRecords  LocalModelUsage[]
+  
+  @@index([userId])
+  @@index([provider])
+  @@index([isActive])
+}
+
+model LocalModelUsage {
+  id          String     @id @default(cuid())
+  modelId     String
+  model       LocalModel @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  
+  // Usage details
+  appId       String?    // Which app used this model
+  app         MarketplaceApp? @relation(fields: [appId], references: [id])
+  
+  tokensUsed  Int        // Tokens processed
+  latency     Int        // Response time in ms
+  successful  Boolean    // Whether the request succeeded
+  
+  // Hardware metrics
+  cpuUsage    Float?     // CPU utilization during request
+  memoryUsage Int?       // Peak memory usage in MB
+  
+  createdAt   DateTime   @default(now())
+  
+  @@index([modelId])
+  @@index([appId])
+  @@index([createdAt])
+}
+
+model ApiUsageRecord {
+  id          String     @id @default(cuid())
+  apiKeyId    String
+  apiKey      ApiKey     @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  
+  // Usage details
+  appId       String?    // Which app used this key
+  app         MarketplaceApp? @relation(fields: [appId], references: [id])
+  
+  endpoint    String     // API endpoint used
+  tokensUsed  Int        // Tokens consumed
+  cost        Decimal    @db.Decimal(8, 4) // Cost in USD
+  
+  // NEW: Enhanced tracking for app marketplace
+  modelUsed   String?    // Specific model used (gpt-4, claude-3, etc.)
+  latency     Int?       // Response time in ms
+  successful  Boolean    @default(true) // Whether request succeeded
+  
+  // Metadata for tracking
+  requestId   String?    // For correlation with logs
+  userAgent   String?
+  ipAddress   String?
+  
+  createdAt   DateTime   @default(now())
+  
+  @@index([apiKeyId])
+  @@index([appId])
+  @@index([createdAt])
+}
+
+// =============================================================================
+// MARKETPLACE APP CATALOG - ENHANCED FOR DEVELOPER APPS
+// =============================================================================
+
+model MarketplaceApp {
+  id            String     @id @default(cuid())
+  
+  // Basic app information
+  name          String
+  slug          String     @unique // URL-friendly identifier
+  description   String     @db.Text
+  shortDescription String  // For cards/lists
+  
+  // App metadata
+  category      AppCategory
+  tags          String[]   // Array of tags for searching
+  version       String     @default("1.0.0")
+  
+  // Developer information
+  developerId   String
+  developer     DeveloperProfile @relation(fields: [developerId], references: [id])
+  
+  // Pricing and availability
+  pricing       AppPricing @default(FREE)
+  price         Decimal?   @db.Decimal(8, 2) // Monthly price in USD
+  isActive      Boolean    @default(false)   // Published/unpublished
+  isFeatured    Boolean    @default(false)
+  
+  // App content
+  iconUrl       String?
+  screenshotUrls String[] // Array of screenshot URLs
+  demoUrl       String?   // Link to live demo
+  githubUrl     String?   // Link to source code (if open source)
+  
+  // NEW: Runtime configuration for developer apps
+  runtime       AppRuntime @relation(fields: [runtimeId], references: [id])
+  runtimeId     String
+  
+  // Integration requirements
+  requiredProviders ApiProvider[] // Which AI providers this app needs
+  supportedLocalModels LocalModelProvider[] // NEW: Which local models it supports
+  
+  // NEW: App execution settings
+  maxExecutionTime Int?    @default(300) // Max seconds per execution
+  memoryLimit     Int?     @default(512) // Max MB of memory
+  allowedDomains  String[] // Domains app can make requests to
+  
+  // Analytics and metrics
+  downloadCount Int        @default(0)
+  activeUsers   Int        @default(0)
+  averageRating Float?
+  reviewCount   Int        @default(0)
+  
+  // NEW: Enhanced metrics for developer marketplace
+  executionCount Int       @default(0) // Total executions
+  avgExecutionTime Float? // Average execution time
+  errorRate     Float?    // Percentage of failed executions
+  
+  // App lifecycle
+  status        AppStatus  @default(DRAFT)
+  publishedAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  
+  // Relationships
+  subscriptions AppSubscription[]
+  reviews       AppReview[]
+  usageRecords  ApiUsageRecord[]
+  localModelUsage LocalModelUsage[] // NEW: Track local model usage
+  
+  // NEW: App execution and installation tracking
+  executions    AppExecution[]
+  installs      AppInstall[]
+  
+  @@index([category])
+  @@index([isActive])
+  @@index([isFeatured])
+  @@index([developerId])
+  @@index([status])
+  @@index([runtimeId])
+}
+
+// NEW: App Runtime Environment
+model AppRuntime {
+  id            String   @id @default(cuid())
+  
+  // Runtime configuration
+  type          RuntimeType // JAVASCRIPT, PYTHON, CONTAINER
+  version       String   // Runtime version (e.g., "18.0.0" for Node.js)
+  
+  // Code and configuration
+  sourceCode    String   @db.Text // The actual app code
+  entryPoint    String   // Main function/file to execute
+  dependencies  Json?    // Package dependencies (package.json, requirements.txt)
+  
+  // Environment configuration
+  environmentVars Json?  // Environment variables for the app
+  secrets       Json?    // Encrypted secrets (API keys, etc.)
+  
+  // Security and sandboxing
+  allowNetworking Boolean @default(false) // Can make external requests
+  allowFileSystem Boolean @default(false) // Can read/write files
+  timeoutSeconds  Int     @default(30)    // Maximum execution time
+  
+  // Deployment
+  deployedAt    DateTime?
+  deployedVersion String?
+  deploymentStatus DeploymentStatus @default(DRAFT)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relationships
+  apps          MarketplaceApp[]
+  executions    AppExecution[]
+  
+  @@index([type])
+  @@index([deploymentStatus])
+}
+
+// NEW: App Execution Tracking
+model AppExecution {
+  id            String   @id @default(cuid())
+  
+  // Execution context
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appId         String
+  app           MarketplaceApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+  runtimeId     String
+  runtime       AppRuntime @relation(fields: [runtimeId], references: [id])
+  
+  // Execution details
+  status        ExecutionStatus @default(PENDING)
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+  
+  // Input/Output
+  inputData     Json?    // User input to the app
+  outputData    Json?    // App output/results
+  errorMessage  String?  // Error details if failed
+  
+  // Resource usage
+  executionTime Int?     // Milliseconds
+  memoryUsed    Int?     // Peak memory usage in MB
+  tokensUsed    Int?     // AI tokens consumed
+  cost          Decimal? @db.Decimal(8, 4) // Total cost in USD
+  
+  // AI provider used
+  providerUsed  String?  // "openai", "anthropic", "local:ollama", etc.
+  modelUsed     String?  // Specific model
+  
+  createdAt     DateTime @default(now())
+  
+  @@index([userId])
+  @@index([appId])
+  @@index([status])
+  @@index([startedAt])
+}
+
+// NEW: App Installation Tracking
+model AppInstall {
+  id            String   @id @default(cuid())
+  
+  // Installation details
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appId         String
+  app           MarketplaceApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+  
+  // Installation status
+  isActive      Boolean  @default(true)
+  installedAt   DateTime @default(now())
+  uninstalledAt DateTime?
+  
+  // Configuration
+  customConfig  Json?    // User's custom app configuration
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([userId, appId]) // User can only install an app once
+  @@index([userId])
+  @@index([appId])
+  @@index([isActive])
+}
+
+// NEW: App Templates for Developers
+model AppTemplate {
+  id            String   @id @default(cuid())
+  
+  // Template information
+  name          String
+  description   String   @db.Text
+  category      AppCategory
+  difficulty    TemplateDifficulty
+  
+  // Creator
+  createdBy     String
+  developer     DeveloperProfile @relation(fields: [createdBy], references: [id])
+  
+  // Template content
+  sourceCode    String   @db.Text // Template code
+  readme        String   @db.Text // Documentation
+  dependencies  Json?    // Required dependencies
+  
+  // Configuration
+  requiredProviders ApiProvider[]
+  supportedLocalModels LocalModelProvider[]
+  estimatedCost String?  // "Low", "Medium", "High"
+  
+  // Usage tracking
+  useCount      Int      @default(0)
+  
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([category])
+  @@index([difficulty])
+  @@index([createdBy])
+  @@index([isActive])
+}
+
+// =============================================================================
+// EXISTING MODELS (UNCHANGED FOR BACKWARD COMPATIBILITY)
+// =============================================================================
+
+model AppSubscription {
+  id            String   @id @default(cuid())
+  
+  // Relationship
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appId         String
+  app           MarketplaceApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+  
+  // Subscription details
+  status        SubscriptionStatus @default(ACTIVE)
+  startedAt     DateTime @default(now())
+  endsAt        DateTime?
+  cancelledAt   DateTime?
+  
+  // Billing (for paid apps)
+  stripeSubscriptionId String? @unique
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([userId, appId]) // User can only have one subscription per app
+  @@index([userId])
+  @@index([appId])
+  @@index([status])
+}
+
+model AppReview {
+  id            String   @id @default(cuid())
+  
+  // Relationship
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appId         String
+  app           MarketplaceApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+  
+  // Review content
+  rating        Int      // 1-5 stars
+  title         String?
+  content       String?  @db.Text
+  
+  // Moderation
+  isVerified    Boolean  @default(false) // Verified purchase
+  isVisible     Boolean  @default(true)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([userId, appId]) // User can only review an app once
+  @@index([appId])
+  @@index([rating])
+  @@index([isVisible])
+}
+
+// =============================================================================
+// LEGACY VIDEO-TO-NOTES MODELS (for backward compatibility)
+// =============================================================================
+
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  filename    String?
+  originalUrl String?
+  filePath    String?
+  fileSize    Int?
+  duration    Float?
+  mimeType    String?
+  status      VideoStatus @default(UPLOADED)
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  transcript  Transcript?
+  notes       Note[]
+  slides      Slide[]
+  
+  @@index([userId])
+  @@index([status])
+}
+
+model Transcript {
+  id          String   @id @default(cuid())
+  content     String   @db.Text
+  rawData     Json?
+  confidence  Float?
+  language    String?
+  
+  videoId     String   @unique
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([videoId])
+}
+
+model Note {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  type        NoteType @default(SUMMARY)
+  
+  videoId     String
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([videoId])
+  @@index([type])
+}
+
+model Slide {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  slideNumber Int
+  template    String   @default("basic")
+  
+  videoId     String
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([videoId])
+  @@index([slideNumber])
+}
+
+model ProcessingJob {
+  id          String   @id @default(cuid())
+  type        JobType
+  status      JobStatus @default(PENDING)
+  videoId     String
+  progress    Int      @default(0)
+  error       String?  @db.Text
+  result      Json?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([status])
+  @@index([type])
+  @@index([videoId])
+}
+
+// =============================================================================
+// AI INTEGRATION ANALYTICS
+// =============================================================================
+
+model AiUsageRecord {
+  id            String      @id @default(cuid())
+  userId        String
+  provider      ApiProvider
+  model         String
+  requestId     String
+  endpoint      String
+  
+  // Usage metrics
+  tokensUsed    Int
+  cost          Decimal     @db.Decimal(8, 4) // Cost in USD
+  latency       Int         // Response time in milliseconds
+  successful    Boolean     // Whether the request succeeded
+  
+  // Error tracking
+  errorCode     String?     // Error code if failed
+  
+  // Request context
+  appId         String?     // Which app made the request
+  userAgent     String?
+  ipAddress     String?
+  
+  // Additional metadata
+  metadata      Json?       // Flexible JSON field for additional data
+  
+  createdAt     DateTime    @default(now())
+  
+  @@index([userId])
+  @@index([provider])
+  @@index([model])
+  @@index([successful])
+  @@index([createdAt])
+  @@index([appId])
+}
+
+// =============================================================================
+// ENUMS - EXTENDED FOR DEVELOPER MARKETPLACE
+// =============================================================================
+
+enum UserPlan {
+  FREE
+  PRO
+  TEAM
+  ENTERPRISE
+}
+
+enum ApiProvider {
+  OPENAI
+  ANTHROPIC
+  GOOGLE
+  AZURE_OPENAI
+  COHERE
+  HUGGING_FACE
+}
+
+// NEW: Local AI Model Providers
+enum LocalModelProvider {
+  OLLAMA
+  LLAMACPP
+  GGML
+  HUGGINGFACE_LOCAL
+  CUSTOM
+}
+
+enum AppCategory {
+  PRODUCTIVITY
+  CONTENT_CREATION
+  DATA_ANALYSIS
+  EDUCATION
+  ENTERTAINMENT
+  BUSINESS
+  DEVELOPER_TOOLS
+  UTILITIES
+  // NEW: Developer-focused categories
+  CODE_GENERATION
+  LEGAL_TOOLS
+  MEDICAL_TOOLS
+  RESEARCH_TOOLS
+  MARKETING_TOOLS
+  DESIGN_TOOLS
+  OTHER
+}
+
+enum AppPricing {
+  FREE
+  FREEMIUM
+  PAID
+  ENTERPRISE
+  // NEW: Developer marketplace pricing models
+  PAY_PER_USE
+  BYOK_ONLY
+}
+
+enum AppStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  PUBLISHED
+  SUSPENDED
+  ARCHIVED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  PAUSED
+}
+
+// NEW: Runtime and execution enums
+enum RuntimeType {
+  JAVASCRIPT
+  PYTHON
+  CONTAINER
+  EDGE_FUNCTION
+}
+
+enum DeploymentStatus {
+  DRAFT
+  BUILDING
+  DEPLOYED
+  FAILED
+  DEPRECATED
+}
+
+enum ExecutionStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  TIMEOUT
+  CANCELLED
+}
+
+enum TemplateDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+// Legacy enums for video-to-notes compatibility
+enum VideoStatus {
+  UPLOADED
+  TRANSCRIBING
+  TRANSCRIBED
+  PROCESSING_NOTES
+  PROCESSING_SLIDES
+  COMPLETED
+  FAILED
+}
+
+enum NoteType {
+  SUMMARY
+  DETAILED
+  BULLET_POINTS
+  OUTLINE
+  FLASHCARDS
+}
+
+enum JobType {
+  TRANSCRIPTION
+  NOTES_GENERATION
+  SLIDE_GENERATION
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}

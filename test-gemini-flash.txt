@@ -1,0 +1,27 @@
+# Test Document for Gemini 1.5 Flash Integration
+
+## Executive Summary
+This is a test document to verify that Gemini 1.5 Flash is working correctly for PDF note generation. The document contains structured content that should be processed quickly and cost-effectively.
+
+## Key Points
+1. **Performance Testing**: Gemini 1.5 Flash should process this content in 2-5 seconds
+2. **Cost Efficiency**: At $0.001/page, this should be the most economical option
+3. **Quality Verification**: The generated notes should maintain accuracy and structure
+
+## Test Content
+The AI App Marketplace platform has successfully implemented BYOK (Bring Your Own Keys) architecture, supporting both cloud and local AI providers. Key achievements include:
+
+- Multi-provider AI support (OpenAI, Anthropic, Google, Cohere, Hugging Face)
+- Local AI integration with Ollama and Llama models
+- HIPAA-compliant local processing for medical applications
+- Real-time cost tracking and usage alerts
+
+## Expected Results
+When processed by Gemini 1.5 Flash, this document should generate:
+- Clear executive summary
+- Structured bullet points
+- Accurate extraction of key information
+- Fast processing time (under 5 seconds)
+
+## Conclusion
+This test will validate the successful pivot to cloud-first AI processing with Gemini 1.5 Flash as the primary provider for the PDF Notes Generator.

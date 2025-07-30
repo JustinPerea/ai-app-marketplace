@@ -1,0 +1,21 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "build": {
+    "env": {
+      "GOOGLE_CLOUD_PROJECT_ID": "default-project",
+      "DATABASE_URL": "postgresql://default:default@localhost:5432/default",
+      "AUTH0_SECRET": "default-secret-key-for-build-process-only",
+      "NEXTAUTH_SECRET": "default-nextauth-secret-for-build-only"
+    }
+  },
+  "cleanUrls": true,
+  "trailingSlash": false
+}
