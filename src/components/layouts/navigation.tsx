@@ -1,6 +1,5 @@
 'use client';
 
-import { useUser } from '@auth0/nextjs-auth0';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, KeyboardEvent, useEffect } from 'react';
@@ -14,13 +13,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Search, ShoppingBag, Code, Settings, LogOut, User, Link as LinkIcon, Building2 } from 'lucide-react';
+import { Search, ShoppingBag, Code, Settings, LogOut, User, Link as LinkIcon, Building2, LogIn } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { MobileNavigation } from './mobile-navigation';
 import { CosmaraLogo } from '@/components/ui/cosmara-logo';
+import { useAuth } from '@/lib/auth/auth-context';
 
 export function Navigation() {
-  const { user, error, isLoading } = useUser();
+  const { user, loading, logout } = useAuth();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [mounted, setMounted] = useState(false);
@@ -29,49 +29,20 @@ export function Navigation() {
     setMounted(true);
   }, []);
 
-  // Development auth bypass - always show Settings tab in development
-  // TEMP DEBUG: Force isDevelopment to true to test
-  const isDevelopment = true; // process.env.NODE_ENV === 'development';
-  
-  // Create a development user in development mode when no Auth0 user exists
-  const devUser = isDevelopment && !user ? {
-    name: 'Developer User',
-    email: 'dev@localhost',
-    picture: null
-  } : null;
+  // Show settings when user is authenticated
+  const shouldShowSettings = mounted && !!user;
 
-  // Use actual user in production, fall back to devUser in development when Auth0 isn't configured
-  const effectiveUser = user || devUser;
-  
-  // Hydration-safe approach: Always render Settings tab, but control visibility with CSS
-  // Show in development OR when we have an authenticated user (after mount)
-  const shouldShowSettings = isDevelopment || (mounted && !!user);
-
-  // Enhanced debug logging for hydration-safe approach
+  // Debug logging for auth state
   useEffect(() => {
     if (mounted) {
-      const debugInfo = {
-        // Environment
-        isDevelopment,
+      console.log('🔍 Navigation Auth State:', {
         mounted,
-        // User data
         user: !!user,
-        devUser: !!devUser,
-        effectiveUser: !!effectiveUser,
-        // Auth state
-        isLoading,
-        error: !!error,
-        // Decision flags
+        loading,
         shouldShowSettings,
-      };
-      
-      console.log('🔍 Navigation Debug (Hydration-Safe):', debugInfo);
-      
-      if (isDevelopment) {
-        console.log(`🎯 Settings tab should ${shouldShowSettings ? 'SHOW' : 'HIDE'} (shouldShowSettings=${shouldShowSettings})`);
-      }
+      });
     }
-  }, [user, devUser, effectiveUser, mounted, isLoading, error, isDevelopment, shouldShowSettings]);
+  }, [user, mounted, loading, shouldShowSettings]);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -156,29 +127,25 @@ export function Navigation() {
           <div className="flex items-center space-x-4">
             {!mounted ? (
               <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
-            ) : !isLoading && !error && !user ? (
+            ) : loading ? (
+              <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+            ) : !user ? (
               <div className="flex items-center space-x-2">
                 <Button variant="ghost" size="sm">
-                  <Link href="/api/auth/login">Sign In</Link>
+                  <Link href="/auth/login" className="flex items-center">
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Sign In
+                  </Link>
                 </Button>
               </div>
-            ) : isLoading ? (
-              <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
-            ) : error ? (
-              <Button variant="outline" size="sm">
-                <Link href="/api/auth/login">Sign In</Link>
-              </Button>
-            ) : null}
-
-            {/* User Menu - FORCE VISIBLE in development */}
-            <div className="block">
+            ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={effectiveUser?.picture || ''} alt={effectiveUser?.name || 'Developer'} />
+                      <AvatarImage src="" alt={user.name} />
                       <AvatarFallback>
-                        {effectiveUser?.name?.charAt(0) || effectiveUser?.email?.charAt(0) || 'D'}
+                        {user.name?.charAt(0) || user.email?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -186,9 +153,17 @@ export function Navigation() {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{effectiveUser?.name || 'Developer User'}</p>
+                      <p className="text-sm font-medium leading-none">{user.name}</p>
                       <p className="text-xs leading-none text-muted-foreground">
-                        {effectiveUser?.email || 'dev@localhost'}
+                        {user.email}
+                      </p>
+                      <p className="text-xs px-2 py-1 rounded-full border text-center mt-2"
+                         style={{
+                           background: user.plan === 'ENTERPRISE' ? 'rgba(255, 215, 0, 0.2)' : 'rgba(139, 92, 246, 0.2)',
+                           color: user.plan === 'ENTERPRISE' ? '#FFD700' : '#8B5CF6',
+                           borderColor: user.plan === 'ENTERPRISE' ? 'rgba(255, 215, 0, 0.3)' : 'rgba(139, 92, 246, 0.3)'
+                         }}>
+                        {user.plan}
                       </p>
                     </div>
                   </DropdownMenuLabel>
@@ -208,7 +183,7 @@ export function Navigation() {
                   <DropdownMenuItem>
                     <Link href="/setup" className="flex items-center cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
-                      <span>Setup</span>
+                      <span>API Keys</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -219,24 +194,18 @@ export function Navigation() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  {user ? (
-                    <DropdownMenuItem>
-                      <Link href="/api/auth/logout" className="flex items-center cursor-pointer">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Log out</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  ) : (
-                    <DropdownMenuItem>
-                      <div className="flex items-center text-muted-foreground">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Development Mode</span>
-                      </div>
-                    </DropdownMenuItem>
-                  )}
+                  <DropdownMenuItem>
+                    <button 
+                      onClick={logout} 
+                      className="flex items-center cursor-pointer w-full text-left"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </button>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
+            )}
 
             {/* Mobile Menu Button */}
             <MobileNavigation />

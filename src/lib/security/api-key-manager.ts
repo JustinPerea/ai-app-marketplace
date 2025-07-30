@@ -12,7 +12,7 @@
 
 import { PrismaClient, ApiProvider } from '@prisma/client';
 import { createHash, randomBytes, timingSafeEqual } from 'crypto';
-import { EnvelopeEncryptionService, createEnvelopeEncryptionService } from './envelope-encryption';
+import { EncryptionService, createEncryptionService } from './encryption-factory';
 
 export interface ApiKeyCreateRequest {
   userId: string;
@@ -56,11 +56,11 @@ export interface ApiKeyWithSecret extends SecureApiKey {
 
 export class ApiKeyManager {
   private prisma: PrismaClient;
-  private encryptionService: EnvelopeEncryptionService;
+  private encryptionService: EncryptionService;
 
-  constructor(prisma: PrismaClient, encryptionService?: EnvelopeEncryptionService) {
+  constructor(prisma: PrismaClient, encryptionService?: EncryptionService) {
     this.prisma = prisma;
-    this.encryptionService = encryptionService || createEnvelopeEncryptionService();
+    this.encryptionService = encryptionService || createEncryptionService();
   }
 
   /**
@@ -97,6 +97,9 @@ export class ApiKeyManager {
           encryptedKey: JSON.stringify({
             encryptedData: encryptionResult.encryptedData,
             encryptedDEK: encryptionResult.encryptedDEK,
+            salt: encryptionResult.salt,
+            iv: encryptionResult.iv,
+            authTag: encryptionResult.authTag,
             context: encryptionResult.context,
             algorithm: encryptionResult.algorithm,
             createdAt: encryptionResult.createdAt.toISOString()
@@ -158,11 +161,14 @@ export class ApiKeyManager {
       const encryptedData = JSON.parse(storedKey.encryptedKey);
       const customerContext = this.createCustomerContext(request.userId, storedKey.provider);
 
-      // Decrypt API key using envelope encryption
+      // Decrypt API key using the configured encryption service
       const decryptionResult = await this.encryptionService.decryptApiKey(
         {
           encryptedData: encryptedData.encryptedData,
           encryptedDEK: encryptedData.encryptedDEK,
+          salt: encryptedData.salt,
+          iv: encryptedData.iv,
+          authTag: encryptedData.authTag,
           context: encryptedData.context,
           algorithm: encryptedData.algorithm,
           createdAt: new Date(encryptedData.createdAt)

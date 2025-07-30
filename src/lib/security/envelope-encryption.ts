@@ -12,7 +12,7 @@
  */
 
 import { KeyManagementServiceClient } from '@google-cloud/kms';
-import { createCipher, createDecipher, randomBytes, createHash } from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes, createHash } from 'crypto';
 
 export interface EncryptionResult {
   encryptedData: string;
@@ -72,10 +72,10 @@ export class EnvelopeEncryptionService {
     try {
       // Step 1: Generate a unique 256-bit Data Encryption Key (DEK)
       const dek = randomBytes(32); // 256 bits
-      const iv = randomBytes(16);  // 128 bits for AES-GCM
+      const iv = randomBytes(12);  // 12 bytes for AES-GCM
       
       // Step 2: Encrypt API key with DEK using AES-256-GCM
-      const cipher = createCipher('aes-256-gcm', dek);
+      const cipher = createCipheriv('aes-256-gcm', dek, iv);
       cipher.setAAD(Buffer.from(customerContext)); // Additional Authenticated Data
       
       let encryptedApiKey = cipher.update(apiKey, 'utf8', 'base64');
@@ -187,7 +187,8 @@ export class EnvelopeEncryptionService {
         Buffer.from(encryptionResult.encryptedData, 'base64').toString()
       );
 
-      const decipher = createDecipher('aes-256-gcm', dek);
+      const iv = Buffer.from(encryptedDataJson.iv, 'base64');
+      const decipher = createDecipheriv('aes-256-gcm', dek, iv);
       decipher.setAAD(Buffer.from(customerContext));
       decipher.setAuthTag(Buffer.from(encryptedDataJson.authTag, 'base64'));
 

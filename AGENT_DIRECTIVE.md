@@ -219,13 +219,19 @@ This directive has successfully guided agents through:
 - ⚙️ **Development**: New features, enhancements, integrations
 - 🛡️ **Protection**: Homepage integrity, backup verification, security checks
 
-### **5. AUTOMATED SCRIPTS AND MONITORING** ⭐ **ENHANCED**
+### **5. AUTOMATED SCRIPTS AND MONITORING** ⭐ **ENHANCED WITH PROACTIVE STABILITY**
 
-**Available Scripts:**
+**Server Stability Scripts:**
 ```bash
+# Proactive stability management
+npm run dev:stable            # Robust server startup (recommended)
+npm run health-check          # Comprehensive system health verification
+npm run emergency-restart     # Nuclear option - complete reset
+
 # Server health monitoring
-npm run health-check          # Verify server health
 npm run test-endpoints        # Test critical API endpoints
+npm run server-status         # Check port and process status
+npm run monitor-logs          # Watch for errors and warnings
 
 # Development assistance
 npm run lint                  # Code quality check
@@ -237,11 +243,132 @@ npm run verify-homepage       # Compare with protected baseline
 npm run restore-homepage      # Restore from backup if needed
 ```
 
-**Monitoring Protocols:**
-- Real-time server health monitoring
-- API endpoint availability checking
-- Homepage integrity verification
-- Performance metrics tracking
+**Proactive Monitoring with Playwright MCP Integration:**
+
+**🚀 BEFORE REPORTING PAGE STATUS - MANDATORY PROTOCOLS:**
+
+**1. Automated Health Check Protocol:**
+```bash
+# ALWAYS run before any page status report
+npm run health-check
+
+# If ANY issues detected, auto-fix with:
+npm run dev:stable
+```
+
+**2. Playwright MCP Web Page Monitoring:**
+When agents use Playwright MCP to check web pages:
+
+**a) Pre-Check Requirements:**
+- ALWAYS run `npm run health-check` before taking screenshots
+- If console errors detected, run stability protocols FIRST
+- Document any stability issues in monitoring log
+
+**b) Console Error Detection Patterns:**
+```javascript
+// Auto-detect these critical errors in browser console:
+- "ENOENT: no such file or directory, open '.next/routes-manifest.json'"
+- "Module not found" errors
+- "Hydration" errors
+- "Internal Server Error" messages
+```
+
+**c) Automatic Recovery Triggers:**
+```bash
+# If console errors detected, IMMEDIATELY run:
+npm run dev:stable
+
+# Then verify fix with:
+npm run health-check
+
+# Only THEN proceed with page status reporting
+```
+
+**3. Monitoring Log Integration:**
+All page checks must document findings in `docs/MONITORING_LOG.md`:
+```markdown
+## Date: 2025-07-30 - Time: 14:30
+- Page: /setup
+- Status: ❌ Console errors detected
+- Action: Ran npm run dev:stable
+- Resolution: ✅ Page operational after stability restart
+- Agent: Playwright MCP
+```
+
+**Proactive Monitoring Protocols:**
+- **Real-time server health monitoring**: `scripts/health-check.sh`
+- **API endpoint availability checking**: Automated curl testing
+- **Homepage integrity verification**: Protected file comparison
+- **Performance metrics tracking**: Response time monitoring
+- **Console error detection**: Automatic browser console monitoring
+- **Stability auto-recovery**: Proactive server restart protocols
+
+### **6. PLAYWRIGHT MCP INTEGRATION PROTOCOLS** ⭐ **PROACTIVE MONITORING**
+
+**🎯 MANDATORY FOR ALL WEB PAGE CHECKS:**
+
+**Before Any Playwright MCP Operation:**
+```bash
+# Step 1: Always run health check first
+npm run health-check
+
+# Step 2: If ANY issues detected, auto-fix immediately  
+npm run dev:stable
+
+# Step 3: Verify resolution
+npm run health-check
+
+# Step 4: Only THEN proceed with Playwright operations
+```
+
+**Playwright MCP Console Error Detection:**
+```javascript
+// Automatically detect these patterns in browser console:
+const criticalErrors = [
+  "ENOENT: no such file or directory, open '.next/routes-manifest.json'",
+  "Module not found", 
+  "Hydration failed",
+  "Internal Server Error",
+  "Network Error",
+  "Compilation failed"
+];
+
+// Auto-trigger recovery if detected:
+if (consoleErrors.includes(criticalErrors)) {
+  await runCommand('npm run dev:stable');
+  await runCommand('npm run health-check');
+}
+```
+
+**Web Page Monitoring Workflow:**
+1. **Pre-Check**: Run `npm run health-check` 
+2. **Navigate**: Use Playwright to load page
+3. **Console Scan**: Check for critical errors automatically
+4. **Auto-Recovery**: If errors detected, run stability protocols
+5. **Verification**: Confirm page operational before reporting
+6. **Documentation**: Log all actions in `docs/MONITORING_LOG.md`
+
+**Required Playwright MCP Commands Integration:**
+```bash
+# Before mcp__playwright__browser_snapshot
+npm run health-check
+
+# Before mcp__playwright__browser_navigate  
+npm run health-check
+
+# Before mcp__playwright__browser_take_screenshot
+npm run health-check
+
+# If console errors detected during any operation:
+npm run dev:stable && npm run health-check
+```
+
+**Error Pattern → Action Mapping:**
+- **Routes manifest missing** → `npm run dev:stable`
+- **Module resolution errors** → `npm run dev:stable` 
+- **Hydration mismatches** → `npm run dev:stable`
+- **API endpoint failures** → `npm run health-check && npm run test-endpoints`
+- **Homepage corruption** → Restore from protected baseline immediately
 
 ## Integration Points
 
@@ -288,12 +415,17 @@ npm run restore-homepage      # Restore from backup if needed
 - [CLAUDE.md](./CLAUDE.md) - Complete project context and strategy
 - [DEVELOPMENT_CHECKLIST.md](./docs/DEVELOPMENT_CHECKLIST.md) - Development procedures
 - **[HOMEPAGE_PROTECTION.md](./HOMEPAGE_PROTECTION.md) - Homepage restoration procedures**
+- **[MONITORING_LOG.md](./docs/MONITORING_LOG.md) - Web page monitoring and recovery log**
+- **[SERVER_STABILITY_GUIDE.md](./docs/SERVER_STABILITY_GUIDE.md) - Complete stability protocols**
 
 **Quick Reference:**
-- Emergency server restart: `pkill -f "next dev" && npm run dev`
-- Clear cache: `rm -rf .next`
+- **Proactive stability**: `npm run dev:stable` (recommended startup)
+- **Health verification**: `npm run health-check` (before any page checks)
+- **Emergency recovery**: `npm run emergency-restart` (nuclear option)
 - **Emergency homepage restore**: Copy from `/src/app/page-PROTECTED-BASELINE.tsx`
-- Error logging: Update ERROR_RESOLUTION_LOG.md with findings
+- **Monitoring documentation**: Update `docs/MONITORING_LOG.md` with all findings
+- **Playwright MCP integration**: Always run health check before browser operations
+- **Console error auto-recovery**: `npm run dev:stable && npm run health-check`
 
 ---
 

@@ -34,6 +34,69 @@ export interface MockSubscription {
 const subscriptions = new Map<string, MockSubscription>();
 let subscriptionCounter = 1;
 
+// Initialize with some sample data for development
+function initializeSampleData() {
+  if (subscriptions.size === 0) {
+    // Add some sample subscriptions for demo user
+    const demoUserId = 'demo-user-123';
+    
+    // Create sample subscriptions
+    const sampleSubscriptions = [
+      {
+        marketplaceId: '1',
+        appId: 'cm5legal001',
+        startedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+      },
+      {
+        marketplaceId: '3',
+        appId: 'cm5dev001',
+        startedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+      },
+      {
+        marketplaceId: '6',
+        appId: 'cm5marketing001',
+        startedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days ago
+      }
+    ];
+
+    sampleSubscriptions.forEach(({ marketplaceId, appId, startedAt }) => {
+      try {
+        const metadata = getAppMetadata(marketplaceId);
+        const appData = mockAppData[marketplaceId];
+        
+        if (metadata && appData) {
+          const subscriptionId = `sub_${subscriptionCounter++}`;
+          const subscription: MockSubscription = {
+            id: subscriptionId,
+            userId: demoUserId,
+            appId,
+            marketplaceId,
+            status: 'ACTIVE',
+            startedAt,
+            app: {
+              id: appId,
+              name: appData.name,
+              slug: metadata.slug,
+              iconUrl: undefined,
+              category: metadata.category,
+              pricing: appData.pricing,
+              price: appData.price,
+              developer: appData.developer,
+            },
+          };
+          
+          subscriptions.set(subscriptionId, subscription);
+        }
+      } catch (error) {
+        console.error('Error creating sample subscription:', error);
+      }
+    });
+  }
+}
+
+// Initialize sample data when module loads
+initializeSampleData();
+
 // Mock app data based on marketplace
 const mockAppData: Record<string, any> = {
   '1': {

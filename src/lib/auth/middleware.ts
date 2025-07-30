@@ -12,7 +12,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession, isAuth0Configured } from '@/lib/auth/auth0-config';
-// Temporarily commenting out Prisma to avoid database connection issues during API testing
+// Conditionally import Prisma to avoid database connection issues during development
 // import { prisma } from '@/lib/db/index';
 import { UserRole, SecurityLevel, type SecurityContext } from '@/lib/security/auth-config';
 
@@ -84,12 +84,16 @@ export function withAuth(
       // FIXED: Add timeout to prevent hanging on database operations
       let user;
       try {
-        user = await Promise.race([
-          getOrCreateUser(session?.user),
-          new Promise<null>((_, reject) => 
-            setTimeout(() => reject(new Error('Database operation timeout after 10 seconds')), 10000)
-          )
-        ]);
+        // Temporarily disabled database operations during Auth0 setup
+        // user = await Promise.race([
+        //   getOrCreateUser(session?.user),
+        //   new Promise<null>((_, reject) => 
+        //     setTimeout(() => reject(new Error('Database operation timeout after 10 seconds')), 10000)
+        //   )
+        // ]);
+        
+        // For now, create mock user from Auth0 session
+        user = createMockUserFromAuth0Session(session?.user);
       } catch (error) {
         console.error('User creation/lookup failed:', error);
         
@@ -200,8 +204,28 @@ export function withDeveloperAuth(handler: AuthenticatedApiHandler) {
 }
 
 /**
+ * Create mock user from Auth0 session (used during setup phase)
+ */
+function createMockUserFromAuth0Session(auth0User: any): AuthenticatedUser | null {
+  if (!auth0User || !auth0User.sub || !auth0User.email) {
+    return null;
+  }
+
+  return {
+    id: `mock-${auth0User.sub}`,
+    auth0Id: auth0User.sub,
+    email: auth0User.email,
+    name: auth0User.name || auth0User.nickname || undefined,
+    plan: 'PRO',
+    roles: [UserRole.USER, UserRole.DEVELOPER],
+    mfaVerified: false,
+  };
+}
+
+/**
  * Get or create user in database from Auth0 session
  * FIXED: Enhanced error handling and logging
+ * NOTE: Temporarily disabled during Auth0 setup phase
  */
 async function getOrCreateUser(auth0User: any): Promise<AuthenticatedUser | null> {
   try {
@@ -215,6 +239,14 @@ async function getOrCreateUser(auth0User: any): Promise<AuthenticatedUser | null
 
     console.log('Looking up user:', { auth0Id, email });
 
+    // Database operations temporarily disabled during Auth0 setup
+    console.log('Database operations disabled during Auth0 setup - using mock user');
+    
+    // Return mock user for development
+    return createMockUserFromAuth0Session(auth0User);
+    
+    // TODO: Enable when database is properly configured for Auth0
+    /*
     // Try to find existing user with timeout
     let user = await Promise.race([
       prisma.user.findUnique({
@@ -264,7 +296,10 @@ async function getOrCreateUser(auth0User: any): Promise<AuthenticatedUser | null
         ]);
       }
     }
+    */
 
+    // TODO: Enable this when database is configured
+    /*
     // Extract roles from Auth0 metadata
     const roles = extractUserRoles(auth0User);
     const mfaVerified = isMfaVerified(auth0User);
@@ -285,6 +320,7 @@ async function getOrCreateUser(auth0User: any): Promise<AuthenticatedUser | null
       roles,
       mfaVerified,
     };
+    */
 
   } catch (error) {
     console.error('Error getting or creating user:', {

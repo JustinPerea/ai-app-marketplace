@@ -14,6 +14,7 @@ export interface AppSubscription {
   id: string;
   userId: string;
   appId: string;
+  marketplaceId: string; // Added marketplace ID for app routing
   status: 'ACTIVE' | 'CANCELLED' | 'PAUSED' | 'EXPIRED';
   startedAt: string;
   cancelledAt?: string;

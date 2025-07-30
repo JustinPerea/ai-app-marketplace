@@ -16,6 +16,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:stable": "./scripts/dev-server-stable.sh",
+    "health-check": "./scripts/health-check.sh",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -31,14 +33,15 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "postinstall": "prisma generate",
-    "health-check": "curl -f http://localhost:3000/api/ai/health || (echo 'Server health check failed' && exit 1)",
     "test-endpoints": "curl -I http://localhost:3000 && curl -I http://localhost:3000/marketplace && curl -I http://localhost:3000/marketplace/apps/pdf-notes-generator",
     "pre-change-check": "npm run type-check && npm run health-check && npm run test-endpoints",
     "post-change-verify": "npm run health-check && npm run test-endpoints && echo 'Post-change verification completed'",
     "emergency-restart": "pkill -f 'next dev' || true && lsof -ti:3000 | xargs kill -9 2>/dev/null || true && echo 'Restarting server...' && npm run dev",
     "server-status": "lsof -i :3000 || echo 'No process on port 3000'",
     "monitor-logs": "tail -f server.log | grep -E '(error|Error|ERROR|warning|Warning|WARN)'",
-    "validate-env": "echo 'Checking development environment...' && node -v && npm -v && echo 'Environment validated'"
+    "validate-env": "echo 'Checking development environment...' && node -v && npm -v && echo 'Environment validated'",
+    "test:migration": "tsx scripts/test-migration.ts",
+    "migrate:api-keys": "echo 'API key migration is handled automatically on user login. No manual migration needed.'"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.8.0",

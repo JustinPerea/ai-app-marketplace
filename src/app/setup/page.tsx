@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { SimpleStars } from '@/components/ui/simple-stars';
 import { 
   Plus, 
   CheckCircle,
@@ -24,18 +25,10 @@ import {
   Wifi,
   WifiOff
 } from 'lucide-react';
-import { APIKeyManager, PROVIDER_CONFIGS } from '@/lib/api-keys';
+import { APIKeyManager, PROVIDER_CONFIGS, type StoredAPIKey } from '@/lib/api-keys-hybrid';
 import { useUsageTracking } from '@/lib/hooks/useUsageAnalytics';
 
-interface StoredAPIKey {
-  id: string;
-  provider: string;
-  name: string;
-  keyPreview: string;
-  isActive: boolean;
-  createdAt: string;
-  lastUsed?: string;
-}
+// Remove duplicate interface definition since it's imported from hybrid manager
 
 export default function SetupPage() {
   const [apiKeys, setApiKeys] = useState<StoredAPIKey[]>([]);
@@ -59,9 +52,15 @@ export default function SetupPage() {
     loadApiKeys();
   }, []);
 
-  const loadApiKeys = () => {
-    const keys = APIKeyManager.getAll();
-    setApiKeys(keys);
+  const loadApiKeys = async () => {
+    try {
+      const keys = await APIKeyManager.getAll();
+      setApiKeys(keys);
+    } catch (error) {
+      console.error('Failed to load API keys:', error);
+      // Gracefully handle errors - the hybrid manager will fallback to localStorage
+      setApiKeys([]);
+    }
   };
 
   const handleAddProvider = async (e: React.FormEvent) => {
@@ -77,18 +76,25 @@ export default function SetupPage() {
       
       if (testResult.success) {
         // Add the key if test passed
-        APIKeyManager.add(selectedProvider, form.name.trim(), form.apiKey.trim());
-        loadApiKeys();
-        
-        setFormTestResult({ success: true });
-        
-        // Reset form after a brief success display
-        setTimeout(() => {
-          setForm({ name: '', apiKey: '', showKey: false });
-          setSelectedProvider('');
-          setShowAddForm(false);
-          setFormTestResult(null);
-        }, 2000);
+        try {
+          await APIKeyManager.add(selectedProvider, form.name.trim(), form.apiKey.trim());
+          await loadApiKeys();
+          
+          setFormTestResult({ success: true });
+          
+          // Reset form after a brief success display
+          setTimeout(() => {
+            setForm({ name: '', apiKey: '', showKey: false });
+            setSelectedProvider('');
+            setShowAddForm(false);
+            setFormTestResult(null);
+          }, 2000);
+        } catch (error) {
+          setFormTestResult({ 
+            success: false, 
+            error: error instanceof Error ? error.message : 'Failed to add API key' 
+          });
+        }
       } else {
         setFormTestResult({ success: false, error: testResult.error });
       }
@@ -152,10 +158,16 @@ export default function SetupPage() {
     }
   };
 
-  const handleDeleteKey = (id: string) => {
+  const handleDeleteKey = async (id: string) => {
     if (confirm('Are you sure you want to delete this API key?')) {
-      APIKeyManager.delete(id);
-      loadApiKeys();
+      try {
+        await APIKeyManager.delete(id);
+        await loadApiKeys();
+      } catch (error) {
+        console.error('Failed to delete API key:', error);
+        // Still reload keys to reflect current state
+        await loadApiKeys();
+      }
     }
   };
 
@@ -166,52 +178,75 @@ export default function SetupPage() {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">AI Provider Setup</h1>
-          <p className="text-gray-600">
+      {/* Simple stars background with parallax scrolling */}
+      <SimpleStars starCount={50} parallaxSpeed={0.3} />
+      
+      {/* Cosmara stellar background with cosmic gradients */}
+      <div className="absolute inset-0 pointer-events-none" 
+           style={{ 
+             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
+           }}>
+      </div>
+      
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* Header - Cosmic styling */}
+        <div className="mb-8 text-center">
+          <div className="glass-base px-4 py-2 rounded-full border inline-flex items-center mb-6"
+               style={{ 
+                 background: 'rgba(255, 215, 0, 0.1)', 
+                 borderColor: 'rgba(255, 215, 0, 0.3)' 
+               }}>
+            <Key className="h-3 w-3 mr-2" style={{ color: '#FFD700' }} />
+            <span className="text-sm font-medium text-text-primary">AI Provider Setup</span>
+          </div>
+          <h1 className="text-hero-glass mb-4">
+            <span className="text-glass-gradient">Connect Your Universe</span>
+          </h1>
+          <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
             Connect your API keys to unlock AI-powered applications. Your keys are stored securely and never shared.
           </p>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats - Cosmic glass design */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center">
-                <Key className="h-8 w-8 text-blue-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Connected Providers</p>
-                  <p className="text-2xl font-bold">{connectedProviders.length}</p>
-                </div>
+          <div className="glass-card p-6 cursor-pointer group">
+            <div className="flex items-center">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform"
+                   style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}>
+                <Key className="h-6 w-6 text-white" />
               </div>
-            </CardContent>
-          </Card>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-stardust-muted">Connected Providers</p>
+                <p className="text-2xl font-bold text-text-primary">{connectedProviders.length}</p>
+              </div>
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center">
-                <Shield className="h-8 w-8 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Privacy</p>
-                  <p className="text-2xl font-bold">100%</p>
-                </div>
+          <div className="glass-card p-6 cursor-pointer group">
+            <div className="flex items-center">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform"
+                   style={{ background: 'linear-gradient(135deg, #FFD700, #FF6B35)' }}>
+                <Shield className="h-6 w-6 text-white" />
               </div>
-            </CardContent>
-          </Card>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-stardust-muted">Privacy</p>
+                <p className="text-2xl font-bold text-text-primary">100%</p>
+              </div>
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center">
-                <DollarSign className="h-8 w-8 text-purple-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Cost Savings</p>
-                  <p className="text-2xl font-bold">70%</p>
-                </div>
+          <div className="glass-card p-6 cursor-pointer group">
+            <div className="flex items-center">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform"
+                   style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}>
+                <DollarSign className="h-6 w-6 text-white" />
               </div>
-            </CardContent>
-          </Card>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-stardust-muted">Cost Savings</p>
+                <p className="text-2xl font-bold text-text-primary">70%</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Connected Providers */}
@@ -296,7 +331,7 @@ export default function SetupPage() {
                                 ❌ Connection failed: {testResult.error}
                                 {testResult.error?.includes('payment') && (
                                   <div className="mt-2 text-sm">
-                                    💡 <strong>Need a free alternative?</strong> Try Google Gemini (free 15 requests/minute) or Anthropic Claude ($5 free credit).
+                                    💡 <strong>Need a free alternative?</strong> Try Google Gemini (free 15 requests per minute) or Anthropic Claude ($5 free credit).
                                   </div>
                                 )}
                               </AlertDescription>
@@ -480,7 +515,7 @@ export default function SetupPage() {
                           ❌ Connection failed: {formTestResult.error}
                           {formTestResult.error?.includes('payment') && (
                             <div className="mt-2 text-sm">
-                              💡 <strong>Need a free alternative?</strong> Try Google Gemini (free 15 requests/minute) or Anthropic Claude ($5 free credit).
+                              💡 <strong>Need a free alternative?</strong> Try Google Gemini (free 15 requests per minute) or Anthropic Claude ($5 free credit).
                             </div>
                           )}
                         </AlertDescription>
