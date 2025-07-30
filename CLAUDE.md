@@ -298,11 +298,40 @@ curl http://localhost:11434/api/generate -d '{"model":"llama3.2:3b","prompt":"He
 - **OpenAI**: 6/10 - Standard privacy, policy-based retention
 - **Google**: 6/10 - Standard privacy, global processing
 
+## 🛡️ Critical Protection: Homepage Safeguards
+
+**⚠️ HOMEPAGE PROTECTION ACTIVE**
+
+The homepage (`/src/app/page.tsx`) is now PROTECTED with comprehensive safeguards:
+
+### Protection Implementation (2025-07-30)
+- ✅ **Protected Baseline Created**: `/src/app/page-PROTECTED-BASELINE.tsx` - Exact backup copy
+- ✅ **Agent Directives Updated**: All agents must get explicit permission before homepage modifications
+- ✅ **Verification Protocols**: Automatic integrity checks and restoration procedures
+- ✅ **Documentation Complete**: Full protection procedures documented
+
+### What This Means
+- **Homepage modifications require explicit user permission**
+- **Backup files available for immediate restoration**
+- **All agents follow protection protocols automatically**
+- **Zero tolerance for unauthorized homepage changes**
+
+### Quick Recovery
+```bash
+# Emergency homepage restoration
+cp src/app/page-PROTECTED-BASELINE.tsx src/app/page.tsx
+```
+
+**Reference Documentation:**
+- `HOMEPAGE_PROTECTION.md` - Complete protection procedures
+- `AGENT_DIRECTIVE.md` - Agent operation protocols with homepage protection
+
 ## Agent Usage Guidelines
 
-**🚨 MANDATORY: Before starting ANY task, agents MUST review `/docs/AGENT_DIRECTIVE.md`**
+**🚨 MANDATORY: Before starting ANY task, agents MUST review `AGENT_DIRECTIVE.md`**
 
 This comprehensive directive document contains:
+- **Homepage protection protocols (NEW)** ⚠️ **CRITICAL**
 - Functionality preservation requirements (CRITICAL)
 - Error resolution protocols
 - Server stability requirements
