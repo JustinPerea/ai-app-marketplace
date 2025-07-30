@@ -124,9 +124,45 @@ async function testGoogleAI(apiKey: string) {
     })
   });
 
+  const responseData = await response.json().catch(() => ({}));
+
+  // Handle different types of errors
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error?.message || `Google AI API error: ${response.status}`);
+    const errorMessage = responseData.error?.message || `Google AI API error: ${response.status}`;
+    
+    // Authentication/authorization errors (invalid key)
+    if (response.status === 400 && errorMessage.toLowerCase().includes('api key')) {
+      throw new Error(errorMessage);
+    }
+    
+    // Service errors (valid key, but service issues) - these should still save the key
+    if (response.status === 429 || errorMessage.toLowerCase().includes('overloaded')) {
+      return {
+        success: true,
+        message: 'Google AI key is valid (service temporarily overloaded)',
+        provider: 'google-ai',
+        warning: 'Service temporarily unavailable, but key is valid'
+      };
+    }
+    
+    throw new Error(errorMessage);
+  }
+
+  // Check for error in successful response (some APIs return 200 with error)
+  if (responseData.error) {
+    const errorMessage = responseData.error.message || 'Unknown error';
+    
+    // Service overload in successful response
+    if (errorMessage.toLowerCase().includes('overloaded')) {
+      return {
+        success: true,
+        message: 'Google AI key is valid (service temporarily overloaded)',
+        provider: 'google-ai',
+        warning: 'Service temporarily unavailable, but key is valid'
+      };
+    }
+    
+    throw new Error(errorMessage);
   }
 
   return {

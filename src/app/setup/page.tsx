@@ -112,7 +112,22 @@ export default function SetupPage() {
     setTestResults(prev => ({ ...prev, [keyId]: { success: false, testing: true } }));
 
     try {
-      const testResult = await APIKeyManager.test(provider);
+      // Get the specific key to test
+      const allKeys = await APIKeyManager.getAll();
+      const keyToTest = allKeys.find(key => key.id === keyId);
+      
+      if (!keyToTest) {
+        throw new Error('API key not found');
+      }
+      
+      // Get the actual API key by ID
+      const actualApiKey = await APIKeyManager.getKeyById(keyId);
+      
+      if (!actualApiKey) {
+        throw new Error('No API key found');
+      }
+      
+      const testResult = await APIKeyManager.test(provider, actualApiKey);
       
       // Track usage event if the API response includes tracking data
       if (testResult.usageEventData) {

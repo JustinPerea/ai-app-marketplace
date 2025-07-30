@@ -292,6 +292,37 @@ class HybridAPIKeyManager {
   }
 
   /**
+   * Get the actual API key by specific key ID
+   */
+  async getKeyById(keyId: string): Promise<string | null> {
+    if (await this.checkAuthentication()) {
+      try {
+        // Get decrypted key from database by ID
+        const response = await fetch(`/api/keys/${keyId}/decrypt`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          return data.key.decryptedKey;
+        }
+      } catch (error) {
+        console.error('Failed to get key from database, falling back to localStorage:', error);
+      }
+    }
+
+    // Fallback to localStorage - find key by ID
+    const keys = LocalStorageManager.getAll();
+    const key = keys.find(k => k.id === keyId && k.isActive);
+    
+    if (!key || typeof window === 'undefined') return null;
+    
+    const encodedKey = localStorage.getItem(`api-key-${keyId}`);
+    return encodedKey ? atob(encodedKey) : null;
+  }
+
+  /**
    * Mark API key as used
    */
   async markUsed(provider: string): Promise<void> {
