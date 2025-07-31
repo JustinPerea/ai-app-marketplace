@@ -1,0 +1,239 @@
+{
+  "startTime": "2025-07-31T16:07:01.513Z",
+  "basicFunctionality": {
+    "tests": 4,
+    "passed": 4,
+    "failed": 0,
+    "details": [
+      {
+        "test": "Homepage loads successfully",
+        "status": "PASS",
+        "responseTime": 113
+      },
+      {
+        "test": "Marketplace page loads",
+        "status": "PASS",
+        "responseTime": 101
+      },
+      {
+        "test": "Dashboard page loads",
+        "status": "PASS",
+        "responseTime": 843
+      },
+      {
+        "test": "AI Chat API endpoint available",
+        "status": "PASS",
+        "note": "Correctly rejects invalid request"
+      }
+    ]
+  },
+  "providerConnectivity": {
+    "tests": 4,
+    "passed": 0,
+    "failed": 1,
+    "details": [
+      {
+        "test": "OPENAI connectivity",
+        "status": "SKIP",
+        "reason": "No API key provided"
+      },
+      {
+        "test": "ANTHROPIC connectivity",
+        "status": "SKIP",
+        "reason": "No API key provided"
+      },
+      {
+        "test": "GOOGLE connectivity",
+        "status": "SKIP",
+        "reason": "No API key provided"
+      },
+      {
+        "test": "OLLAMA connectivity",
+        "status": "FAIL",
+        "error": "HTTP 500: {\"error\":\"fetch failed\",\"provider\":\"\",\"model\":\"\"}"
+      }
+    ]
+  },
+  "costAnalysis": {
+    "tests": 3,
+    "passed": 3,
+    "failed": 0,
+    "details": [
+      {
+        "test": "Cost optimization achieves 60%+ savings",
+        "status": "PASS",
+        "actualSavings": "99.9%",
+        "cheapestOption": "gemini-1.5-flash (Google)"
+      },
+      {
+        "test": "Comprehensive pricing data available",
+        "status": "PASS",
+        "modelsWithPricing": 7
+      },
+      {
+        "test": "Significant cost variation across providers",
+        "status": "PASS",
+        "costRange": "99.9%",
+        "note": "Demonstrates clear optimization opportunity"
+      }
+    ],
+    "costComparisons": [
+      {
+        "model": "gemini-1.5-flash",
+        "provider": "Google",
+        "inputCostPer1K": 0.00035,
+        "outputCostPer1K": 0.0000105,
+        "estimatedCostForTest": 0.000020125,
+        "inputCost": 0.000017500000000000002,
+        "outputCost": 0.000002625,
+        "savingsVsGPT4": "99.9"
+      },
+      {
+        "model": "claude-3-haiku-20240307",
+        "provider": "Anthropic",
+        "inputCostPer1K": 0.00025,
+        "outputCostPer1K": 0.00125,
+        "estimatedCostForTest": 0.000325,
+        "inputCost": 0.0000125,
+        "outputCost": 0.0003125,
+        "savingsVsGPT4": "98.3"
+      },
+      {
+        "model": "gpt-3.5-turbo",
+        "provider": "OpenAI",
+        "inputCostPer1K": 0.0015,
+        "outputCostPer1K": 0.002,
+        "estimatedCostForTest": 0.000575,
+        "inputCost": 0.00007500000000000001,
+        "outputCost": 0.0005,
+        "savingsVsGPT4": "97.1"
+      },
+      {
+        "model": "gemini-1.5-pro",
+        "provider": "Google",
+        "inputCostPer1K": 0.0035,
+        "outputCostPer1K": 0.0105,
+        "estimatedCostForTest": 0.0028000000000000004,
+        "inputCost": 0.00017500000000000003,
+        "outputCost": 0.002625,
+        "savingsVsGPT4": "85.6"
+      },
+      {
+        "model": "claude-3-sonnet-20240229",
+        "provider": "Anthropic",
+        "inputCostPer1K": 0.003,
+        "outputCostPer1K": 0.015,
+        "estimatedCostForTest": 0.0039,
+        "inputCost": 0.00015000000000000001,
+        "outputCost": 0.00375,
+        "savingsVsGPT4": "80.0"
+      },
+      {
+        "model": "gpt-4",
+        "provider": "OpenAI",
+        "inputCostPer1K": 0.03,
+        "outputCostPer1K": 0.06,
+        "estimatedCostForTest": 0.0165,
+        "inputCost": 0.0015,
+        "outputCost": 0.015,
+        "savingsVsGPT4": "15.4"
+      },
+      {
+        "model": "claude-3-opus-20240229",
+        "provider": "Anthropic",
+        "inputCostPer1K": 0.015,
+        "outputCostPer1K": 0.075,
+        "estimatedCostForTest": 0.0195,
+        "inputCost": 0.00075,
+        "outputCost": 0.01875,
+        "savingsVsGPT4": "0.0"
+      }
+    ]
+  },
+  "performance": {
+    "tests": 2,
+    "passed": 1,
+    "failed": 1,
+    "details": [
+      {
+        "test": "OLLAMA response time under 5000ms",
+        "status": "PASS",
+        "avgResponseTime": "85ms",
+        "measurements": [
+          85,
+          83,
+          86
+        ]
+      },
+      {
+        "test": "Concurrent request handling",
+        "status": "FAIL",
+        "successfulRequests": 0,
+        "totalRequests": 3,
+        "successRate": "0.0%"
+      }
+    ],
+    "responseTimeMeasurements": [
+      {
+        "provider": "OLLAMA",
+        "model": "llama2",
+        "measurements": [
+          85,
+          83,
+          86
+        ],
+        "avgResponseTime": 84.66666666666667,
+        "minResponseTime": 83,
+        "maxResponseTime": 86
+      }
+    ]
+  },
+  "errorHandling": {
+    "tests": 4,
+    "passed": 4,
+    "failed": 0,
+    "details": [
+      {
+        "test": "Invalid request error handling",
+        "status": "PASS",
+        "note": "Correctly returns 400 for invalid requests"
+      },
+      {
+        "test": "Missing API key error handling",
+        "status": "PASS",
+        "note": "Correctly returns 401 for missing API keys"
+      },
+      {
+        "test": "Unsupported provider error handling",
+        "status": "PASS",
+        "note": "Correctly rejects unsupported providers"
+      },
+      {
+        "test": "API timeout handling",
+        "status": "PASS",
+        "note": "Correctly handles request timeouts"
+      }
+    ]
+  },
+  "endTime": "2025-07-31T16:07:18.251Z",
+  "summary": {
+    "totalTests": 17,
+    "totalPassed": 12,
+    "totalFailed": 2,
+    "overallPassRate": "70.6",
+    "criticalIssues": [
+      "Performance targets not met (1 performance tests failed)"
+    ],
+    "recommendations": [
+      "Promote gemini-1.5-flash (Google) as default for cost-sensitive applications",
+      "Implement intelligent routing based on query complexity and cost thresholds",
+      "Increase provider diversity to strengthen value proposition and reduce single-provider dependency"
+    ]
+  },
+  "metadata": {
+    "testSuiteVersion": "1.0.0",
+    "platform": "Cosmara AI Marketplace",
+    "environment": "localhost:3000",
+    "timestamp": "2025-07-31T16:07:18.252Z"
+  }
+}

@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Lock, User, Mail } from 'lucide-react';
+import { Loader2, Lock, User, Mail, ArrowLeft } from 'lucide-react';
+import { CosmaraLogo } from '@/components/ui/cosmara-logo';
 import { getDemoUsers } from '@/lib/auth/simple-auth';
 import { canUseAuth0 } from '@/lib/auth/auth0-config';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -120,22 +122,36 @@ export default function LoginPage() {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4" 
+      className="min-h-screen flex flex-col" 
       style={{ 
         background: 'linear-gradient(135deg, #0B1426 0%, #1E2A4A 50%, #2D1B69 100%)',
       }}
     >
+      {/* Header with COSMARA logo */}
+      <div className="flex items-center justify-between p-6">
+        <Link href="/" className="flex items-center space-x-3">
+          <CosmaraLogo size={32} />
+          <span className="text-xl font-bold text-glass-gradient">COSMARA</span>
+        </Link>
+        <Link 
+          href="/" 
+          className="flex items-center space-x-2 text-sm text-[#94A3B8] hover:text-[#E2E8F0] transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Home
+        </Link>
+      </div>
+      
+      {/* Main content */}
+      <div className="flex-1 flex items-center justify-center p-4">
       <Card className="w-full max-w-md glass-card">
         <CardHeader className="text-center space-y-2">
-          <div 
-            className="mx-auto w-12 h-12 rounded-full flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #8B5CF6, #7C3AED)' }}
-          >
-            <Lock className="h-6 w-6 text-white" />
+          <div className="mx-auto">
+            <CosmaraLogo size={48} />
           </div>
           <CardTitle className="text-h2 text-text-primary">Welcome Back</CardTitle>
           <CardDescription className="text-body-glass">
-            Sign in to access your AI marketplace
+            Sign in to access your COSMARA AI marketplace
           </CardDescription>
         </CardHeader>
         
@@ -307,17 +323,9 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <div className="text-center">
-            <Button 
-              variant="ghost" 
-              onClick={() => router.push('/')}
-              className="text-text-muted hover:text-text-primary"
-            >
-              ← Back to Home
-            </Button>
-          </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

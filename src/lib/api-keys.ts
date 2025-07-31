@@ -251,7 +251,7 @@ export const APIKeyManager = {
 export const PROVIDER_CONFIGS = {
   OPENAI: {
     name: 'OpenAI',
-    icon: '🤖',
+    icon: 'OPENAI',
     models: ['gpt-4o', 'gpt-4o-mini', 'gpt-3.5-turbo'],
     keyFormat: 'sk-...',
     signupUrl: 'https://platform.openai.com/api-keys',
@@ -268,7 +268,7 @@ export const PROVIDER_CONFIGS = {
   },
   ANTHROPIC: {
     name: 'Anthropic',
-    icon: '🔮',
+    icon: 'ANTHROPIC',
     models: ['claude-3-sonnet', 'claude-3-haiku'],
     keyFormat: 'sk-ant-...',
     signupUrl: 'https://console.anthropic.com/',
@@ -285,7 +285,7 @@ export const PROVIDER_CONFIGS = {
   },
   GOOGLE: {
     name: 'Google AI',
-    icon: '🟡',
+    icon: 'GOOGLE',
     models: ['gemini-1.5-flash', 'gemini-1.5-pro'],
     keyFormat: 'AI...',
     signupUrl: 'https://aistudio.google.com/app/apikey',

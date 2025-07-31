@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { SimpleStars } from '@/components/ui/simple-stars';
 import { InstallAppModal } from '@/components/ui/install-app-modal';
 import { useAppInstallation, useSubscriptions } from '@/lib/hooks/useSubscriptions';
 import { toast } from 'sonner';
@@ -31,6 +32,7 @@ import {
   CheckCircle,
   Loader2
 } from 'lucide-react';
+import { ProviderLogo } from '@/components/ui/provider-logo';
 
 const categories = [
   { id: 'all', name: 'All Apps', icon: Grid3X3, count: 47 },
@@ -279,11 +281,23 @@ function MarketplaceContent() {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-8">
+      {/* Simple stars background with parallax scrolling */}
+      <SimpleStars starCount={50} parallaxSpeed={0.3} />
+      
+      {/* Cosmara stellar background with cosmic gradients */}
+      <div className="absolute inset-0 pointer-events-none" 
+           style={{ 
+             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
+           }}>
+      </div>
+      
+      <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Professional AI App Marketplace</h1>
-          <p className="text-muted-foreground mb-4">
+          <h1 className="text-hero-glass mb-4">
+            <span className="text-glass-gradient">Professional AI App Marketplace</span>
+          </h1>
+          <p className="text-body-lg text-text-secondary mb-4">
             Discover specialized AI applications built by developers for professionals. Use your own API keys or local models for maximum cost control and privacy.
           </p>
           <div className="flex flex-wrap gap-2">
@@ -447,11 +461,14 @@ function MarketplaceContent() {
                     {app.providers && (
                       <div className="flex flex-wrap gap-1">
                         {app.providers.map((provider, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {provider === 'LOCAL' ? '🏠 Local AI' : 
-                             provider === 'OPENAI' ? '🤖 OpenAI' :
-                             provider === 'ANTHROPIC' ? '🔮 Claude' :
-                             provider === 'GOOGLE' ? '🟡 Gemini' : provider}
+                          <Badge key={index} variant="secondary" className="text-xs flex items-center gap-1">
+                            <ProviderLogo provider={provider} size={12} />
+                            {provider === 'LOCAL' ? 'Local AI' : 
+                             provider === 'OPENAI' ? 'OpenAI' :
+                             provider === 'ANTHROPIC' ? 'Claude' :
+                             provider === 'GOOGLE' ? 'Gemini' : 
+                             provider === 'COHERE' ? 'Cohere' :
+                             provider === 'HUGGING_FACE' ? 'Hugging Face' : provider}
                           </Badge>
                         ))}
                       </div>

@@ -6,6 +6,7 @@ import { DashboardLayout } from '@/components/layouts/dashboard-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SimpleStars } from '@/components/ui/simple-stars';
 import { useSubscriptions, useSubscriptionStats, useAppInstallation } from '@/lib/hooks/useSubscriptions';
 import { getAppRoute } from '@/lib/utils/app-mapping';
 import { 
@@ -43,12 +44,24 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
+      {/* Simple stars background with parallax scrolling */}
+      <SimpleStars starCount={50} parallaxSpeed={0.3} />
+      
+      {/* Cosmara stellar background with cosmic gradients */}
+      <div className="absolute inset-0 pointer-events-none" 
+           style={{ 
+             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
+           }}>
+      </div>
+      
       {/* Page Content */}
-      <div className="min-h-screen">
+      <div className="min-h-screen relative z-10">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#E2E8F0]">Dashboard Overview</h1>
-          <p className="text-[#94A3B8] mt-2">
+          <h1 className="text-hero-glass mb-4">
+            <span className="text-glass-gradient">Dashboard Overview</span>
+          </h1>
+          <p className="text-body-lg text-text-secondary">
             Monitor your AI applications, API usage, and spending in one place
           </p>
         </div>

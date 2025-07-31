@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { SimpleStars } from '@/components/ui/simple-stars';
 import { MainLayout } from '@/components/layouts/main-layout';
 import { 
   ArrowRight, 
@@ -117,19 +118,34 @@ const quickLinks = [
 export default function DevelopersPage() {
   return (
     <MainLayout>
+      {/* Simple stars background with parallax scrolling */}
+      <SimpleStars starCount={50} parallaxSpeed={0.3} />
+      
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 py-20 sm:py-32">
-        <div className="container mx-auto px-4">
+      <section className="relative overflow-hidden py-20 sm:py-32">
+        {/* Cosmara stellar background with cosmic gradients */}
+        <div className="absolute inset-0 pointer-events-none" 
+             style={{ 
+               background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
+             }}>
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <Badge variant="secondary" className="mb-6">
-              <Code2 className="h-3 w-3 mr-1" />
-              Developer Portal
-            </Badge>
-            <h1 className="text-4xl sm:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              Build the Future of
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600"> AI Applications</span>
+            <div className="glass-base px-4 py-2 rounded-full border inline-flex items-center mb-6"
+                 style={{ 
+                   background: 'rgba(255, 215, 0, 0.1)', 
+                   borderColor: 'rgba(255, 215, 0, 0.3)' 
+                 }}>
+              <Code2 className="h-3 w-3 mr-2" style={{ color: '#FFD700' }} />
+              <span className="text-sm font-medium text-text-primary">Developer Portal</span>
+            </div>
+            <h1 className="text-hero-glass mb-6 leading-tight">
+              <span className="text-stardust-muted">Build the Future of</span>
+              <br />
+              <span className="text-glass-gradient">AI Applications</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-body-lg text-text-secondary mb-8 leading-relaxed max-w-3xl mx-auto">
               Join thousands of developers building and monetizing AI applications on our platform. 
               With our BYOK model, comprehensive SDK, and generous revenue sharing, success starts here.
             </p>

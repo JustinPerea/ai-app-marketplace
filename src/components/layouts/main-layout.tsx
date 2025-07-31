@@ -1,6 +1,7 @@
 import { Navigation } from './navigation';
 import { SkipNavigation } from '../ui/skip-nav';
 import { ProviderStatusBar } from '@/components/provider-status-bar';
+import { TrademarkFooter } from '@/components/legal/trademark-footer';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -71,6 +72,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               </a>
             </div>
           </div>
+          <TrademarkFooter />
         </div>
       </footer>
     </div>

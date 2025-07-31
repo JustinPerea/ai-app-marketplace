@@ -22,6 +22,7 @@ import {
   Cpu,
   Globe
 } from 'lucide-react';
+import { ProviderLogo, getProviderDisplayName } from '@/components/ui/provider-logo';
 
 interface Message {
   id: string;
@@ -57,7 +58,7 @@ export default function SimpleAIChatApp() {
           name: 'OpenAI',
           id: 'OPENAI',
           models: ['gpt-4o', 'gpt-4o-mini', 'gpt-3.5-turbo'],
-          icon: '🤖',
+          icon: 'OPENAI',
           status: 'checking',
           description: 'GPT models for general conversation'
         },
@@ -65,7 +66,7 @@ export default function SimpleAIChatApp() {
           name: 'Anthropic Claude',
           id: 'ANTHROPIC',
           models: ['claude-3-5-sonnet-20241022', 'claude-3-haiku-20240307'],
-          icon: '🔮',
+          icon: 'ANTHROPIC',
           status: 'checking',
           description: 'Claude models for thoughtful dialogue'
         },
@@ -73,7 +74,7 @@ export default function SimpleAIChatApp() {
           name: 'Google AI',
           id: 'GOOGLE',
           models: ['gemini-1.5-pro', 'gemini-1.5-flash'],
-          icon: '🟡',
+          icon: 'GOOGLE',
           status: 'checking',
           description: 'Gemini models for creative tasks'
         },
@@ -81,7 +82,7 @@ export default function SimpleAIChatApp() {
           name: 'Cohere',
           id: 'COHERE',
           models: ['command-r-plus', 'command-r'],
-          icon: '🟢',
+          icon: 'COHERE',
           status: 'checking',
           description: 'Command models for enterprise use'
         },
@@ -89,7 +90,7 @@ export default function SimpleAIChatApp() {
           name: 'Hugging Face',
           id: 'HUGGING_FACE',
           models: ['meta-llama/Llama-2-70b-chat-hf'],
-          icon: '🤗',
+          icon: 'HUGGING_FACE',
           status: 'checking',
           description: 'Open source models'
         },
@@ -97,7 +98,7 @@ export default function SimpleAIChatApp() {
           name: 'Local (Ollama)',
           id: 'LOCAL',
           models: ['llama3.2:3b', 'llama3.2:1b'],
-          icon: '🦙',
+          icon: 'LOCAL',
           status: 'checking',
           description: 'Local models via Ollama'
         }
@@ -217,8 +218,7 @@ export default function SimpleAIChatApp() {
   };
 
   const getProviderIcon = (providerId: string) => {
-    const provider = providers.find(p => p.id === providerId);
-    return provider?.icon || '⚡';
+    return <ProviderLogo provider={providerId} size={16} className="inline-flex" />;
   };
 
   const getStatusIcon = (status: string) => {
@@ -295,7 +295,7 @@ export default function SimpleAIChatApp() {
                           value={provider.id}
                           disabled={provider.status !== 'connected'}
                         >
-                          {provider.icon} {provider.name} ({provider.status})
+                          {provider.name} ({provider.status})
                         </option>
                       ))}
                     </select>
@@ -330,7 +330,7 @@ export default function SimpleAIChatApp() {
                     {providers.map((provider) => (
                       <div key={provider.id} className="flex items-center justify-between text-sm">
                         <div className="flex items-center space-x-2">
-                          <span>{provider.icon}</span>
+                          <ProviderLogo provider={provider.id} size={16} />
                           <span>{provider.name}</span>
                         </div>
                         {getStatusIcon(provider.status)}
@@ -366,7 +366,7 @@ export default function SimpleAIChatApp() {
                     </CardTitle>
                     {selectedProvider && selectedModel && (
                       <Badge variant="outline" className="flex items-center space-x-1">
-                        <span>{getProviderIcon(selectedProvider)}</span>
+                        <ProviderLogo provider={selectedProvider} size={14} />
                         <span>{selectedModel}</span>
                       </Badge>
                     )}
@@ -408,7 +408,7 @@ export default function SimpleAIChatApp() {
                             <p className="text-sm">{message.content}</p>
                             {message.provider && (
                               <div className="flex items-center space-x-1 mt-1 text-xs opacity-70">
-                                <span>{getProviderIcon(message.provider)}</span>
+                                <ProviderLogo provider={message.provider} size={12} />
                                 <span>{message.model}</span>
                               </div>
                             )}

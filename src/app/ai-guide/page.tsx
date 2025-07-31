@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { SimpleStars } from '@/components/ui/simple-stars';
 import { 
   Calculator,
   ExternalLink,
@@ -256,11 +257,23 @@ export default function AIGuidePage() {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-8">
+      {/* Simple stars background with parallax scrolling */}
+      <SimpleStars starCount={50} parallaxSpeed={0.3} />
+      
+      {/* Cosmara stellar background with cosmic gradients */}
+      <div className="absolute inset-0 pointer-events-none" 
+           style={{ 
+             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
+           }}>
+      </div>
+      
+      <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">Local AI Guide</h1>
-          <p className="text-xl text-gray-600">
+        <div className="mb-8 text-center">
+          <h1 className="text-hero-glass mb-4">
+            <span className="text-glass-gradient">Local AI Guide</span>
+          </h1>
+          <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
             Run AI models completely locally for maximum privacy, zero ongoing costs, and HIPAA compliance
           </p>
           <div className="mt-4 flex flex-wrap gap-3">

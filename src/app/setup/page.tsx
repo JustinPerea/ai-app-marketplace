@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { APIKeyManager, PROVIDER_CONFIGS, type StoredAPIKey } from '@/lib/api-keys-hybrid';
 import { useUsageTracking } from '@/lib/hooks/useUsageAnalytics';
+import { ProviderLogo } from '@/components/ui/provider-logo';
 
 // Remove duplicate interface definition since it's imported from hybrid manager
 
@@ -286,7 +287,7 @@ export default function SetupPage() {
                     <div key={key.id} className="p-4 border rounded-lg">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <span className="text-2xl">{config.icon}</span>
+                          <ProviderLogo provider={key.provider} size={32} />
                           <div>
                             <h4 className="font-medium">{key.name}</h4>
                             <p className="text-sm text-gray-600">{config.name} • {key.keyPreview}</p>
@@ -391,7 +392,9 @@ export default function SetupPage() {
                         }}
                       >
                         <div className="text-center">
-                          <span className="text-3xl mb-2 block">{config.icon}</span>
+                          <div className="mb-2">
+                            <ProviderLogo provider={provider} size={48} className="mx-auto" />
+                          </div>
                           <h4 className="font-medium">{config.name}</h4>
                           <p className="text-sm text-gray-600 mt-1">
                             {config.models.length} models available
@@ -415,9 +418,7 @@ export default function SetupPage() {
             ) : (
               <form onSubmit={handleAddProvider} className="space-y-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-2xl">
-                    {PROVIDER_CONFIGS[selectedProvider as keyof typeof PROVIDER_CONFIGS]?.icon}
-                  </span>
+                  <ProviderLogo provider={selectedProvider} size={32} />
                   <div>
                     <h3 className="font-medium">
                       Connect {PROVIDER_CONFIGS[selectedProvider as keyof typeof PROVIDER_CONFIGS]?.name}

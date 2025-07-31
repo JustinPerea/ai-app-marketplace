@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { SimpleStars } from '@/components/ui/simple-stars';
 import { useSubscriptions } from '@/lib/hooks/useSubscriptions';
 import { 
   Zap, 
@@ -23,6 +24,7 @@ import {
   Settings
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { ProviderLogo } from '@/components/ui/provider-logo';
 
 // App definitions - this would typically come from a database
 const appDefinitions = [
@@ -76,7 +78,7 @@ const appDefinitions = [
     description: "Automated code review for security issues, performance optimizations, and style improvements.",
     route: "/marketplace/apps/code-review-bot",
     category: "DEVELOPER_TOOLS",
-    icon: "🤖",
+    icon: "OPENAI",
     publisher: "DevSecure",
     providers: ["OPENAI", "ANTHROPIC"],
     features: ["Security Analysis", "Performance Review", "Multi-Language Support"]
@@ -120,15 +122,7 @@ export default function MyAppsPage() {
   };
 
   const getProviderIcon = (provider: string) => {
-    switch (provider) {
-      case 'OPENAI': return '🤖';
-      case 'ANTHROPIC': return '🔮';
-      case 'GOOGLE': return '🟡';
-      case 'COHERE': return '🟢';
-      case 'HUGGING_FACE': return '🤗';
-      case 'LOCAL': return '🦙';
-      default: return '⚡';
-    }
+    return <ProviderLogo provider={provider} size={16} className="inline-flex" />;
   };
 
   const getCategoryColor = (category: string) => {
@@ -163,7 +157,17 @@ export default function MyAppsPage() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+      {/* Simple stars background with parallax scrolling */}
+      <SimpleStars starCount={50} parallaxSpeed={0.3} />
+      
+      {/* Cosmara stellar background with cosmic gradients */}
+      <div className="absolute inset-0 pointer-events-none" 
+           style={{ 
+             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
+           }}>
+      </div>
+      
+      <div className="min-h-screen p-4 relative z-10">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -172,8 +176,10 @@ export default function MyAppsPage() {
                 <Zap className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">My Apps</h1>
-                <p className="text-gray-600">Manage and access your installed AI applications</p>
+                <h1 className="text-hero-glass">
+                  <span className="text-glass-gradient">My Apps</span>
+                </h1>
+                <p className="text-body-lg text-text-secondary">Manage and access your installed AI applications</p>
               </div>
             </div>
 
@@ -288,8 +294,8 @@ export default function MyAppsPage() {
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-2xl">
-                            {app.icon}
+                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                            <ProviderLogo provider={app.icon} size={24} />
                           </div>
                           <div>
                             <CardTitle className="text-lg">{app.name}</CardTitle>
@@ -328,7 +334,7 @@ export default function MyAppsPage() {
                         <span className="text-xs text-gray-500">Supports:</span>
                         {app.providers.slice(0, 4).map((provider) => (
                           <span key={provider} className="text-sm" title={provider}>
-                            {getProviderIcon(provider)}
+                            <ProviderLogo provider={provider} size={16} />
                           </span>
                         ))}
                         {app.providers.length > 4 && (
