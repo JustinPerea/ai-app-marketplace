@@ -24,7 +24,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
+  
+  // Only initialize router on client side
+  let router: ReturnType<typeof useRouter> | null = null;
+  try {
+    router = useRouter();
+  } catch (error) {
+    // Gracefully handle server-side rendering
+    console.log('Router not available during SSR');
+  }
+  
+  // Set client-side flag
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Fetch current user on mount
   useEffect(() => {
@@ -90,12 +104,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
       setUser(null);
-      router.push('/');
+      if (router && isClient) {
+        router.push('/');
+      }
     } catch (error) {
       console.error('Logout failed:', error);
       // Still clear local state even if API call fails
       setUser(null);
-      router.push('/');
+      if (router && isClient) {
+        router.push('/');
+      }
     }
   };
 
@@ -130,10 +148,16 @@ export function useAuth() {
 export function withAuth<P extends object>(Component: React.ComponentType<P>) {
   return function AuthenticatedComponent(props: P) {
     const { user, loading } = useAuth();
-    const router = useRouter();
+    let router: ReturnType<typeof useRouter> | null = null;
+    
+    try {
+      router = useRouter();
+    } catch (error) {
+      console.log('Router not available during SSR in withAuth');
+    }
 
     useEffect(() => {
-      if (!loading && !user) {
+      if (!loading && !user && router) {
         router.push('/auth/login');
       }
     }, [user, loading, router]);

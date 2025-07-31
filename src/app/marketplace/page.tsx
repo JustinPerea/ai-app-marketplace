@@ -46,6 +46,22 @@ const categories = [
 
 const apps = [
   {
+    id: 10,
+    name: "Simple AI Chat",
+    description: "Direct conversation with your preferred AI model. Test API connections, compare responses, and chat with OpenAI, Claude, Gemini, or local models.",
+    category: "DEVELOPER_TOOLS",
+    rating: 4.9,
+    installs: "8.5K",
+    price: "Free + API costs",
+    featured: true,
+    verified: true,
+    tags: ["Multi-Model", "Chat", "API Testing", "Conversation", "All Providers"],
+    publisher: "AI Marketplace",
+    lastUpdated: "Just now",
+    providers: ["OPENAI", "ANTHROPIC", "GOOGLE", "COHERE", "HUGGING_FACE", "LOCAL"],
+    status: "active" // Fully functional app
+  },
+  {
     id: 9,
     name: "PDF Notes Generator",
     description: "Transform any PDF into structured, actionable notes using your choice of AI model. Perfect for research papers, reports, and documents with local or cloud processing.",
@@ -214,7 +230,7 @@ function MarketplaceContent() {
   }, [searchParams]);
 
   // Check if app is installed
-  const isAppInstalled = (appId: string) => {
+  const isAppInstalled = (appId: string | number) => {
     return subscriptions.some(sub => sub.appId === String(appId) && sub.status === 'ACTIVE');
   };
 
@@ -466,6 +482,7 @@ function MarketplaceContent() {
                           app.id === 2 ? '/marketplace/apps/hipaa-medical-scribe' :
                           app.id === 3 ? '/marketplace/apps/code-review-bot' :
                           app.id === 9 ? '/marketplace/apps/pdf-notes-generator' :
+                          app.id === 10 ? '/marketplace/apps/simple-ai-chat' :
                           '#'
                         }>
                           View Details

@@ -52,6 +52,11 @@ export const APP_ID_MAP: Record<string, { cuid: string; slug: string; category: 
     cuid: 'cm5pdf001', // PDF Notes Generator
     slug: 'pdf-notes-generator',
     category: 'CONTENT_CREATION'
+  },
+  '10': {
+    cuid: 'cm5aichat001', // Simple AI Chat
+    slug: 'simple-ai-chat',
+    category: 'DEVELOPER_TOOLS'
   }
 };
 
@@ -108,7 +113,8 @@ export const APP_ROUTES: Record<string, string> = {
   '6': '/marketplace/apps/content-marketing-suite',
   '7': '/marketplace/apps/data-visualization-engine',
   '8': '/marketplace/apps/brand-voice-designer',
-  '9': '/marketplace/apps/pdf-notes-generator'
+  '9': '/marketplace/apps/pdf-notes-generator',
+  '10': '/marketplace/apps/simple-ai-chat'
 };
 
 /**

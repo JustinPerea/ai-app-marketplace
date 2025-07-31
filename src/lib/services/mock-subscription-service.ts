@@ -94,8 +94,14 @@ function initializeSampleData() {
   }
 }
 
-// Initialize sample data when module loads
-initializeSampleData();
+// Initialize sample data lazily to avoid hoisting issues
+let initialized = false;
+function ensureInitialized() {
+  if (!initialized) {
+    initializeSampleData();
+    initialized = true;
+  }
+}
 
 // Mock app data based on marketplace
 const mockAppData: Record<string, any> = {
@@ -152,6 +158,12 @@ const mockAppData: Record<string, any> = {
     pricing: 'Free + API costs',
     price: 0,
     developer: { displayName: 'AI Marketplace', verified: true }
+  },
+  '10': {
+    name: 'Simple AI Chat',
+    pricing: 'Free + API costs',
+    price: 0,
+    developer: { displayName: 'AI Marketplace', verified: true }
   }
 };
 
@@ -173,6 +185,7 @@ export class MockSubscriptionService {
       pages: number;
     };
   } {
+    ensureInitialized();
     const userSubscriptions = Array.from(subscriptions.values())
       .filter(sub => sub.userId === userId)
       .filter(sub => !status || sub.status === status)
@@ -202,6 +215,7 @@ export class MockSubscriptionService {
     marketplaceId: string,
     appId: string
   ): MockSubscription {
+    ensureInitialized();
     const metadata = getAppMetadata(marketplaceId);
     const appData = mockAppData[marketplaceId];
 
@@ -237,6 +251,7 @@ export class MockSubscriptionService {
    * Check if user has an active subscription for an app
    */
   static hasActiveSubscription(userId: string, marketplaceId: string): boolean {
+    ensureInitialized();
     return Array.from(subscriptions.values()).some(
       sub => sub.userId === userId && 
              sub.marketplaceId === marketplaceId && 
@@ -273,6 +288,7 @@ export class MockSubscriptionService {
    * Get subscription by ID
    */
   static getSubscription(subscriptionId: string): MockSubscription | null {
+    ensureInitialized();
     return subscriptions.get(subscriptionId) || null;
   }
 
