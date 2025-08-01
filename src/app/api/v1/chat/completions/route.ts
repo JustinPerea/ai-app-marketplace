@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { experimentTracker } from '@/lib/experiment-middleware';
 
 // OpenAI-compatible interfaces
 interface OpenAIMessage {
@@ -119,25 +120,109 @@ class ProviderRouter {
     return { provider: 'openai', actualModel: model };
   }
 
-  static async routeRequest(request: OpenAICompletionRequest, headers: Headers): Promise<OpenAICompletionResponse> {
-    const { provider, actualModel } = this.getProviderFromModel(request.model);
-    
-    switch (provider) {
-      case 'openai':
-        return this.callOpenAI(request, actualModel, headers);
-      case 'anthropic':
-        return this.callAnthropic(request, actualModel, headers);
-      case 'google':
-        return this.callGoogle(request, actualModel, headers);
-      case 'cohere':
-        return this.callCohere(request, actualModel, headers);
-      case 'huggingface':
-        return this.callHuggingFace(request, actualModel, headers);
-      case 'ollama':
-        return this.callOllama(request, actualModel);
-      default:
-        throw new Error(`Unsupported provider: ${provider}`);
+  static async routeRequest(
+    request: OpenAICompletionRequest, 
+    headers: Headers, 
+    experimentContext?: {
+      experimentId: string;
+      variantId: string;
+      provider: string;
+      model: string;
+      requestId: string;
     }
+  ): Promise<OpenAICompletionResponse> {
+    let { provider, actualModel } = this.getProviderFromModel(request.model);
+    
+    // Override provider/model if this request is part of an experiment
+    if (experimentContext) {
+      provider = experimentContext.provider;
+      actualModel = experimentContext.model;
+    }
+    
+    const startTime = Date.now();
+    let response: OpenAICompletionResponse;
+    let success = false;
+    let errorMessage: string | undefined;
+    
+    try {
+      switch (provider) {
+        case 'openai':
+          response = await this.callOpenAI(request, actualModel, headers);
+          break;
+        case 'anthropic':
+          response = await this.callAnthropic(request, actualModel, headers);
+          break;
+        case 'google':
+          response = await this.callGoogle(request, actualModel, headers);
+          break;
+        case 'cohere':
+          response = await this.callCohere(request, actualModel, headers);
+          break;
+        case 'huggingface':
+          response = await this.callHuggingFace(request, actualModel, headers);
+          break;
+        case 'ollama':
+          response = await this.callOllama(request, actualModel);
+          break;
+        default:
+          throw new Error(`Unsupported provider: ${provider}`);
+      }
+      
+      success = true;
+      
+      // Complete experiment tracking if this was part of an experiment
+      if (experimentContext) {
+        const cost = this.calculateCost(provider, actualModel, response.usage);
+        experimentTracker.completeTracking(
+          experimentContext.requestId,
+          response.usage.prompt_tokens,
+          response.usage.completion_tokens,
+          cost,
+          success,
+          errorMessage
+        );
+      }
+      
+      return response;
+      
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      // Complete experiment tracking with error if this was part of an experiment
+      if (experimentContext) {
+        experimentTracker.completeTracking(
+          experimentContext.requestId,
+          0, 0, 0,
+          false,
+          errorMessage
+        );
+      }
+      
+      throw error;
+    }
+  }
+
+  private static calculateCost(provider: string, model: string, usage: { prompt_tokens: number; completion_tokens: number }): number {
+    // Simple cost calculation based on provider and model
+    // In production, this would use real-time pricing data
+    const costPerToken = this.getCostPerToken(provider, model);
+    return (usage.prompt_tokens * costPerToken.input) + (usage.completion_tokens * costPerToken.output);
+  }
+
+  private static getCostPerToken(provider: string, model: string): { input: number; output: number } {
+    // Simplified cost matrix - in production, this would be more comprehensive
+    const costs: { [key: string]: { input: number; output: number } } = {
+      'openai-gpt-4o': { input: 0.000005, output: 0.000015 },
+      'openai-gpt-4o-mini': { input: 0.00000015, output: 0.0000006 },
+      'anthropic-claude-3-5-sonnet-20241022': { input: 0.000003, output: 0.000015 },
+      'anthropic-claude-3-haiku-20240307': { input: 0.00000025, output: 0.00000125 },
+      'google-gemini-1.5-pro': { input: 0.0000035, output: 0.0000105 },
+      'google-gemini-1.5-flash': { input: 0.000000075, output: 0.0000003 },
+      'ollama': { input: 0, output: 0 }, // Local models are free
+    };
+
+    const key = `${provider}-${model}`;
+    return costs[key] || { input: 0.000001, output: 0.000003 }; // Default fallback
   }
 
   private static async callOpenAI(request: OpenAICompletionRequest, model: string, headers: Headers): Promise<OpenAICompletionResponse> {
@@ -540,8 +625,61 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Check for experiment participation
+    const requestId = `req-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const userId = req.headers.get('x-user-id') || 'user-demo-1';
+    const teamId = req.headers.get('x-team-id') || undefined;
+
+    const experimentMatch = experimentTracker.shouldIncludeInExperiment(
+      userId, teamId, body.model, 'chat_completion'
+    );
+
+    let experimentContext: {
+      experimentId: string;
+      variantId: string;
+      provider: string;
+      model: string;
+      requestId: string;
+    } | undefined;
+
+    if (experimentMatch) {
+      const { experiment, variant } = experimentMatch;
+      const providerInfo = experimentTracker.getProviderForVariant(experiment, variant);
+      
+      if (providerInfo) {
+        experimentContext = {
+          experimentId: experiment.id,
+          variantId: variant,
+          provider: providerInfo.provider,
+          model: providerInfo.model,
+          requestId,
+        };
+
+        // Start tracking
+        experimentTracker.startTracking(
+          experiment.id,
+          variant,
+          providerInfo.provider,
+          providerInfo.model,
+          requestId,
+          userId,
+          teamId
+        );
+      }
+    }
+
     // Route the request through our provider system
-    const response = await ProviderRouter.routeRequest(body, req.headers);
+    const response = await ProviderRouter.routeRequest(body, req.headers, experimentContext);
+
+    // Add experiment metadata to response if part of experiment
+    if (experimentContext) {
+      (response as any)._experiment = {
+        experiment_id: experimentContext.experimentId,
+        variant_id: experimentContext.variantId,
+        provider_used: experimentContext.provider,
+        model_used: experimentContext.model,
+      };
+    }
 
     return NextResponse.json(response);
 

@@ -41,7 +41,13 @@
     "monitor-logs": "tail -f server.log | grep -E '(error|Error|ERROR|warning|Warning|WARN)'",
     "validate-env": "echo 'Checking development environment...' && node -v && npm -v && echo 'Environment validated'",
     "test:migration": "tsx scripts/test-migration.ts",
-    "migrate:api-keys": "echo 'API key migration is handled automatically on user login. No manual migration needed.'"
+    "migrate:api-keys": "echo 'API key migration is handled automatically on user login. No manual migration needed.'",
+    "notify:task-complete": "source scripts/notifications.sh && notify_task_complete",
+    "notify:need-approval": "source scripts/notifications.sh && notify_need_approval",
+    "notify:qa-complete": "source scripts/notifications.sh && notify_qa_complete",
+    "notify:phase-complete": "source scripts/notifications.sh && notify_phase_complete",
+    "notify:error": "source scripts/notifications.sh && notify_error",
+    "notify:test": "source scripts/notifications.sh && test_notifications"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.8.0",
