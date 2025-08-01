@@ -213,12 +213,18 @@ export default function SubmitAppPage() {
 
     setIsSubmitting(true);
     try {
+      // Remove empty URL fields from formData before spreading
+      const { demoUrl, githubUrl, ...formDataWithoutUrls } = formData;
+      
       const submitData = {
-        ...formData,
+        ...formDataWithoutUrls,
         price: formData.pricing === 'PAID' ? parseFloat(formData.price) : undefined,
         tags: formData.tags,
         requiredProviders: formData.requiredProviders,
-        screenshotUrls: formData.screenshotUrls
+        screenshotUrls: formData.screenshotUrls,
+        // Only include optional URL fields if they have valid values
+        ...(demoUrl?.trim() && { demoUrl: demoUrl.trim() }),
+        ...(githubUrl?.trim() && { githubUrl: githubUrl.trim() })
       };
 
       const response = await fetch('/api/developers/apps', {

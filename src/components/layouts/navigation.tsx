@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Search, ShoppingBag, Code, Settings, LogOut, User, Link as LinkIcon, Building2, LogIn, Zap } from 'lucide-react';
+import { Search, ShoppingBag, Code, Settings, LogOut, User, Link as LinkIcon, Building2, LogIn, Zap, Map } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { MobileNavigation } from './mobile-navigation';
 import { CosmaraLogo } from '@/components/ui/cosmara-logo';
@@ -114,6 +114,13 @@ export function Navigation() {
             >
               <Code className="h-4 w-4 mr-1" />
               Developers
+            </Link>
+            <Link
+              href="/roadmap"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center"
+            >
+              <Map className="h-4 w-4 mr-1" />
+              Roadmap
             </Link>
             <Link
               href="/setup"

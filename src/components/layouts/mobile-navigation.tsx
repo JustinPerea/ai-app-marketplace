@@ -24,13 +24,15 @@ import {
   Home,
   Search,
   BarChart3,
-  Key
+  Key,
+  Map
 } from 'lucide-react';
 import { CosmaraLogo } from '@/components/ui/cosmara-logo';
 
 const navigationItems = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
+  { href: '/roadmap', label: 'Roadmap', icon: Map },
   { href: '/setup', label: 'Setup', icon: Settings },
   { href: '/developers', label: 'Developer Portal', icon: Code },
 ];
