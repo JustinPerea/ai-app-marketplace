@@ -65,12 +65,7 @@
   ],
   "author": "BYOK Developer App Marketplace",
   "license": "MIT",
-  "dependencies": {
-    "openai": "^4.63.0",
-    "@anthropic-ai/sdk": "^0.28.0",
-    "axios": "^1.7.7",
-    "zod": "^3.23.8"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^20.19.9",

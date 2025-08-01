@@ -3,7 +3,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
@@ -12,6 +14,15 @@ var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
 // src/utils/errors.ts
@@ -620,163 +631,1135 @@ var init_base = __esm({
   }
 });
 
-// src/providers/openai.ts
-function openai(options = {}) {
-  return {
-    provider: "openai",
-    model: options.model || "gpt-4o",
-    ...options
-  };
+// src/chat/index.ts
+var chat_exports = {};
+__export(chat_exports, {
+  Chat: () => exports.Chat,
+  Conversation: () => Conversation,
+  ask: () => ask,
+  chat: () => chat,
+  createChat: () => createChat
+});
+function createChat(options) {
+  return new exports.Chat(options);
 }
-var OpenAIProvider, OpenAIProviderFactory;
-var init_openai = __esm({
-  "src/providers/openai.ts"() {
+async function ask(message, options) {
+  const chat2 = new exports.Chat({ provider: options?.provider });
+  return chat2.ask(message, options);
+}
+async function chat(messages, options) {
+  const chatInstance = new exports.Chat({ provider: options?.provider });
+  return chatInstance.chat(messages, options);
+}
+exports.Chat = void 0; var Conversation;
+var init_chat = __esm({
+  "src/chat/index.ts"() {
     init_base();
     init_errors();
-    OpenAIProvider = class extends exports.BaseProvider {
-      constructor(config) {
-        super("openai", config);
-        __publicField(this, "openaiConfig");
-        this.openaiConfig = config;
+    exports.Chat = class {
+      constructor(options = {}) {
+        __publicField(this, "defaultProvider");
+        __publicField(this, "options");
+        this.options = {
+          enableAutoRetry: true,
+          enableFallback: true,
+          trackUsage: true,
+          ...options
+        };
+        this.defaultProvider = options.provider;
       }
       /**
-       * Get OpenAI provider capabilities
+       * Complete a chat conversation
        */
-      getCapabilities() {
+      async complete(request, options) {
+        const mergedOptions = { ...this.options, ...options };
+        const providerConfig = await this.selectProvider(request, mergedOptions);
+        const provider = exports.providerRegistry.getProvider(providerConfig);
+        try {
+          return await provider.chatCompletion(request);
+        } catch (error) {
+          if (mergedOptions.enableFallback && this.shouldFallback(error)) {
+            return this.executeWithFallback(request, providerConfig, mergedOptions);
+          }
+          throw error;
+        }
+      }
+      /**
+       * Stream a chat conversation
+       */
+      async *stream(request, options) {
+        const mergedOptions = { ...this.options, ...options };
+        const providerConfig = await this.selectProvider(request, mergedOptions);
+        const provider = exports.providerRegistry.getProvider(providerConfig);
+        try {
+          yield* provider.streamChatCompletion(request);
+        } catch (error) {
+          throw error;
+        }
+      }
+      /**
+       * Simple text completion (convenience method)
+       */
+      async ask(message, options) {
+        const messages = [];
+        if (options?.system) {
+          messages.push({ role: "system", content: options.system });
+        }
+        messages.push({ role: "user", content: message });
+        const request = {
+          messages,
+          ...options?.temperature && { temperature: options.temperature },
+          ...options?.maxTokens && { max_tokens: options.maxTokens }
+        };
+        const response = await this.complete(request, options);
+        const content = response.choices[0]?.message.content || "";
+        return typeof content === "string" ? content : JSON.stringify(content);
+      }
+      /**
+       * Chat with conversation history
+       */
+      async chat(messages, options) {
+        const request = {
+          messages,
+          ...options?.temperature && { temperature: options.temperature },
+          ...options?.maxTokens && { max_tokens: options.maxTokens },
+          ...options?.tools && { tools: options.tools }
+        };
+        return this.complete(request, options);
+      }
+      /**
+       * Create a conversation instance for stateful chat
+       */
+      conversation(options) {
+        return new Conversation(this, options);
+      }
+      /**
+       * Select optimal provider based on request and constraints
+       */
+      async selectProvider(request, options) {
+        if (options.provider) {
+          return options.provider;
+        }
+        if (this.defaultProvider && !options.constraints) {
+          return this.defaultProvider;
+        }
+        return this.intelligentProviderSelection(request, options.constraints);
+      }
+      /**
+       * Intelligent provider selection based on constraints and request characteristics
+       */
+      async intelligentProviderSelection(request, constraints) {
+        const supportedProviders = exports.providerRegistry.getRegisteredProviders();
+        const candidates = [];
+        for (const provider of supportedProviders) {
+          if (constraints?.excludeProviders?.includes(provider)) {
+            continue;
+          }
+          const config = {
+            provider,
+            model: this.getDefaultModel(provider),
+            apiKey: ""
+            // Will be resolved later
+          };
+          const providerInstance = exports.providerRegistry.getProvider(config);
+          const capabilities = providerInstance.getCapabilities();
+          if (constraints?.requiredCapabilities) {
+            const hasRequired = constraints.requiredCapabilities.every(
+              (cap) => capabilities[cap] === true
+            );
+            if (!hasRequired) continue;
+          }
+          const estimatedCost = providerInstance.estimateCost(request);
+          const estimatedLatency = this.estimateLatency(provider);
+          const qualityScore = this.calculateQualityScore(provider, request);
+          if (constraints?.maxCost && estimatedCost > constraints.maxCost) {
+            continue;
+          }
+          if (constraints?.maxLatency && estimatedLatency > constraints.maxLatency) {
+            continue;
+          }
+          if (constraints?.qualityThreshold && qualityScore < constraints.qualityThreshold) {
+            continue;
+          }
+          candidates.push({
+            provider,
+            model: config.model,
+            estimatedCost,
+            estimatedLatency,
+            qualityScore,
+            reasoning: this.generateSelectionReasoning(provider, estimatedCost, qualityScore)
+          });
+        }
+        if (candidates.length === 0) {
+          throw new exports.BaseSDKError(
+            "No providers meet the specified constraints",
+            "NO_SUITABLE_PROVIDER",
+            { details: { constraints } }
+          );
+        }
+        const bestCandidate = candidates.reduce((best, current) => {
+          const bestScore = best.qualityScore / best.estimatedCost;
+          const currentScore = current.qualityScore / current.estimatedCost;
+          return currentScore > bestScore ? current : best;
+        });
+        if (constraints?.preferredProviders) {
+          const preferredCandidate = candidates.find(
+            (c) => constraints.preferredProviders.includes(c.provider)
+          );
+          if (preferredCandidate) {
+            return {
+              provider: preferredCandidate.provider,
+              model: preferredCandidate.model,
+              apiKey: ""
+              // Will be resolved later
+            };
+          }
+        }
         return {
-          chat: true,
-          images: true,
-          embeddings: true,
-          tools: true,
-          streaming: true,
-          vision: true,
-          maxTokens: 128e3,
-          costPer1kTokens: { input: 0.01, output: 0.03 }
+          provider: bestCandidate.provider,
+          model: bestCandidate.model,
+          apiKey: ""
+          // Will be resolved later
         };
       }
       /**
-       * Validate OpenAI model
+       * Execute request with fallback providers
        */
-      validateModel(model) {
-        const validModels = this.getAvailableModels();
-        return validModels.includes(model);
+      async executeWithFallback(request, failedProvider, options) {
+        const fallbackProviders = this.getFallbackProviders(failedProvider);
+        for (const provider of fallbackProviders) {
+          try {
+            const providerInstance = exports.providerRegistry.getProvider(provider);
+            return await providerInstance.chatCompletion(request);
+          } catch (error) {
+            continue;
+          }
+        }
+        throw new exports.BaseSDKError(
+          "All fallback providers failed",
+          "ALL_PROVIDERS_FAILED",
+          { details: { originalProvider: failedProvider.provider } }
+        );
       }
       /**
-       * Get available OpenAI models
+       * Determine if error should trigger fallback
        */
+      shouldFallback(error) {
+        if (error.code === "RATE_LIMIT_EXCEEDED") return true;
+        if (error.statusCode && error.statusCode >= 500) return true;
+        if (error.code === "NETWORK_ERROR") return true;
+        return false;
+      }
+      /**
+       * Get fallback providers for a failed provider
+       */
+      getFallbackProviders(failedProvider) {
+        const fallbackMap = {
+          "openai": ["claude"],
+          "claude": ["openai"],
+          "google": ["openai", "claude"],
+          "azure": ["openai", "claude"],
+          "cohere": ["openai", "claude"],
+          "huggingface": ["openai", "claude"]
+        };
+        const fallbacks = fallbackMap[failedProvider.provider] || ["openai"];
+        return fallbacks.map((provider) => ({
+          provider,
+          model: this.getDefaultModel(provider),
+          apiKey: ""
+          // Will be resolved later
+        }));
+      }
+      /**
+       * Get default model for provider
+       */
+      getDefaultModel(provider) {
+        const defaultModels = {
+          "openai": "gpt-4o",
+          "claude": "claude-3-5-sonnet-20241022",
+          "google": "gemini-pro",
+          "azure": "gpt-4",
+          "cohere": "command-r-plus",
+          "huggingface": "meta-llama/Llama-2-70b-chat-hf"
+        };
+        return defaultModels[provider] || "gpt-4o";
+      }
+      /**
+       * Estimate latency for provider (placeholder implementation)
+       */
+      estimateLatency(provider) {
+        const latencyMap = {
+          "openai": 2e3,
+          "claude": 3e3,
+          "google": 1500,
+          "azure": 2500,
+          "cohere": 2e3,
+          "huggingface": 4e3
+        };
+        return latencyMap[provider] || 2e3;
+      }
+      /**
+       * Calculate quality score for provider (placeholder implementation)
+       */
+      calculateQualityScore(provider, request) {
+        const qualityMap = {
+          "openai": 0.9,
+          "claude": 0.95,
+          "google": 0.8,
+          "azure": 0.9,
+          "cohere": 0.7,
+          "huggingface": 0.6
+        };
+        return qualityMap[provider] || 0.5;
+      }
+      /**
+       * Generate reasoning for provider selection
+       */
+      generateSelectionReasoning(provider, cost, quality) {
+        return `Selected ${provider} for optimal cost/quality ratio (cost: $${cost.toFixed(4)}, quality: ${quality.toFixed(2)})`;
+      }
+    };
+    Conversation = class {
+      constructor(chat2, options = {}) {
+        __publicField(this, "messages", []);
+        __publicField(this, "chat");
+        __publicField(this, "options");
+        this.chat = chat2;
+        this.options = options;
+        if (options.system) {
+          this.messages.push({ role: "system", content: options.system });
+        }
+      }
+      /**
+       * Send a message and get response
+       */
+      async say(message) {
+        this.messages.push({ role: "user", content: message });
+        const response = await this.chat.chat(this.messages, this.options);
+        const assistantMessage = response.choices[0]?.message.content || "";
+        this.messages.push({ role: "assistant", content: assistantMessage });
+        return assistantMessage;
+      }
+      /**
+       * Get conversation history
+       */
+      getHistory() {
+        return [...this.messages];
+      }
+      /**
+       * Clear conversation history (keeping system message)
+       */
+      clear() {
+        const systemMessage = this.messages.find((m) => m.role === "system");
+        this.messages = systemMessage ? [systemMessage] : [];
+      }
+      /**
+       * Get conversation summary
+       */
+      async summarize() {
+        if (this.messages.length < 3) {
+          return "Conversation too short to summarize";
+        }
+        const summaryRequest = [
+          { role: "system", content: "Summarize the following conversation concisely." },
+          { role: "user", content: JSON.stringify(this.messages) }
+        ];
+        const response = await this.chat.chat(summaryRequest, { ...this.options, maxTokens: 200 });
+        return response.choices[0]?.message.content || "Unable to generate summary";
+      }
+    };
+  }
+});
+
+// src/utils/http.ts
+function createHTTPClient(config) {
+  return new HTTPClient(config);
+}
+var HTTPError, HTTPTimeoutError, HTTPClient;
+var init_http = __esm({
+  "src/utils/http.ts"() {
+    HTTPError = class extends Error {
+      constructor(message, status, statusText, data) {
+        super(message);
+        this.status = status;
+        this.statusText = statusText;
+        this.data = data;
+        this.name = "HTTPError";
+      }
+    };
+    HTTPTimeoutError = class extends Error {
+      constructor(timeout) {
+        super(`Request timeout after ${timeout}ms`);
+        this.name = "HTTPTimeoutError";
+      }
+    };
+    HTTPClient = class {
+      constructor(config = {}) {
+        __publicField(this, "config");
+        this.config = {
+          timeout: 3e4,
+          maxRetries: 3,
+          retryDelay: 1e3,
+          ...config
+        };
+      }
+      /**
+       * Make HTTP request with timeout and retry logic
+       */
+      async request(request) {
+        const url = this.buildURL(request.url);
+        const timeout = request.timeout || this.config.timeout;
+        return this.executeWithRetry(async () => {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), timeout);
+          try {
+            const response = await fetch(url, {
+              method: request.method || "GET",
+              headers: this.buildHeaders(request.headers),
+              body: this.buildBody(request.body),
+              signal: request.signal || controller.signal
+            });
+            clearTimeout(timeoutId);
+            if (!response.ok) {
+              const data2 = await this.parseResponse(response);
+              throw new HTTPError(
+                `HTTP ${response.status}: ${response.statusText}`,
+                response.status,
+                response.statusText,
+                data2
+              );
+            }
+            const data = await this.parseResponse(response);
+            return {
+              data,
+              status: response.status,
+              statusText: response.statusText,
+              headers: response.headers,
+              ok: response.ok
+            };
+          } catch (error) {
+            clearTimeout(timeoutId);
+            if (error instanceof DOMException && error.name === "AbortError") {
+              throw new HTTPTimeoutError(timeout);
+            }
+            if (error instanceof HTTPError) {
+              throw error;
+            }
+            if (error instanceof Error) {
+              throw error;
+            }
+            throw new Error(`Unknown error: ${error}`);
+          }
+        });
+      }
+      /**
+       * GET request
+       */
+      async get(url, config) {
+        return this.request({ ...config, url, method: "GET" });
+      }
+      /**
+       * POST request
+       */
+      async post(url, body, config) {
+        return this.request({ ...config, url, method: "POST", body });
+      }
+      /**
+       * PUT request
+       */
+      async put(url, body, config) {
+        return this.request({ ...config, url, method: "PUT", body });
+      }
+      /**
+       * DELETE request
+       */
+      async delete(url, config) {
+        return this.request({ ...config, url, method: "DELETE" });
+      }
+      /**
+       * Streaming request for SSE
+       */
+      async *stream(request) {
+        const url = this.buildURL(request.url);
+        const response = await fetch(url, {
+          method: request.method || "POST",
+          headers: this.buildHeaders(request.headers),
+          body: this.buildBody(request.body),
+          signal: request.signal
+        });
+        if (!response.ok) {
+          const data = await this.parseResponse(response);
+          throw new HTTPError(
+            `HTTP ${response.status}: ${response.statusText}`,
+            response.status,
+            response.statusText,
+            data
+          );
+        }
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error("Response body is not readable");
+        }
+        const decoder = new TextDecoder();
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            yield chunk;
+          }
+        } finally {
+          reader.releaseLock();
+        }
+      }
+      buildURL(url) {
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+          return url;
+        }
+        const baseURL = this.config.baseURL || "";
+        return `${baseURL.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
+      }
+      buildHeaders(requestHeaders) {
+        return {
+          "Content-Type": "application/json",
+          ...this.config.headers,
+          ...requestHeaders
+        };
+      }
+      buildBody(body) {
+        if (!body) return void 0;
+        if (typeof body === "string") {
+          return body;
+        }
+        return JSON.stringify(body);
+      }
+      async parseResponse(response) {
+        const contentType = response.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          return response.json();
+        }
+        if (contentType.includes("text/")) {
+          return response.text();
+        }
+        return response.arrayBuffer();
+      }
+      async executeWithRetry(fn) {
+        const maxRetries = this.config.maxRetries || 0;
+        const retryDelay = this.config.retryDelay || 1e3;
+        let lastError;
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+          try {
+            return await fn();
+          } catch (error) {
+            lastError = error;
+            if (error instanceof HTTPError && error.status < 500) {
+              throw error;
+            }
+            if (error instanceof HTTPTimeoutError) {
+              throw error;
+            }
+            if (attempt === maxRetries) {
+              throw error;
+            }
+            await this.delay(retryDelay * Math.pow(2, attempt));
+          }
+        }
+        throw lastError;
+      }
+      delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+    };
+    new HTTPClient();
+  }
+});
+
+// src/utils/validation.ts
+function parse(validator, value) {
+  const result = validator.validate(value);
+  if (!result.success) {
+    throw result.error;
+  }
+  return result.data;
+}
+var ValidationError, BaseValidator, StringValidator, NumberValidator, BooleanValidator, ArrayValidator, ObjectValidator, UnionValidator, OptionalValidator, NullableValidator, DefaultValidator, v;
+var init_validation = __esm({
+  "src/utils/validation.ts"() {
+    ValidationError = class extends Error {
+      constructor(message, path = [], received) {
+        super(message);
+        this.path = path;
+        this.received = received;
+        this.name = "ValidationError";
+      }
+    };
+    BaseValidator = class {
+      optional() {
+        return new OptionalValidator(this);
+      }
+      nullable() {
+        return new NullableValidator(this);
+      }
+      default(defaultValue) {
+        return new DefaultValidator(this, defaultValue);
+      }
+    };
+    StringValidator = class _StringValidator extends BaseValidator {
+      constructor(constraints = {}) {
+        super();
+        this.constraints = constraints;
+      }
+      validate(value, path = []) {
+        if (typeof value !== "string") {
+          return {
+            success: false,
+            error: new ValidationError(
+              `Expected string, received ${typeof value}`,
+              path,
+              value
+            )
+          };
+        }
+        if (this.constraints.minLength !== void 0 && value.length < this.constraints.minLength) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `String must be at least ${this.constraints.minLength} characters`,
+              path,
+              value
+            )
+          };
+        }
+        if (this.constraints.maxLength !== void 0 && value.length > this.constraints.maxLength) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `String must be at most ${this.constraints.maxLength} characters`,
+              path,
+              value
+            )
+          };
+        }
+        if (this.constraints.pattern && !this.constraints.pattern.test(value)) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `String does not match required pattern`,
+              path,
+              value
+            )
+          };
+        }
+        if (this.constraints.enum && !this.constraints.enum.includes(value)) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `String must be one of: ${this.constraints.enum.join(", ")}`,
+              path,
+              value
+            )
+          };
+        }
+        return { success: true, data: value };
+      }
+      min(length) {
+        return new _StringValidator({ ...this.constraints, minLength: length });
+      }
+      max(length) {
+        return new _StringValidator({ ...this.constraints, maxLength: length });
+      }
+      regex(pattern) {
+        return new _StringValidator({ ...this.constraints, pattern });
+      }
+      enum(...values) {
+        return new _StringValidator({ ...this.constraints, enum: values });
+      }
+    };
+    NumberValidator = class _NumberValidator extends BaseValidator {
+      constructor(constraints = {}) {
+        super();
+        this.constraints = constraints;
+      }
+      validate(value, path = []) {
+        if (typeof value !== "number" || isNaN(value)) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `Expected number, received ${typeof value}`,
+              path,
+              value
+            )
+          };
+        }
+        if (this.constraints.integer && !Number.isInteger(value)) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `Expected integer, received ${value}`,
+              path,
+              value
+            )
+          };
+        }
+        if (this.constraints.min !== void 0 && value < this.constraints.min) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `Number must be at least ${this.constraints.min}`,
+              path,
+              value
+            )
+          };
+        }
+        if (this.constraints.max !== void 0 && value > this.constraints.max) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `Number must be at most ${this.constraints.max}`,
+              path,
+              value
+            )
+          };
+        }
+        return { success: true, data: value };
+      }
+      min(value) {
+        return new _NumberValidator({ ...this.constraints, min: value });
+      }
+      max(value) {
+        return new _NumberValidator({ ...this.constraints, max: value });
+      }
+      int() {
+        return new _NumberValidator({ ...this.constraints, integer: true });
+      }
+    };
+    BooleanValidator = class extends BaseValidator {
+      validate(value, path = []) {
+        if (typeof value !== "boolean") {
+          return {
+            success: false,
+            error: new ValidationError(
+              `Expected boolean, received ${typeof value}`,
+              path,
+              value
+            )
+          };
+        }
+        return { success: true, data: value };
+      }
+    };
+    ArrayValidator = class _ArrayValidator extends BaseValidator {
+      constructor(itemValidator, constraints = {}) {
+        super();
+        this.itemValidator = itemValidator;
+        this.constraints = constraints;
+      }
+      validate(value, path = []) {
+        if (!Array.isArray(value)) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `Expected array, received ${typeof value}`,
+              path,
+              value
+            )
+          };
+        }
+        if (this.constraints.minLength !== void 0 && value.length < this.constraints.minLength) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `Array must have at least ${this.constraints.minLength} items`,
+              path,
+              value
+            )
+          };
+        }
+        if (this.constraints.maxLength !== void 0 && value.length > this.constraints.maxLength) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `Array must have at most ${this.constraints.maxLength} items`,
+              path,
+              value
+            )
+          };
+        }
+        const validatedItems = [];
+        for (let i = 0; i < value.length; i++) {
+          const itemResult = this.itemValidator.validate(value[i], [...path, i.toString()]);
+          if (!itemResult.success) {
+            return itemResult;
+          }
+          validatedItems.push(itemResult.data);
+        }
+        return { success: true, data: validatedItems };
+      }
+      min(length) {
+        return new _ArrayValidator(this.itemValidator, { ...this.constraints, minLength: length });
+      }
+      max(length) {
+        return new _ArrayValidator(this.itemValidator, { ...this.constraints, maxLength: length });
+      }
+    };
+    ObjectValidator = class extends BaseValidator {
+      constructor(shape) {
+        super();
+        this.shape = shape;
+      }
+      validate(value, path = []) {
+        if (typeof value !== "object" || value === null || Array.isArray(value)) {
+          return {
+            success: false,
+            error: new ValidationError(
+              `Expected object, received ${typeof value}`,
+              path,
+              value
+            )
+          };
+        }
+        const result = {};
+        const inputObj = value;
+        for (const [key, validator] of Object.entries(this.shape)) {
+          const fieldResult = validator.validate(inputObj[key], [...path, key]);
+          if (!fieldResult.success) {
+            return fieldResult;
+          }
+          result[key] = fieldResult.data;
+        }
+        return { success: true, data: result };
+      }
+    };
+    UnionValidator = class extends BaseValidator {
+      constructor(validators) {
+        super();
+        this.validators = validators;
+      }
+      validate(value, path = []) {
+        const errors = [];
+        for (const validator of this.validators) {
+          const result = validator.validate(value, path);
+          if (result.success) {
+            return result;
+          }
+          errors.push(result.error);
+        }
+        return {
+          success: false,
+          error: new ValidationError(
+            `Value does not match any of the union types`,
+            path,
+            value
+          )
+        };
+      }
+    };
+    OptionalValidator = class extends BaseValidator {
+      constructor(innerValidator) {
+        super();
+        this.innerValidator = innerValidator;
+      }
+      validate(value, path = []) {
+        if (value === void 0) {
+          return { success: true, data: void 0 };
+        }
+        return this.innerValidator.validate(value, path);
+      }
+    };
+    NullableValidator = class extends BaseValidator {
+      constructor(innerValidator) {
+        super();
+        this.innerValidator = innerValidator;
+      }
+      validate(value, path = []) {
+        if (value === null) {
+          return { success: true, data: null };
+        }
+        return this.innerValidator.validate(value, path);
+      }
+    };
+    DefaultValidator = class extends BaseValidator {
+      constructor(innerValidator, defaultValue) {
+        super();
+        this.innerValidator = innerValidator;
+        this.defaultValue = defaultValue;
+      }
+      validate(value, path = []) {
+        if (value === void 0) {
+          return { success: true, data: this.defaultValue };
+        }
+        return this.innerValidator.validate(value, path);
+      }
+    };
+    v = {
+      string: () => new StringValidator(),
+      number: () => new NumberValidator(),
+      boolean: () => new BooleanValidator(),
+      array: (itemValidator) => new ArrayValidator(itemValidator),
+      object: (shape) => new ObjectValidator(shape),
+      union: (...validators) => new UnionValidator(validators),
+      literal: (value) => ({
+        validate: (input, path = []) => {
+          if (input === value) {
+            return { success: true, data: value };
+          }
+          return {
+            success: false,
+            error: new ValidationError(
+              `Expected literal value ${value}, received ${input}`,
+              path,
+              input
+            )
+          };
+        },
+        optional: () => v.union(v.literal(value), v.undefined()),
+        nullable: () => v.union(v.literal(value), v.null()),
+        default: (defaultValue) => new DefaultValidator(v.literal(value), defaultValue)
+      }),
+      undefined: () => ({
+        validate: (input, path = []) => {
+          if (input === void 0) {
+            return { success: true, data: void 0 };
+          }
+          return {
+            success: false,
+            error: new ValidationError(
+              `Expected undefined, received ${typeof input}`,
+              path,
+              input
+            )
+          };
+        },
+        optional: () => v.undefined(),
+        nullable: () => v.union(v.undefined(), v.null()),
+        default: (defaultValue) => new DefaultValidator(v.undefined(), defaultValue)
+      }),
+      null: () => ({
+        validate: (input, path = []) => {
+          if (input === null) {
+            return { success: true, data: null };
+          }
+          return {
+            success: false,
+            error: new ValidationError(
+              `Expected null, received ${typeof input}`,
+              path,
+              input
+            )
+          };
+        },
+        optional: () => v.union(v.null(), v.undefined()),
+        nullable: () => v.null(),
+        default: (defaultValue) => new DefaultValidator(v.null(), defaultValue)
+      }),
+      any: () => ({
+        validate: (input) => {
+          return { success: true, data: input };
+        },
+        optional: () => v.any(),
+        nullable: () => v.any(),
+        default: (defaultValue) => new DefaultValidator(v.any(), defaultValue)
+      })
+    };
+  }
+});
+
+// src/providers/openai.ts
+function createOpenAIProvider(config) {
+  return new OpenAIProvider({ ...config, provider: "openai" });
+}
+var OPENAI_PRICING, openAIMessageSchema, openAIRequestSchema, OpenAIProvider, openAIFactory;
+var init_openai = __esm({
+  "src/providers/openai.ts"() {
+    init_base();
+    init_http();
+    init_validation();
+    OPENAI_PRICING = {
+      "gpt-4o": { input: 25e-4, output: 0.01 },
+      "gpt-4o-mini": { input: 15e-5, output: 6e-4 },
+      "gpt-4-turbo": { input: 0.01, output: 0.03 },
+      "gpt-4": { input: 0.03, output: 0.06 },
+      "gpt-3.5-turbo": { input: 5e-4, output: 15e-4 },
+      "gpt-3.5-turbo-instruct": { input: 15e-4, output: 2e-3 }
+    };
+    openAIMessageSchema = v.object({
+      role: v.string().enum("system", "user", "assistant", "function", "tool"),
+      content: v.union(v.string(), v.null()),
+      name: v.string().optional(),
+      function_call: v.object({
+        name: v.string(),
+        arguments: v.string()
+      }).optional(),
+      tool_calls: v.array(v.object({
+        id: v.string(),
+        type: v.literal("function"),
+        function: v.object({
+          name: v.string(),
+          arguments: v.string()
+        })
+      })).optional(),
+      tool_call_id: v.string().optional()
+    });
+    openAIRequestSchema = v.object({
+      model: v.string(),
+      messages: v.array(openAIMessageSchema),
+      max_tokens: v.number().int().min(1).optional(),
+      temperature: v.number().min(0).max(2).optional(),
+      top_p: v.number().min(0).max(1).optional(),
+      n: v.number().int().min(1).max(10).default(1),
+      stream: v.boolean().default(false),
+      stop: v.union(v.string(), v.array(v.string())).optional(),
+      presence_penalty: v.number().min(-2).max(2).optional(),
+      frequency_penalty: v.number().min(-2).max(2).optional(),
+      logit_bias: v.object({}).optional(),
+      user: v.string().optional(),
+      functions: v.array(v.object({
+        name: v.string(),
+        description: v.string().optional(),
+        parameters: v.object({}).optional()
+      })).optional(),
+      function_call: v.union(
+        v.literal("none"),
+        v.literal("auto"),
+        v.object({ name: v.string() })
+      ).optional(),
+      tools: v.array(v.object({
+        type: v.literal("function"),
+        function: v.object({
+          name: v.string(),
+          description: v.string().optional(),
+          parameters: v.object({}).optional()
+        })
+      })).optional(),
+      tool_choice: v.union(
+        v.literal("none"),
+        v.literal("auto"),
+        v.object({
+          type: v.literal("function"),
+          function: v.object({ name: v.string() })
+        })
+      ).optional(),
+      response_format: v.object({
+        type: v.string().enum("text", "json_object")
+      }).optional(),
+      seed: v.number().int().optional()
+    });
+    OpenAIProvider = class extends exports.BaseProvider {
+      constructor(config) {
+        super("openai", config);
+        __publicField(this, "client");
+        __publicField(this, "apiKey");
+        if (!config.apiKey) {
+          throw new Error("OpenAI API key is required");
+        }
+        this.apiKey = config.apiKey;
+        this.client = createHTTPClient({
+          baseURL: config.baseURL || "https://api.openai.com/v1",
+          timeout: config.timeout || 3e4,
+          headers: {
+            "Authorization": `Bearer ${this.apiKey}`,
+            "OpenAI-Beta": "assistants=v2"
+          }
+        });
+      }
+      getCapabilities() {
+        return {
+          chatCompletion: true,
+          streamingCompletion: true,
+          functionCalling: true,
+          imageGeneration: true,
+          imageAnalysis: true,
+          jsonMode: true,
+          systemMessages: true,
+          toolUse: true,
+          multipleMessages: true,
+          maxContextTokens: this.getContextLimit(),
+          supportedModels: this.getAvailableModels()
+        };
+      }
+      validateModel(model) {
+        return this.getAvailableModels().includes(model);
+      }
       getAvailableModels() {
         return [
           "gpt-4o",
           "gpt-4o-mini",
           "gpt-4-turbo",
+          "gpt-4-turbo-preview",
           "gpt-4",
           "gpt-3.5-turbo",
-          "gpt-3.5-turbo-16k"
+          "gpt-3.5-turbo-instruct"
         ];
       }
-      /**
-       * Estimate cost for OpenAI request
-       */
       estimateCost(request) {
-        const model = request.model || this.config.model;
-        const tokenCount = this.estimateTokenCount(request);
-        const pricing = this.getModelPricing(model);
-        const inputCost = tokenCount.input / 1e3 * pricing.input;
-        const outputCost = tokenCount.output / 1e3 * pricing.output;
-        return inputCost + outputCost;
+        const model = request.model;
+        const pricing = OPENAI_PRICING[model];
+        if (!pricing) {
+          return 0;
+        }
+        const inputText = request.messages.map((m) => m.content).join(" ");
+        const estimatedInputTokens = Math.ceil(inputText.length / 4);
+        const estimatedOutputTokens = request.max_tokens || 1e3;
+        return estimatedInputTokens * pricing.input / 1e3 + estimatedOutputTokens * pricing.output / 1e3;
       }
-      /**
-       * Chat completion implementation
-       */
       async chatCompletion(request) {
         const requestId = this.generateRequestId();
         const startTime = Date.now();
-        const metrics = this.createRequestMetrics(requestId, request.model || this.config.model, startTime);
-        return this.executeWithRetry(async () => {
-          const openaiRequest = this.transformRequest(request);
-          const response = await this.executeWithTimeout(
-            this.makeOpenAIRequest("/chat/completions", openaiRequest),
-            "chat_completion"
+        try {
+          const openAIRequest = this.transformRequest(request);
+          const response = await this.executeWithRetry(
+            () => this.client.post("/chat/completions", openAIRequest),
+            { requestId, operation: "chat_completion" }
           );
-          const usage = this.calculateUsage(response, request);
-          const transformedResponse = this.transformResponse(response, request, metrics);
-          this.logRequestMetrics(this.finalizeMetrics(metrics, usage, true));
-          return transformedResponse;
-        }, { requestId, operation: "chat_completion" });
+          return this.transformResponse(
+            response.data,
+            request,
+            this.createRequestMetrics(requestId, request.model, startTime)
+          );
+        } catch (error) {
+          throw this.handleError(error, requestId);
+        }
       }
-      /**
-       * Streaming chat completion implementation
-       */
       async *streamChatCompletion(request) {
         const requestId = this.generateRequestId();
-        const openaiRequest = { ...this.transformRequest(request), stream: true };
-        const response = await this.executeWithTimeout(
-          this.makeOpenAIStreamRequest("/chat/completions", openaiRequest),
-          "stream_chat_completion"
-        );
-        let totalUsage = {
-          prompt_tokens: 0,
-          completion_tokens: 0,
-          total_tokens: 0,
-          estimated_cost: 0
-        };
         try {
-          for await (const chunk of response) {
-            const transformedChunk = this.transformStreamChunk(chunk, request);
-            if (transformedChunk) {
-              if (transformedChunk.usage) {
-                totalUsage = transformedChunk.usage;
+          const openAIRequest = this.transformRequest({ ...request, stream: true });
+          const stream = this.client.stream({
+            url: "/chat/completions",
+            method: "POST",
+            body: openAIRequest
+          });
+          for await (const chunk of stream) {
+            const lines = chunk.split("\n").filter((line) => line.trim());
+            for (const line of lines) {
+              if (line.startsWith("data: ")) {
+                const data = line.slice(6);
+                if (data === "[DONE]") {
+                  return;
+                }
+                try {
+                  const parsed = JSON.parse(data);
+                  const transformedChunk = this.transformStreamChunk(parsed, request);
+                  if (transformedChunk) {
+                    yield transformedChunk;
+                  }
+                } catch (parseError) {
+                  continue;
+                }
               }
-              yield transformedChunk;
             }
           }
         } catch (error) {
-          throw exports.ErrorFactory.fromProviderError(error, "openai", requestId);
+          throw this.handleError(error, requestId);
         }
       }
-      /**
-       * Image generation implementation
-       */
-      async generateImages(request) {
-        const requestId = this.generateRequestId();
-        return this.executeWithRetry(async () => {
-          const openaiRequest = this.transformImageRequest(request);
-          const response = await this.executeWithTimeout(
-            this.makeOpenAIRequest("/images/generations", openaiRequest),
-            "image_generation"
-          );
-          return this.transformImageResponse(response);
-        }, { requestId, operation: "image_generation" });
-      }
-      /**
-       * Transform unified request to OpenAI format
-       */
-      transformRequest(request) {
-        const openaiRequest = {
-          model: request.model || this.config.model,
-          messages: request.messages.map((msg) => ({
-            role: msg.role,
-            content: msg.content,
-            ...msg.name && { name: msg.name },
-            ...msg.tool_calls && { tool_calls: msg.tool_calls },
-            ...msg.tool_call_id && { tool_call_id: msg.tool_call_id }
-          })),
-          ...request.temperature !== void 0 && { temperature: request.temperature },
-          ...request.max_tokens !== void 0 && { max_tokens: request.max_tokens },
-          ...request.top_p !== void 0 && { top_p: request.top_p },
-          ...request.frequency_penalty !== void 0 && { frequency_penalty: request.frequency_penalty },
-          ...request.presence_penalty !== void 0 && { presence_penalty: request.presence_penalty },
-          ...request.stop && { stop: request.stop },
-          ...request.tools && { tools: request.tools },
-          ...request.tool_choice && { tool_choice: request.tool_choice },
-          ...request.user && { user: request.user }
-        };
-        return openaiRequest;
-      }
-      /**
-       * Transform OpenAI response to unified format
-       */
       transformResponse(response, request, metrics) {
+        const usage = {
+          prompt_tokens: response.usage.prompt_tokens,
+          completion_tokens: response.usage.completion_tokens,
+          total_tokens: response.usage.total_tokens,
+          estimated_cost: this.calculateActualCost(response.usage, request.model)
+        };
         return {
           id: response.id,
           object: "chat.completion",
@@ -788,312 +1771,244 @@ var init_openai = __esm({
             message: {
               role: choice.message.role,
               content: choice.message.content,
-              ...choice.message.tool_calls && { tool_calls: choice.message.tool_calls }
-            },
-            finish_reason: choice.finish_reason,
-            ...choice.logprobs && { logprobs: choice.logprobs }
-          })),
-          usage: {
-            prompt_tokens: response.usage.prompt_tokens,
-            completion_tokens: response.usage.completion_tokens,
-            total_tokens: response.usage.total_tokens,
-            estimated_cost: this.calculateCost(response.usage, request.model || this.config.model)
-          },
-          ...response.system_fingerprint && { system_fingerprint: response.system_fingerprint }
-        };
-      }
-      /**
-       * Transform OpenAI streaming chunk to unified format
-       */
-      transformStreamChunk(chunk, request) {
-        if (!chunk || chunk === "[DONE]") {
-          return null;
-        }
-        let data;
-        try {
-          data = typeof chunk === "string" ? JSON.parse(chunk) : chunk;
-        } catch {
-          return null;
-        }
-        return {
-          id: data.id,
-          object: "chat.completion.chunk",
-          created: data.created,
-          model: data.model,
-          provider: "openai",
-          choices: data.choices.map((choice) => ({
-            index: choice.index,
-            delta: {
-              ...choice.delta.role && { role: choice.delta.role },
-              ...choice.delta.content && { content: choice.delta.content },
-              ...choice.delta.tool_calls && { tool_calls: choice.delta.tool_calls }
+              function_call: choice.message.function_call,
+              tool_calls: choice.message.tool_calls
             },
             finish_reason: choice.finish_reason
           })),
-          ...data.usage && {
-            usage: {
-              prompt_tokens: data.usage.prompt_tokens,
-              completion_tokens: data.usage.completion_tokens,
-              total_tokens: data.usage.total_tokens,
-              estimated_cost: this.calculateCost(data.usage, request.model || this.config.model)
-            }
-          }
+          usage,
+          system_fingerprint: response.system_fingerprint
         };
       }
-      /**
-       * Transform unified image request to OpenAI format
-       */
-      transformImageRequest(request) {
+      transformStreamChunk(chunk, request) {
+        if (!chunk.choices || chunk.choices.length === 0) {
+          return null;
+        }
+        const choice = chunk.choices[0];
         return {
-          prompt: request.prompt,
-          model: request.model || "dall-e-3",
-          n: request.n || 1,
-          size: request.size || "1024x1024",
-          quality: request.quality || "standard",
-          style: request.style || "vivid",
-          response_format: request.response_format || "url",
-          ...request.user && { user: request.user }
-        };
-      }
-      /**
-       * Transform OpenAI image response to unified format
-       */
-      transformImageResponse(response) {
-        return {
-          created: response.created,
-          data: response.data.map((item) => ({
-            url: item.url,
-            b64_json: item.b64_json,
-            revised_prompt: item.revised_prompt
-          })),
+          id: chunk.id,
+          object: "chat.completion.chunk",
+          created: chunk.created,
+          model: chunk.model,
           provider: "openai",
-          usage: {
-            estimated_cost: this.calculateImageCost(response.data.length)
-          }
+          choices: [{
+            index: choice.index,
+            delta: {
+              role: choice.delta.role,
+              content: choice.delta.content,
+              function_call: choice.delta.function_call,
+              tool_calls: choice.delta.tool_calls
+            },
+            finish_reason: choice.finish_reason
+          }],
+          usage: chunk.usage ? {
+            prompt_tokens: chunk.usage.prompt_tokens,
+            completion_tokens: chunk.usage.completion_tokens,
+            total_tokens: chunk.usage.total_tokens,
+            estimated_cost: chunk.usage ? this.calculateActualCost(chunk.usage, request.model) : 0
+          } : void 0
         };
       }
-      /**
-       * Make HTTP request to OpenAI API
-       */
-      async makeOpenAIRequest(endpoint, data) {
-        const url = `${this.config.baseURL || "https://api.openai.com/v1"}${endpoint}`;
-        const headers = this.getDefaultHeaders();
-        if (this.openaiConfig.organization) {
-          headers["OpenAI-Organization"] = this.openaiConfig.organization;
-        }
-        if (this.openaiConfig.project) {
-          headers["OpenAI-Project"] = this.openaiConfig.project;
-        }
-        try {
-          const response = await fetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data)
-          });
-          if (!response.ok) {
-            const error = await response.json().catch(() => ({ message: response.statusText }));
-            throw exports.ErrorFactory.fromProviderError({ ...error, status: response.status }, "openai");
-          }
-          return await response.json();
-        } catch (error) {
-          throw exports.ErrorFactory.fromProviderError(error, "openai");
-        }
-      }
-      /**
-       * Make streaming HTTP request to OpenAI API
-       */
-      async makeOpenAIStreamRequest(endpoint, data) {
-        const url = `${this.config.baseURL || "https://api.openai.com/v1"}${endpoint}`;
-        const headers = { ...this.getDefaultHeaders(), "Accept": "text/event-stream" };
-        if (this.openaiConfig.organization) {
-          headers["OpenAI-Organization"] = this.openaiConfig.organization;
-        }
-        if (this.openaiConfig.project) {
-          headers["OpenAI-Project"] = this.openaiConfig.project;
-        }
-        const response = await fetch(url, {
-          method: "POST",
-          headers,
-          body: JSON.stringify(data)
-        });
-        if (!response.ok) {
-          const error = await response.json().catch(() => ({ message: response.statusText }));
-          throw exports.ErrorFactory.fromProviderError({ ...error, status: response.status }, "openai");
-        }
-        return this.parseSSEStream(response);
-      }
-      /**
-       * Parse Server-Sent Events stream
-       */
-      async *parseSSEStream(response) {
-        const reader = response.body?.getReader();
-        if (!reader) throw new Error("No response body");
-        const decoder = new TextDecoder();
-        let buffer = "";
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split("\n");
-            buffer = lines.pop() || "";
-            for (const line of lines) {
-              if (line.startsWith("data: ")) {
-                const data = line.slice(6);
-                if (data === "[DONE]") return;
-                try {
-                  yield JSON.parse(data);
-                } catch {
-                }
-              }
-            }
-          }
-        } finally {
-          reader.releaseLock();
-        }
-      }
-      /**
-       * Validate OpenAI API key format
-       */
       validateApiKey(apiKey) {
-        return /^sk-[a-zA-Z0-9]{48}$/.test(apiKey);
+        return /^sk-[a-zA-Z0-9]{48}$/.test(apiKey) || /^sk-proj-[a-zA-Z0-9]{48}$/.test(apiKey);
       }
-      /**
-       * Get OpenAI authorization header
-       */
       getAuthHeader(apiKey) {
         return `Bearer ${apiKey}`;
       }
-      /**
-       * Test connection to OpenAI API
-       */
       async testConnection() {
-        await this.makeOpenAIRequest("/models", {}).catch(() => {
-        });
-      }
-      /**
-       * Calculate usage and cost
-       */
-      calculateUsage(response, request) {
-        const usage = response.usage;
-        const cost = this.calculateCost(usage, request.model || this.config.model);
-        return {
-          prompt_tokens: usage.prompt_tokens,
-          completion_tokens: usage.completion_tokens,
-          total_tokens: usage.total_tokens,
-          estimated_cost: cost
-        };
-      }
-      /**
-       * Calculate cost based on usage and model
-       */
-      calculateCost(usage, model) {
-        const pricing = this.getModelPricing(model);
-        const inputCost = usage.prompt_tokens / 1e3 * pricing.input;
-        const outputCost = usage.completion_tokens / 1e3 * pricing.output;
-        return inputCost + outputCost;
-      }
-      /**
-       * Get model-specific pricing
-       */
-      getModelPricing(model) {
-        const pricingMap = {
-          "gpt-4o": { input: 5e-3, output: 0.015 },
-          "gpt-4o-mini": { input: 15e-5, output: 6e-4 },
-          "gpt-4-turbo": { input: 0.01, output: 0.03 },
-          "gpt-4": { input: 0.03, output: 0.06 },
-          "gpt-3.5-turbo": { input: 15e-4, output: 2e-3 },
-          "gpt-3.5-turbo-16k": { input: 3e-3, output: 4e-3 }
-        };
-        return pricingMap[model] || { input: 0.01, output: 0.03 };
-      }
-      /**
-       * Calculate image generation cost
-       */
-      calculateImageCost(imageCount) {
-        return imageCount * 0.04;
-      }
-      /**
-       * Estimate token count for cost calculation
-       */
-      estimateTokenCount(request) {
-        const messageText = request.messages.map((m) => typeof m.content === "string" ? m.content : JSON.stringify(m.content)).join(" ");
-        const inputTokens = Math.ceil(messageText.length / 4);
-        const outputTokens = request.max_tokens || 1e3;
-        return { input: inputTokens, output: outputTokens };
-      }
-      /**
-       * Log request metrics for analytics
-       */
-      logRequestMetrics(metrics) {
-        if (this.config.debug) {
-          console.log("OpenAI Request Metrics:", {
-            requestId: metrics.requestId,
-            provider: metrics.provider,
-            model: metrics.model,
-            duration: metrics.endTime - metrics.startTime,
-            tokens: metrics.tokens,
-            cost: metrics.cost,
-            success: metrics.success
-          });
+        try {
+          await this.client.get("/models");
+        } catch (error) {
+          if (error instanceof HTTPError && error.status === 401) {
+            throw new Error("Invalid OpenAI API key");
+          }
+          throw error;
         }
       }
+      transformRequest(request) {
+        try {
+          const openAIRequest = {
+            model: request.model,
+            messages: request.messages.map((msg) => ({
+              role: msg.role,
+              content: msg.content,
+              name: msg.name,
+              function_call: msg.function_call,
+              tool_calls: msg.tool_calls,
+              tool_call_id: msg.tool_call_id
+            })),
+            max_tokens: request.max_tokens,
+            temperature: request.temperature,
+            top_p: request.top_p,
+            n: request.n,
+            stream: request.stream,
+            stop: request.stop,
+            presence_penalty: request.presence_penalty,
+            frequency_penalty: request.frequency_penalty,
+            logit_bias: request.logit_bias,
+            user: request.user,
+            functions: request.functions,
+            function_call: request.function_call,
+            tools: request.tools,
+            tool_choice: request.tool_choice,
+            response_format: request.response_format,
+            seed: request.seed
+          };
+          return parse(openAIRequestSchema, openAIRequest);
+        } catch (error) {
+          if (error instanceof ValidationError) {
+            throw new Error(`Invalid request: ${error.message}`);
+          }
+          throw error;
+        }
+      }
+      calculateActualCost(usage, model) {
+        const modelKey = model;
+        const pricing = OPENAI_PRICING[modelKey];
+        if (!pricing) {
+          return 0;
+        }
+        return usage.prompt_tokens * pricing.input / 1e3 + usage.completion_tokens * pricing.output / 1e3;
+      }
+      getContextLimit() {
+        const model = this.config.model;
+        switch (model) {
+          case "gpt-4o":
+          case "gpt-4o-mini":
+            return 128e3;
+          case "gpt-4-turbo":
+          case "gpt-4-turbo-preview":
+            return 128e3;
+          case "gpt-4":
+            return 8192;
+          case "gpt-3.5-turbo":
+            return 16385;
+          default:
+            return 4096;
+        }
+      }
+      handleError(error, requestId) {
+        if (error instanceof HTTPError) {
+          switch (error.status) {
+            case 401:
+              return new Error("Invalid OpenAI API key");
+            case 429:
+              return new Error("OpenAI rate limit exceeded");
+            case 400:
+              return new Error(`Invalid request: ${error.data?.error?.message || error.statusText}`);
+            case 500:
+            case 502:
+            case 503:
+              return new Error("OpenAI service temporarily unavailable");
+            default:
+              return new Error(`OpenAI API error: ${error.message}`);
+          }
+        }
+        if (error instanceof Error) {
+          return error;
+        }
+        return new Error(`Unknown error in OpenAI request ${requestId}`);
+      }
     };
-    OpenAIProviderFactory = class {
-      create(config) {
-        return new OpenAIProvider(config);
-      }
-      supports(provider) {
-        return provider === "openai";
-      }
+    openAIFactory = {
+      create: (config) => new OpenAIProvider(config),
+      supports: (provider) => provider === "openai"
     };
   }
 });
 
 // src/providers/claude.ts
+function createAnthropicProvider(config) {
+  return new AnthropicProvider({ ...config, provider: "anthropic" });
+}
 function claude(options = {}) {
   return {
-    provider: "claude",
+    provider: "anthropic",
     model: options.model || "claude-3-5-sonnet-20241022",
     ...options
   };
 }
-var ClaudeProvider, ClaudeProviderFactory;
+var ANTHROPIC_PRICING, anthropicContentSchema, anthropicMessageSchema, anthropicRequestSchema, AnthropicProvider, anthropicFactory;
 var init_claude = __esm({
   "src/providers/claude.ts"() {
     init_base();
-    init_errors();
-    ClaudeProvider = class extends exports.BaseProvider {
+    init_http();
+    init_validation();
+    ANTHROPIC_PRICING = {
+      "claude-3-5-sonnet-20241022": { input: 3e-3, output: 0.015 },
+      "claude-3-5-haiku-20241022": { input: 25e-5, output: 125e-5 },
+      "claude-3-opus-20240229": { input: 0.015, output: 0.075 },
+      "claude-3-sonnet-20240229": { input: 3e-3, output: 0.015 },
+      "claude-3-haiku-20240307": { input: 25e-5, output: 125e-5 }
+    };
+    anthropicContentSchema = v.union(
+      v.string(),
+      v.array(v.object({
+        type: v.string().enum("text", "image"),
+        text: v.string().optional(),
+        source: v.object({
+          type: v.literal("base64"),
+          media_type: v.string(),
+          data: v.string()
+        }).optional()
+      }))
+    );
+    anthropicMessageSchema = v.object({
+      role: v.string().enum("user", "assistant"),
+      content: anthropicContentSchema
+    });
+    anthropicRequestSchema = v.object({
+      model: v.string(),
+      messages: v.array(anthropicMessageSchema),
+      max_tokens: v.number().int().min(1).max(4096),
+      system: v.string().optional(),
+      temperature: v.number().min(0).max(1).optional(),
+      top_p: v.number().min(0).max(1).optional(),
+      stop_sequences: v.array(v.string()).optional(),
+      tools: v.array(v.object({
+        name: v.string(),
+        description: v.string().optional(),
+        input_schema: v.object({}).optional()
+      })).optional(),
+      stream: v.boolean().default(false)
+    });
+    AnthropicProvider = class extends exports.BaseProvider {
       constructor(config) {
-        super("claude", config);
-        __publicField(this, "claudeConfig");
-        this.claudeConfig = config;
+        super("anthropic", config);
+        __publicField(this, "client");
+        __publicField(this, "apiKey");
+        if (!config.apiKey) {
+          throw new Error("Anthropic API key is required");
+        }
+        this.apiKey = config.apiKey;
+        this.client = createHTTPClient({
+          baseURL: config.baseURL || "https://api.anthropic.com/v1",
+          timeout: config.timeout || 3e4,
+          headers: {
+            "x-api-key": this.apiKey,
+            "anthropic-version": "2023-06-01",
+            "anthropic-beta": "messages-2023-12-15"
+          }
+        });
       }
-      /**
-       * Get Claude provider capabilities
-       */
       getCapabilities() {
         return {
-          chat: true,
-          images: false,
-          embeddings: false,
-          tools: true,
-          streaming: true,
-          vision: true,
-          maxTokens: 2e5,
-          costPer1kTokens: { input: 3e-3, output: 0.015 }
+          chatCompletion: true,
+          streamingCompletion: true,
+          functionCalling: true,
+          imageGeneration: false,
+          imageAnalysis: true,
+          jsonMode: false,
+          systemMessages: true,
+          toolUse: true,
+          multipleMessages: true,
+          maxContextTokens: this.getContextLimit(),
+          supportedModels: this.getAvailableModels()
         };
       }
-      /**
-       * Validate Claude model
-       */
       validateModel(model) {
-        const validModels = this.getAvailableModels();
-        return validModels.includes(model);
+        return this.getAvailableModels().includes(model);
       }
-      /**
-       * Get available Claude models
-       */
       getAvailableModels() {
         return [
           "claude-3-5-sonnet-20241022",
@@ -1103,91 +2018,215 @@ var init_claude = __esm({
           "claude-3-haiku-20240307"
         ];
       }
-      /**
-       * Estimate cost for Claude request
-       */
       estimateCost(request) {
-        const model = request.model || this.config.model;
-        const tokenCount = this.estimateTokenCount(request);
-        const pricing = this.getModelPricing(model);
-        const inputCost = tokenCount.input / 1e3 * pricing.input;
-        const outputCost = tokenCount.output / 1e3 * pricing.output;
-        return inputCost + outputCost;
+        const model = request.model;
+        const pricing = ANTHROPIC_PRICING[model];
+        if (!pricing) {
+          return 0;
+        }
+        const inputText = request.messages.map(
+          (m) => typeof m.content === "string" ? m.content : JSON.stringify(m.content)
+        ).join(" ");
+        const estimatedInputTokens = Math.ceil(inputText.length / 4);
+        const estimatedOutputTokens = request.max_tokens || 1e3;
+        return estimatedInputTokens * pricing.input / 1e3 + estimatedOutputTokens * pricing.output / 1e3;
       }
-      /**
-       * Chat completion implementation
-       */
       async chatCompletion(request) {
         const requestId = this.generateRequestId();
         const startTime = Date.now();
-        const metrics = this.createRequestMetrics(requestId, request.model || this.config.model, startTime);
-        return this.executeWithRetry(async () => {
-          const claudeRequest = this.transformRequest(request);
-          const response = await this.executeWithTimeout(
-            this.makeClaudeRequest("/messages", claudeRequest),
-            "chat_completion"
+        try {
+          const anthropicRequest = this.transformRequest(request);
+          const response = await this.executeWithRetry(
+            () => this.client.post("/messages", anthropicRequest),
+            { requestId, operation: "chat_completion" }
           );
-          const usage = this.calculateUsage(response, request);
-          const transformedResponse = this.transformResponse(response, request, metrics);
-          this.logRequestMetrics(this.finalizeMetrics(metrics, usage, true));
-          return transformedResponse;
-        }, { requestId, operation: "chat_completion" });
+          return this.transformResponse(
+            response.data,
+            request,
+            this.createRequestMetrics(requestId, request.model, startTime)
+          );
+        } catch (error) {
+          throw this.handleError(error, requestId);
+        }
       }
-      /**
-       * Streaming chat completion implementation
-       */
       async *streamChatCompletion(request) {
         const requestId = this.generateRequestId();
-        const claudeRequest = { ...this.transformRequest(request), stream: true };
-        const response = await this.executeWithTimeout(
-          this.makeClaudeStreamRequest("/messages", claudeRequest),
-          "stream_chat_completion"
-        );
-        let totalUsage = {
-          prompt_tokens: 0,
-          completion_tokens: 0,
-          total_tokens: 0,
-          estimated_cost: 0
-        };
         try {
-          for await (const chunk of response) {
-            const transformedChunk = this.transformStreamChunk(chunk, request);
-            if (transformedChunk) {
-              if (transformedChunk.usage) {
-                totalUsage = transformedChunk.usage;
+          const anthropicRequest = this.transformRequest({ ...request, stream: true });
+          const stream = this.client.stream({
+            url: "/messages",
+            method: "POST",
+            body: anthropicRequest
+          });
+          for await (const chunk of stream) {
+            const lines = chunk.split("\n").filter((line) => line.trim());
+            for (const line of lines) {
+              if (line.startsWith("data: ")) {
+                const data = line.slice(6);
+                if (data === "[DONE]") {
+                  return;
+                }
+                try {
+                  const parsed = JSON.parse(data);
+                  const transformedChunk = this.transformStreamChunk(parsed, request);
+                  if (transformedChunk) {
+                    yield transformedChunk;
+                  }
+                } catch (parseError) {
+                  continue;
+                }
               }
-              yield transformedChunk;
             }
           }
         } catch (error) {
-          throw exports.ErrorFactory.fromProviderError(error, "claude", requestId);
+          throw this.handleError(error, requestId);
         }
       }
-      /**
-       * Transform unified request to Claude format
-       */
-      transformRequest(request) {
-        const systemMessage = request.messages.find((m) => m.role === "system");
-        const messages = request.messages.filter((m) => m.role !== "system");
-        const claudeMessages = messages.map((msg) => ({
-          role: msg.role === "assistant" ? "assistant" : "user",
-          content: this.transformMessageContent(msg)
-        }));
-        const claudeRequest = {
-          model: request.model || this.config.model,
-          messages: claudeMessages,
-          max_tokens: request.max_tokens || 1e3,
-          ...systemMessage && { system: systemMessage.content },
-          ...request.temperature !== void 0 && { temperature: request.temperature },
-          ...request.top_p !== void 0 && { top_p: request.top_p },
-          ...request.stop && { stop_sequences: Array.isArray(request.stop) ? request.stop : [request.stop] },
-          ...request.tools && { tools: this.transformTools(request.tools) }
+      transformResponse(response, request, metrics) {
+        const usage = {
+          prompt_tokens: response.usage.input_tokens,
+          completion_tokens: response.usage.output_tokens,
+          total_tokens: response.usage.input_tokens + response.usage.output_tokens,
+          estimated_cost: this.calculateActualCost(response.usage, request.model)
         };
-        return claudeRequest;
+        const textContent = response.content.filter((item) => item.type === "text").map((item) => item.text).join("");
+        const toolCalls = response.content.filter((item) => item.type === "tool_use").map((item, index) => ({
+          id: item.id || `call_${index}`,
+          type: "function",
+          function: {
+            name: item.name || "",
+            arguments: JSON.stringify(item.input || {})
+          }
+        }));
+        return {
+          id: response.id,
+          object: "chat.completion",
+          created: Math.floor(Date.now() / 1e3),
+          model: response.model,
+          provider: "anthropic",
+          choices: [{
+            index: 0,
+            message: {
+              role: "assistant",
+              content: textContent,
+              ...toolCalls.length > 0 && { tool_calls: toolCalls }
+            },
+            finish_reason: this.mapStopReason(response.stop_reason)
+          }],
+          usage
+        };
       }
-      /**
-       * Transform message content for Claude format
-       */
+      transformStreamChunk(chunk, request) {
+        if (!chunk.type) {
+          return null;
+        }
+        const baseChunk = {
+          id: chunk.message?.id || "unknown",
+          object: "chat.completion.chunk",
+          created: Math.floor(Date.now() / 1e3),
+          model: request.model,
+          provider: "anthropic"
+        };
+        switch (chunk.type) {
+          case "message_start":
+            return {
+              ...baseChunk,
+              choices: [{
+                index: 0,
+                delta: { role: "assistant" },
+                finish_reason: null
+              }]
+            };
+          case "content_block_delta":
+            if (chunk.delta?.text) {
+              return {
+                ...baseChunk,
+                choices: [{
+                  index: 0,
+                  delta: { content: chunk.delta.text },
+                  finish_reason: null
+                }]
+              };
+            }
+            break;
+          case "message_delta":
+            const usage = chunk.usage ? {
+              prompt_tokens: chunk.usage.input_tokens,
+              completion_tokens: chunk.usage.output_tokens,
+              total_tokens: chunk.usage.input_tokens + chunk.usage.output_tokens,
+              estimated_cost: this.calculateActualCost(chunk.usage, request.model)
+            } : void 0;
+            return {
+              ...baseChunk,
+              choices: [{
+                index: 0,
+                delta: {},
+                finish_reason: this.mapStopReason(chunk.delta?.stop_reason || "end_turn")
+              }],
+              ...usage && { usage }
+            };
+          case "message_stop":
+            return {
+              ...baseChunk,
+              choices: [{
+                index: 0,
+                delta: {},
+                finish_reason: "stop"
+              }]
+            };
+        }
+        return null;
+      }
+      validateApiKey(apiKey) {
+        return /^sk-ant-api03-[a-zA-Z0-9\-_]{95}$/.test(apiKey);
+      }
+      getAuthHeader(apiKey) {
+        return apiKey;
+      }
+      async testConnection() {
+        try {
+          const testRequest = {
+            model: this.config.model || "claude-3-5-haiku-20241022",
+            messages: [{ role: "user", content: "Hi" }],
+            max_tokens: 1
+          };
+          await this.client.post("/messages", testRequest);
+        } catch (error) {
+          if (error instanceof HTTPError && error.status === 401) {
+            throw new Error("Invalid Anthropic API key");
+          }
+          throw error;
+        }
+      }
+      transformRequest(request) {
+        try {
+          const systemMessage = request.messages.find((m) => m.role === "system");
+          const messages = request.messages.filter((m) => m.role !== "system");
+          const anthropicMessages = messages.map((msg) => ({
+            role: msg.role === "assistant" ? "assistant" : "user",
+            content: this.transformMessageContent(msg)
+          }));
+          const anthropicRequest = {
+            model: request.model,
+            messages: anthropicMessages,
+            max_tokens: request.max_tokens || 1e3,
+            ...systemMessage && { system: systemMessage.content },
+            ...request.temperature !== void 0 && { temperature: request.temperature },
+            ...request.top_p !== void 0 && { top_p: request.top_p },
+            ...request.stop && {
+              stop_sequences: Array.isArray(request.stop) ? request.stop : [request.stop]
+            },
+            ...request.tools && { tools: this.transformTools(request.tools) },
+            ...request.stream && { stream: true }
+          };
+          return parse(anthropicRequestSchema, anthropicRequest);
+        } catch (error) {
+          if (error instanceof ValidationError) {
+            throw new Error(`Invalid request: ${error.message}`);
+          }
+          throw error;
+        }
+      }
       transformMessageContent(message) {
         if (typeof message.content === "string") {
           return message.content;
@@ -1199,83 +2238,31 @@ var init_claude = __esm({
               text: content.text
             };
           } else if (content.type === "image_url") {
+            const dataUrl = content.image_url?.url || "";
+            const [header, data] = dataUrl.split(",");
+            const mediaType = header.match(/data:([^;]+)/)?.[1] || "image/jpeg";
             return {
               type: "image",
               source: {
                 type: "base64",
-                media_type: "image/jpeg",
-                // Assume JPEG, could be improved
-                data: content.image_url?.url.split(",")[1] || ""
-                // Remove data:image/jpeg;base64, prefix
+                media_type: mediaType,
+                data: data || ""
               }
             };
           }
-          return content;
+          return {
+            type: "text",
+            text: JSON.stringify(content)
+          };
         });
       }
-      /**
-       * Transform tools for Claude format
-       */
       transformTools(tools) {
         return tools.map((tool) => ({
           name: tool.function.name,
           description: tool.function.description,
-          input_schema: tool.function.parameters
+          input_schema: tool.function.parameters || {}
         }));
       }
-      /**
-       * Transform Claude response to unified format
-       */
-      transformResponse(response, request, metrics) {
-        const usage = {
-          prompt_tokens: response.usage?.input_tokens || 0,
-          completion_tokens: response.usage?.output_tokens || 0,
-          total_tokens: (response.usage?.input_tokens || 0) + (response.usage?.output_tokens || 0),
-          estimated_cost: this.calculateCost(response.usage, request.model || this.config.model)
-        };
-        return {
-          id: response.id,
-          object: "chat.completion",
-          created: Math.floor(Date.now() / 1e3),
-          model: response.model,
-          provider: "claude",
-          choices: [{
-            index: 0,
-            message: {
-              role: "assistant",
-              content: this.extractContentFromResponse(response),
-              ...response.tool_calls && { tool_calls: this.transformToolCallsFromClaude(response.tool_calls) }
-            },
-            finish_reason: this.mapStopReason(response.stop_reason)
-          }],
-          usage
-        };
-      }
-      /**
-       * Extract content from Claude response
-       */
-      extractContentFromResponse(response) {
-        if (response.content && Array.isArray(response.content)) {
-          return response.content.filter((item) => item.type === "text").map((item) => item.text).join("");
-        }
-        return response.content || "";
-      }
-      /**
-       * Transform tool calls from Claude format
-       */
-      transformToolCallsFromClaude(toolCalls) {
-        return toolCalls.map((call, index) => ({
-          id: `call_${index}`,
-          type: "function",
-          function: {
-            name: call.name,
-            arguments: JSON.stringify(call.input)
-          }
-        }));
-      }
-      /**
-       * Map Claude stop reason to unified format
-       */
       mapStopReason(stopReason) {
         const reasonMap = {
           "end_turn": "stop",
@@ -1285,226 +2272,404 @@ var init_claude = __esm({
         };
         return reasonMap[stopReason] || "stop";
       }
-      /**
-       * Transform Claude streaming chunk to unified format
-       */
-      transformStreamChunk(chunk, request) {
-        if (!chunk || !chunk.type) {
-          return null;
+      calculateActualCost(usage, model) {
+        const modelKey = model;
+        const pricing = ANTHROPIC_PRICING[modelKey];
+        if (!pricing) {
+          return 0;
         }
-        if (chunk.type === "message_start") {
-          return {
-            id: chunk.message.id,
-            object: "chat.completion.chunk",
-            created: Math.floor(Date.now() / 1e3),
-            model: chunk.message.model,
-            provider: "claude",
-            choices: [{
-              index: 0,
-              delta: { role: "assistant" },
-              finish_reason: null
-            }]
-          };
-        }
-        if (chunk.type === "content_block_delta") {
-          return {
-            id: chunk.message?.id || "unknown",
-            object: "chat.completion.chunk",
-            created: Math.floor(Date.now() / 1e3),
-            model: request.model || this.config.model,
-            provider: "claude",
-            choices: [{
-              index: 0,
-              delta: { content: chunk.delta.text },
-              finish_reason: null
-            }]
-          };
-        }
-        if (chunk.type === "message_delta") {
-          const usage = chunk.usage ? {
-            prompt_tokens: chunk.usage.input_tokens || 0,
-            completion_tokens: chunk.usage.output_tokens || 0,
-            total_tokens: (chunk.usage.input_tokens || 0) + (chunk.usage.output_tokens || 0),
-            estimated_cost: this.calculateCost(chunk.usage, request.model || this.config.model)
-          } : void 0;
-          return {
-            id: chunk.message?.id || "unknown",
-            object: "chat.completion.chunk",
-            created: Math.floor(Date.now() / 1e3),
-            model: request.model || this.config.model,
-            provider: "claude",
-            choices: [{
-              index: 0,
-              delta: {},
-              finish_reason: this.mapStopReason(chunk.delta.stop_reason || "end_turn")
-            }],
-            ...usage && { usage }
-          };
-        }
-        return null;
+        return usage.input_tokens * pricing.input / 1e3 + usage.output_tokens * pricing.output / 1e3;
       }
-      /**
-       * Make HTTP request to Claude API
-       */
-      async makeClaudeRequest(endpoint, data) {
-        const url = `${this.config.baseURL || "https://api.anthropic.com/v1"}${endpoint}`;
-        const headers = this.getDefaultHeaders();
-        headers["anthropic-version"] = this.claudeConfig.anthropicVersion || "2023-06-01";
-        try {
-          const response = await fetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data)
-          });
-          if (!response.ok) {
-            const error = await response.json().catch(() => ({ message: response.statusText }));
-            throw exports.ErrorFactory.fromProviderError({ ...error, status: response.status }, "claude");
+      getContextLimit() {
+        const model = this.config.model;
+        switch (model) {
+          case "claude-3-5-sonnet-20241022":
+          case "claude-3-opus-20240229":
+          case "claude-3-sonnet-20240229":
+            return 2e5;
+          case "claude-3-5-haiku-20241022":
+          case "claude-3-haiku-20240307":
+            return 2e5;
+          default:
+            return 2e5;
+        }
+      }
+      handleError(error, requestId) {
+        if (error instanceof HTTPError) {
+          switch (error.status) {
+            case 401:
+              return new Error("Invalid Anthropic API key");
+            case 429:
+              return new Error("Anthropic rate limit exceeded");
+            case 400:
+              return new Error(`Invalid request: ${error.data?.error?.message || error.statusText}`);
+            case 500:
+            case 502:
+            case 503:
+              return new Error("Anthropic service temporarily unavailable");
+            default:
+              return new Error(`Anthropic API error: ${error.message}`);
           }
-          return await response.json();
-        } catch (error) {
-          throw exports.ErrorFactory.fromProviderError(error, "claude");
         }
+        if (error instanceof Error) {
+          return error;
+        }
+        return new Error(`Unknown error in Anthropic request ${requestId}`);
       }
-      /**
-       * Make streaming HTTP request to Claude API
-       */
-      async makeClaudeStreamRequest(endpoint, data) {
-        const url = `${this.config.baseURL || "https://api.anthropic.com/v1"}${endpoint}`;
-        const headers = { ...this.getDefaultHeaders(), "Accept": "text/event-stream" };
-        headers["anthropic-version"] = this.claudeConfig.anthropicVersion || "2023-06-01";
-        const response = await fetch(url, {
-          method: "POST",
-          headers,
-          body: JSON.stringify(data)
+    };
+    anthropicFactory = {
+      create: (config) => new AnthropicProvider(config),
+      supports: (provider) => provider === "anthropic"
+    };
+  }
+});
+
+// src/providers/google.ts
+function createGoogleProvider(config) {
+  return new GoogleProvider({ ...config, provider: "google" });
+}
+function gemini(options = {}) {
+  return {
+    provider: "google",
+    model: options.model || "gemini-1.5-flash",
+    // Default to Flash for cost optimization
+    ...options
+  };
+}
+var GEMINI_PRICING, geminiPartSchema, geminiContentSchema, geminiRequestSchema, GoogleProvider, googleFactory;
+var init_google = __esm({
+  "src/providers/google.ts"() {
+    init_base();
+    init_http();
+    init_validation();
+    GEMINI_PRICING = {
+      "gemini-1.5-pro": { input: 125e-5, output: 5e-3 },
+      "gemini-1.5-flash": { input: 75e-6, output: 3e-4 },
+      "gemini-pro": { input: 5e-4, output: 15e-4 },
+      "gemini-pro-vision": { input: 25e-5, output: 5e-4 }
+    };
+    geminiPartSchema = v.object({
+      text: v.string().optional(),
+      inlineData: v.object({
+        mimeType: v.string(),
+        data: v.string()
+      }).optional()
+    });
+    geminiContentSchema = v.object({
+      role: v.string().enum("user", "model"),
+      parts: v.array(geminiPartSchema)
+    });
+    geminiRequestSchema = v.object({
+      contents: v.array(geminiContentSchema),
+      generationConfig: v.object({
+        temperature: v.number().min(0).max(1).optional(),
+        topP: v.number().min(0).max(1).optional(),
+        topK: v.number().int().min(1).optional(),
+        maxOutputTokens: v.number().int().min(1).optional(),
+        stopSequences: v.array(v.string()).optional()
+      }).optional(),
+      safetySettings: v.array(v.object({
+        category: v.string(),
+        threshold: v.string()
+      })).optional()
+    });
+    GoogleProvider = class extends exports.BaseProvider {
+      constructor(config) {
+        super("google", config);
+        __publicField(this, "client");
+        __publicField(this, "apiKey");
+        if (!config.apiKey) {
+          throw new Error("Google API key is required");
+        }
+        this.apiKey = config.apiKey;
+        this.client = createHTTPClient({
+          baseURL: config.baseURL || "https://generativelanguage.googleapis.com/v1beta",
+          timeout: config.timeout || 3e4
         });
-        if (!response.ok) {
-          const error = await response.json().catch(() => ({ message: response.statusText }));
-          throw exports.ErrorFactory.fromProviderError({ ...error, status: response.status }, "claude");
-        }
-        return this.parseSSEStream(response);
       }
-      /**
-       * Parse Server-Sent Events stream for Claude
-       */
-      async *parseSSEStream(response) {
-        const reader = response.body?.getReader();
-        if (!reader) throw new Error("No response body");
-        const decoder = new TextDecoder();
-        let buffer = "";
+      getCapabilities() {
+        return {
+          chatCompletion: true,
+          streamingCompletion: true,
+          functionCalling: false,
+          // Not yet implemented in this version
+          imageGeneration: false,
+          imageAnalysis: true,
+          jsonMode: false,
+          systemMessages: false,
+          // Gemini doesn't have system messages
+          toolUse: false,
+          // Not yet implemented
+          multipleMessages: true,
+          maxContextTokens: this.getContextLimit(),
+          supportedModels: this.getAvailableModels()
+        };
+      }
+      validateModel(model) {
+        return this.getAvailableModels().includes(model);
+      }
+      getAvailableModels() {
+        return [
+          "gemini-1.5-pro",
+          "gemini-1.5-flash",
+          "gemini-pro",
+          "gemini-pro-vision"
+        ];
+      }
+      estimateCost(request) {
+        const model = request.model;
+        const pricing = GEMINI_PRICING[model];
+        if (!pricing) {
+          return 0;
+        }
+        const inputText = request.messages.map(
+          (m) => typeof m.content === "string" ? m.content : JSON.stringify(m.content)
+        ).join(" ");
+        const estimatedInputTokens = Math.ceil(inputText.length / 4);
+        const estimatedOutputTokens = request.max_tokens || 1e3;
+        return estimatedInputTokens * pricing.input / 1e3 + estimatedOutputTokens * pricing.output / 1e3;
+      }
+      async chatCompletion(request) {
+        const requestId = this.generateRequestId();
+        const startTime = Date.now();
         try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split("\n");
-            buffer = lines.pop() || "";
+          const geminiRequest = this.transformRequest(request);
+          const url = `/models/${request.model}:generateContent?key=${this.apiKey}`;
+          const response = await this.executeWithRetry(
+            () => this.client.post(url, geminiRequest),
+            { requestId, operation: "chat_completion" }
+          );
+          return this.transformResponse(
+            response.data,
+            request,
+            this.createRequestMetrics(requestId, request.model, startTime)
+          );
+        } catch (error) {
+          throw this.handleError(error, requestId);
+        }
+      }
+      async *streamChatCompletion(request) {
+        const requestId = this.generateRequestId();
+        try {
+          const geminiRequest = this.transformRequest(request);
+          const url = `/models/${request.model}:streamGenerateContent?key=${this.apiKey}`;
+          const stream = this.client.stream({
+            url,
+            method: "POST",
+            body: geminiRequest
+          });
+          for await (const chunk of stream) {
+            const lines = chunk.split("\n").filter((line) => line.trim());
             for (const line of lines) {
               if (line.startsWith("data: ")) {
                 const data = line.slice(6);
-                if (data === "[DONE]") return;
+                if (data === "[DONE]") {
+                  return;
+                }
                 try {
-                  yield JSON.parse(data);
-                } catch {
+                  const parsed = JSON.parse(data);
+                  const transformedChunk = this.transformStreamChunk(parsed, request);
+                  if (transformedChunk) {
+                    yield transformedChunk;
+                  }
+                } catch (parseError) {
+                  continue;
                 }
               }
             }
           }
-        } finally {
-          reader.releaseLock();
+        } catch (error) {
+          throw this.handleError(error, requestId);
         }
       }
-      /**
-       * Validate Claude API key format
-       */
-      validateApiKey(apiKey) {
-        return /^sk-ant-api[a-zA-Z0-9\-]{95}$/.test(apiKey);
-      }
-      /**
-       * Get Claude authorization header
-       */
-      getAuthHeader(apiKey) {
-        return `Bearer ${apiKey}`;
-      }
-      /**
-       * Test connection to Claude API
-       */
-      async testConnection() {
-        const testRequest = {
-          model: this.config.model,
-          messages: [{ role: "user", content: "Hi" }],
-          max_tokens: 1
+      transformResponse(response, request, metrics) {
+        const candidate = response.candidates[0];
+        if (!candidate) {
+          throw new Error("No response candidate from Gemini");
+        }
+        const usage = {
+          prompt_tokens: response.usageMetadata?.promptTokenCount || 0,
+          completion_tokens: response.usageMetadata?.candidatesTokenCount || 0,
+          total_tokens: response.usageMetadata?.totalTokenCount || 0,
+          estimated_cost: this.calculateActualCost(response.usageMetadata, request.model)
         };
-        await this.makeClaudeRequest("/messages", testRequest).catch(() => {
+        const content = candidate.content.parts.map((part) => part.text).join("");
+        return {
+          id: `gemini_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          object: "chat.completion",
+          created: Math.floor(Date.now() / 1e3),
+          model: request.model,
+          provider: "google",
+          choices: [{
+            index: 0,
+            message: {
+              role: "assistant",
+              content
+            },
+            finish_reason: this.mapFinishReason(candidate.finishReason)
+          }],
+          usage
+        };
+      }
+      transformStreamChunk(response, request) {
+        const candidate = response.candidates?.[0];
+        if (!candidate) {
+          return null;
+        }
+        const content = candidate.content?.parts?.[0]?.text || "";
+        return {
+          id: `gemini_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          object: "chat.completion.chunk",
+          created: Math.floor(Date.now() / 1e3),
+          model: request.model,
+          provider: "google",
+          choices: [{
+            index: 0,
+            delta: {
+              content
+            },
+            finish_reason: candidate.finishReason ? this.mapFinishReason(candidate.finishReason) : null
+          }],
+          usage: response.usageMetadata ? {
+            prompt_tokens: response.usageMetadata.promptTokenCount,
+            completion_tokens: response.usageMetadata.candidatesTokenCount,
+            total_tokens: response.usageMetadata.totalTokenCount,
+            estimated_cost: this.calculateActualCost(response.usageMetadata, request.model)
+          } : void 0
+        };
+      }
+      validateApiKey(apiKey) {
+        return /^AIza[0-9A-Za-z\-_]{35}$/.test(apiKey);
+      }
+      getAuthHeader(apiKey) {
+        return apiKey;
+      }
+      async testConnection() {
+        try {
+          const testRequest = {
+            contents: [{
+              role: "user",
+              parts: [{ text: "Hi" }]
+            }]
+          };
+          const url = `/models/${this.config.model || "gemini-pro"}:generateContent?key=${this.apiKey}`;
+          await this.client.post(url, testRequest);
+        } catch (error) {
+          if (error instanceof HTTPError && error.status === 401) {
+            throw new Error("Invalid Google API key");
+          }
+          throw error;
+        }
+      }
+      transformRequest(request) {
+        try {
+          const filteredMessages = request.messages.filter((m) => m.role !== "system");
+          const contents = filteredMessages.map((msg) => ({
+            role: msg.role === "assistant" ? "model" : "user",
+            parts: this.transformMessageContent(msg)
+          }));
+          const geminiRequest = {
+            contents,
+            generationConfig: {
+              ...request.temperature !== void 0 && { temperature: request.temperature },
+              ...request.top_p !== void 0 && { topP: request.top_p },
+              ...request.max_tokens !== void 0 && { maxOutputTokens: request.max_tokens },
+              ...request.stop && {
+                stopSequences: Array.isArray(request.stop) ? request.stop : [request.stop]
+              }
+            }
+          };
+          return parse(geminiRequestSchema, geminiRequest);
+        } catch (error) {
+          if (error instanceof ValidationError) {
+            throw new Error(`Invalid request: ${error.message}`);
+          }
+          throw error;
+        }
+      }
+      transformMessageContent(message) {
+        if (typeof message.content === "string") {
+          return [{ text: message.content }];
+        }
+        return message.content.map((content) => {
+          if (content.type === "text") {
+            return { text: content.text };
+          } else if (content.type === "image_url") {
+            const dataUrl = content.image_url?.url || "";
+            const [header, data] = dataUrl.split(",");
+            const mimeType = header.match(/data:([^;]+)/)?.[1] || "image/jpeg";
+            return {
+              inlineData: {
+                mimeType,
+                data: data || ""
+              }
+            };
+          }
+          return { text: JSON.stringify(content) };
         });
       }
-      /**
-       * Calculate usage and cost
-       */
-      calculateUsage(response, request) {
-        const usage = response.usage || {};
-        const cost = this.calculateCost(usage, request.model || this.config.model);
-        return {
-          prompt_tokens: usage.input_tokens || 0,
-          completion_tokens: usage.output_tokens || 0,
-          total_tokens: (usage.input_tokens || 0) + (usage.output_tokens || 0),
-          estimated_cost: cost
+      mapFinishReason(finishReason) {
+        const reasonMap = {
+          "STOP": "stop",
+          "MAX_TOKENS": "length",
+          "SAFETY": "content_filter",
+          "RECITATION": "content_filter",
+          "OTHER": "stop"
         };
+        return reasonMap[finishReason] || "stop";
       }
-      /**
-       * Calculate cost based on usage and model
-       */
-      calculateCost(usage, model) {
-        const pricing = this.getModelPricing(model);
-        const inputCost = (usage.input_tokens || 0) / 1e3 * pricing.input;
-        const outputCost = (usage.output_tokens || 0) / 1e3 * pricing.output;
-        return inputCost + outputCost;
+      calculateActualCost(usageMetadata, model) {
+        if (!usageMetadata) return 0;
+        const modelKey = model;
+        const pricing = GEMINI_PRICING[modelKey];
+        if (!pricing) {
+          return 0;
+        }
+        return usageMetadata.promptTokenCount * pricing.input / 1e3 + usageMetadata.candidatesTokenCount * pricing.output / 1e3;
       }
-      /**
-       * Get model-specific pricing
-       */
-      getModelPricing(model) {
-        const pricingMap = {
-          "claude-3-5-sonnet-20241022": { input: 3e-3, output: 0.015 },
-          "claude-3-5-haiku-20241022": { input: 25e-5, output: 125e-5 },
-          "claude-3-opus-20240229": { input: 0.015, output: 0.075 },
-          "claude-3-sonnet-20240229": { input: 3e-3, output: 0.015 },
-          "claude-3-haiku-20240307": { input: 25e-5, output: 125e-5 }
-        };
-        return pricingMap[model] || { input: 3e-3, output: 0.015 };
-      }
-      /**
-       * Estimate token count for cost calculation
-       */
-      estimateTokenCount(request) {
-        const messageText = request.messages.map((m) => typeof m.content === "string" ? m.content : JSON.stringify(m.content)).join(" ");
-        const inputTokens = Math.ceil(messageText.length / 4);
-        const outputTokens = request.max_tokens || 1e3;
-        return { input: inputTokens, output: outputTokens };
-      }
-      /**
-       * Log request metrics for analytics
-       */
-      logRequestMetrics(metrics) {
-        if (this.config.debug) {
-          console.log("Claude Request Metrics:", {
-            requestId: metrics.requestId,
-            provider: metrics.provider,
-            model: metrics.model,
-            duration: metrics.endTime - metrics.startTime,
-            tokens: metrics.tokens,
-            cost: metrics.cost,
-            success: metrics.success
-          });
+      getContextLimit() {
+        const model = this.config.model;
+        switch (model) {
+          case "gemini-1.5-pro":
+            return 1e6;
+          // 1M tokens
+          case "gemini-1.5-flash":
+            return 1e6;
+          // 1M tokens
+          case "gemini-pro":
+            return 30720;
+          case "gemini-pro-vision":
+            return 12288;
+          default:
+            return 30720;
         }
       }
+      handleError(error, requestId) {
+        if (error instanceof HTTPError) {
+          switch (error.status) {
+            case 400:
+              return new Error(`Invalid request: ${error.data?.error?.message || error.statusText}`);
+            case 401:
+              return new Error("Invalid Google API key");
+            case 429:
+              return new Error("Google API rate limit exceeded");
+            case 500:
+            case 502:
+            case 503:
+              return new Error("Google API service temporarily unavailable");
+            default:
+              return new Error(`Google API error: ${error.message}`);
+          }
+        }
+        if (error instanceof Error) {
+          return error;
+        }
+        return new Error(`Unknown error in Google request ${requestId}`);
+      }
     };
-    ClaudeProviderFactory = class {
-      create(config) {
-        return new ClaudeProvider(config);
-      }
-      supports(provider) {
-        return provider === "claude";
-      }
+    googleFactory = {
+      create: (config) => new GoogleProvider(config),
+      supports: (provider) => provider === "google"
     };
   }
 });
@@ -1512,17 +2677,23 @@ var init_claude = __esm({
 // src/providers/index.ts
 var providers_exports = {};
 __export(providers_exports, {
+  AnthropicProvider: () => AnthropicProvider,
   BaseProvider: () => exports.BaseProvider,
-  ClaudeProvider: () => ClaudeProvider,
-  ClaudeProviderFactory: () => ClaudeProviderFactory,
+  GoogleProvider: () => GoogleProvider,
   OpenAIProvider: () => OpenAIProvider,
-  OpenAIProviderFactory: () => OpenAIProviderFactory,
   ProviderRegistry: () => ProviderRegistry,
+  anthropicFactory: () => anthropicFactory,
   checkProviderHealth: () => checkProviderHealth,
   claude: () => claude,
+  createAnthropicProvider: () => createAnthropicProvider,
+  createGoogleProvider: () => createGoogleProvider,
+  createOpenAIProvider: () => createOpenAIProvider,
+  gemini: () => gemini,
   getSupportedProviders: () => getSupportedProviders,
+  googleFactory: () => googleFactory,
   isProviderSupported: () => isProviderSupported,
-  openai: () => openai,
+  openAIFactory: () => openAIFactory,
+  openai: () => exports.openai,
   providerRegistry: () => exports.providerRegistry,
   providers: () => exports.providers
 });
@@ -1535,349 +2706,321 @@ function isProviderSupported(provider) {
 async function checkProviderHealth() {
   return exports.providerRegistry.healthCheckAll();
 }
-exports.providers = void 0;
+exports.providers = void 0; exports.openai = void 0;
 var init_providers = __esm({
   "src/providers/index.ts"() {
     init_base();
     init_openai();
     init_claude();
+    init_google();
     init_base();
     init_openai();
     init_claude();
-    exports.providerRegistry.register("openai", new OpenAIProviderFactory());
-    exports.providerRegistry.register("claude", new ClaudeProviderFactory());
+    init_google();
+    exports.providerRegistry.register("openai", openAIFactory);
+    exports.providerRegistry.register("anthropic", anthropicFactory);
+    exports.providerRegistry.register("claude", anthropicFactory);
+    exports.providerRegistry.register("google", googleFactory);
     exports.providers = {
-      openai,
-      claude
+      openai: (config) => ({ provider: "openai", model: "gpt-4o", ...config }),
+      claude: (config) => ({ provider: "anthropic", model: "claude-3-5-sonnet-20241022", ...config }),
+      gemini: (config) => ({ provider: "google", model: "gemini-1.5-flash", ...config })
     };
+    exports.openai = (config) => ({ provider: "openai", model: "gpt-4o", ...config });
   }
 });
 
-// src/chat/index.ts
-init_base();
-init_errors();
-var Chat2 = class {
-  constructor(options = {}) {
-    __publicField(this, "defaultProvider");
-    __publicField(this, "options");
-    this.options = {
-      enableAutoRetry: true,
-      enableFallback: true,
-      trackUsage: true,
-      ...options
-    };
-    this.defaultProvider = options.provider;
-  }
+// src/index.ts
+init_chat();
+
+// src/orchestration/index.ts
+init_providers();
+var StrategyEngine = class {
   /**
-   * Complete a chat conversation
+   * Analyze request and determine optimal strategy
    */
-  async complete(request, options) {
-    const mergedOptions = { ...this.options, ...options };
-    const providerConfig = await this.selectProvider(request, mergedOptions);
-    const provider = exports.providerRegistry.getProvider(providerConfig);
-    try {
-      return await provider.chatCompletion(request);
-    } catch (error) {
-      if (mergedOptions.enableFallback && this.shouldFallback(error)) {
-        return this.executeWithFallback(request, providerConfig, mergedOptions);
-      }
-      throw error;
-    }
-  }
-  /**
-   * Stream a chat conversation
-   */
-  async *stream(request, options) {
-    const mergedOptions = { ...this.options, ...options };
-    const providerConfig = await this.selectProvider(request, mergedOptions);
-    const provider = exports.providerRegistry.getProvider(providerConfig);
-    try {
-      yield* provider.streamChatCompletion(request);
-    } catch (error) {
-      throw error;
-    }
-  }
-  /**
-   * Simple text completion (convenience method)
-   */
-  async ask(message, options) {
-    const messages = [];
-    if (options?.system) {
-      messages.push({ role: "system", content: options.system });
-    }
-    messages.push({ role: "user", content: message });
-    const request = {
-      messages,
-      ...options?.temperature && { temperature: options.temperature },
-      ...options?.maxTokens && { max_tokens: options.maxTokens }
-    };
-    const response = await this.complete(request, options);
-    return response.choices[0]?.message.content || "";
-  }
-  /**
-   * Chat with conversation history
-   */
-  async chat(messages, options) {
-    const request = {
-      messages,
-      ...options?.temperature && { temperature: options.temperature },
-      ...options?.maxTokens && { max_tokens: options.maxTokens },
-      ...options?.tools && { tools: options.tools }
-    };
-    return this.complete(request, options);
-  }
-  /**
-   * Create a conversation instance for stateful chat
-   */
-  conversation(options) {
-    return new Conversation(this, options);
-  }
-  /**
-   * Select optimal provider based on request and constraints
-   */
-  async selectProvider(request, options) {
-    if (options.provider) {
-      return options.provider;
-    }
-    if (this.defaultProvider && !options.constraints) {
-      return this.defaultProvider;
-    }
-    return this.intelligentProviderSelection(request, options.constraints);
-  }
-  /**
-   * Intelligent provider selection based on constraints and request characteristics
-   */
-  async intelligentProviderSelection(request, constraints) {
-    const supportedProviders = exports.providerRegistry.getRegisteredProviders();
-    const candidates = [];
-    for (const provider of supportedProviders) {
-      if (constraints?.excludeProviders?.includes(provider)) {
-        continue;
-      }
-      const config = {
-        provider,
-        model: this.getDefaultModel(provider),
-        apiKey: ""
-        // Will be resolved later
-      };
-      const providerInstance = exports.providerRegistry.getProvider(config);
-      const capabilities = providerInstance.getCapabilities();
-      if (constraints?.requiredCapabilities) {
-        const hasRequired = constraints.requiredCapabilities.every(
-          (cap) => capabilities[cap] === true
-        );
-        if (!hasRequired) continue;
-      }
-      const estimatedCost = providerInstance.estimateCost(request);
-      const estimatedLatency = this.estimateLatency(provider);
-      const qualityScore = this.calculateQualityScore(provider, request);
-      if (constraints?.maxCost && estimatedCost > constraints.maxCost) {
-        continue;
-      }
-      if (constraints?.maxLatency && estimatedLatency > constraints.maxLatency) {
-        continue;
-      }
-      if (constraints?.qualityThreshold && qualityScore < constraints.qualityThreshold) {
-        continue;
-      }
-      candidates.push({
-        provider,
-        model: config.model,
-        estimatedCost,
-        estimatedLatency,
-        qualityScore,
-        reasoning: this.generateSelectionReasoning(provider, estimatedCost, qualityScore)
-      });
-    }
-    if (candidates.length === 0) {
-      throw new exports.BaseSDKError(
-        "No providers meet the specified constraints",
-        "NO_SUITABLE_PROVIDER",
-        { details: { constraints } }
-      );
-    }
-    const bestCandidate = candidates.reduce((best, current) => {
-      const bestScore = best.qualityScore / best.estimatedCost;
-      const currentScore = current.qualityScore / current.estimatedCost;
-      return currentScore > bestScore ? current : best;
-    });
-    if (constraints?.preferredProviders) {
-      const preferredCandidate = candidates.find(
-        (c) => constraints.preferredProviders.includes(c.provider)
-      );
-      if (preferredCandidate) {
-        return {
-          provider: preferredCandidate.provider,
-          model: preferredCandidate.model,
-          apiKey: ""
-          // Will be resolved later
-        };
-      }
-    }
+  determine(request) {
+    const { requirements = {}, constraints = {}, strategy = "balanced" } = request;
+    const complexity = this.analyzeComplexity(request);
+    const capabilities = this.determineCapabilities(requirements);
+    const candidateProviders = this.filterProviders(capabilities, constraints);
     return {
-      provider: bestCandidate.provider,
-      model: bestCandidate.model,
-      apiKey: ""
-      // Will be resolved later
+      strategy,
+      complexity,
+      capabilities,
+      providers: candidateProviders,
+      routing: this.determineRouting(strategy, candidateProviders, constraints),
+      fallbacks: this.determineFallbacks(candidateProviders, constraints),
+      validation: this.shouldValidate(request, complexity)
     };
   }
-  /**
-   * Execute request with fallback providers
-   */
-  async executeWithFallback(request, failedProvider, options) {
-    const fallbackProviders = this.getFallbackProviders(failedProvider);
-    for (const provider of fallbackProviders) {
-      try {
-        const providerInstance = exports.providerRegistry.getProvider(provider);
-        return await providerInstance.chatCompletion(request);
-      } catch (error) {
-        continue;
+  analyzeComplexity(request) {
+    const content = request.messages?.map((m) => m.content).join(" ") || "";
+    const wordCount = content.split(" ").length;
+    if (wordCount < 100) return "simple";
+    if (wordCount < 500) return "moderate";
+    return "complex";
+  }
+  determineCapabilities(requirements = {}) {
+    const capabilities = ["chat"];
+    if (requirements.reasoning) capabilities.push("reasoning");
+    if (requirements.vision) capabilities.push("vision");
+    if (requirements.tools) capabilities.push("tools");
+    if (requirements.coding) capabilities.push("coding");
+    if (requirements.creative) capabilities.push("creative");
+    if (requirements.analysis) capabilities.push("analysis");
+    return capabilities;
+  }
+  filterProviders(capabilities, constraints = {}) {
+    const allProviders = [
+      {
+        provider: "openai",
+        model: "gpt-4o",
+        capabilities: ["chat", "vision", "tools", "coding", "creative"],
+        costPerToken: 25e-4,
+        avgLatency: 2500,
+        qualityScore: 90,
+        privacyLevel: "public"
+      },
+      {
+        provider: "anthropic",
+        model: "claude-3-5-sonnet-20241022",
+        capabilities: ["chat", "reasoning", "analysis", "coding", "tools"],
+        costPerToken: 3e-3,
+        avgLatency: 3e3,
+        qualityScore: 95,
+        privacyLevel: "private"
+      },
+      {
+        provider: "google",
+        model: "gemini-1.5-pro",
+        capabilities: ["chat", "vision", "tools", "analysis"],
+        costPerToken: 125e-5,
+        avgLatency: 2e3,
+        qualityScore: 85,
+        privacyLevel: "public"
+      },
+      {
+        provider: "local",
+        model: "llama-3.2-3b",
+        capabilities: ["chat", "coding"],
+        costPerToken: 0,
+        avgLatency: 8e3,
+        qualityScore: 70,
+        privacyLevel: "hipaa"
       }
-    }
-    throw new exports.BaseSDKError(
-      "All fallback providers failed",
-      "ALL_PROVIDERS_FAILED",
-      { details: { originalProvider: failedProvider.provider } }
-    );
-  }
-  /**
-   * Determine if error should trigger fallback
-   */
-  shouldFallback(error) {
-    if (error.code === "RATE_LIMIT_EXCEEDED") return true;
-    if (error.statusCode && error.statusCode >= 500) return true;
-    if (error.code === "NETWORK_ERROR") return true;
-    return false;
-  }
-  /**
-   * Get fallback providers for a failed provider
-   */
-  getFallbackProviders(failedProvider) {
-    const fallbackMap = {
-      "openai": ["claude"],
-      "claude": ["openai"],
-      "google": ["openai", "claude"],
-      "azure": ["openai", "claude"],
-      "cohere": ["openai", "claude"],
-      "huggingface": ["openai", "claude"]
-    };
-    const fallbacks = fallbackMap[failedProvider.provider] || ["openai"];
-    return fallbacks.map((provider) => ({
-      provider,
-      model: this.getDefaultModel(provider),
-      apiKey: ""
-      // Will be resolved later
-    }));
-  }
-  /**
-   * Get default model for provider
-   */
-  getDefaultModel(provider) {
-    const defaultModels = {
-      "openai": "gpt-4o",
-      "claude": "claude-3-5-sonnet-20241022",
-      "google": "gemini-pro",
-      "azure": "gpt-4",
-      "cohere": "command-r-plus",
-      "huggingface": "meta-llama/Llama-2-70b-chat-hf"
-    };
-    return defaultModels[provider] || "gpt-4o";
-  }
-  /**
-   * Estimate latency for provider (placeholder implementation)
-   */
-  estimateLatency(provider) {
-    const latencyMap = {
-      "openai": 2e3,
-      "claude": 3e3,
-      "google": 1500,
-      "azure": 2500,
-      "cohere": 2e3,
-      "huggingface": 4e3
-    };
-    return latencyMap[provider] || 2e3;
-  }
-  /**
-   * Calculate quality score for provider (placeholder implementation)
-   */
-  calculateQualityScore(provider, request) {
-    const qualityMap = {
-      "openai": 0.9,
-      "claude": 0.95,
-      "google": 0.8,
-      "azure": 0.9,
-      "cohere": 0.7,
-      "huggingface": 0.6
-    };
-    return qualityMap[provider] || 0.5;
-  }
-  /**
-   * Generate reasoning for provider selection
-   */
-  generateSelectionReasoning(provider, cost, quality) {
-    return `Selected ${provider} for optimal cost/quality ratio (cost: $${cost.toFixed(4)}, quality: ${quality.toFixed(2)})`;
-  }
-};
-var Conversation = class {
-  constructor(chat2, options = {}) {
-    __publicField(this, "messages", []);
-    __publicField(this, "chat");
-    __publicField(this, "options");
-    this.chat = chat2;
-    this.options = options;
-    if (options.system) {
-      this.messages.push({ role: "system", content: options.system });
-    }
-  }
-  /**
-   * Send a message and get response
-   */
-  async say(message) {
-    this.messages.push({ role: "user", content: message });
-    const response = await this.chat.chat(this.messages, this.options);
-    const assistantMessage = response.choices[0]?.message.content || "";
-    this.messages.push({ role: "assistant", content: assistantMessage });
-    return assistantMessage;
-  }
-  /**
-   * Get conversation history
-   */
-  getHistory() {
-    return [...this.messages];
-  }
-  /**
-   * Clear conversation history (keeping system message)
-   */
-  clear() {
-    const systemMessage = this.messages.find((m) => m.role === "system");
-    this.messages = systemMessage ? [systemMessage] : [];
-  }
-  /**
-   * Get conversation summary
-   */
-  async summarize() {
-    if (this.messages.length < 3) {
-      return "Conversation too short to summarize";
-    }
-    const summaryRequest = [
-      { role: "system", content: "Summarize the following conversation concisely." },
-      { role: "user", content: JSON.stringify(this.messages) }
     ];
-    const response = await this.chat.chat(summaryRequest, { ...this.options, maxTokens: 200 });
-    return response.choices[0]?.message.content || "Unable to generate summary";
+    return allProviders.filter((p) => {
+      const hasCapabilities = capabilities.every((cap) => p.capabilities.includes(cap));
+      if (!hasCapabilities) return false;
+      if (constraints.excludeProviders?.includes(p.provider)) return false;
+      if (constraints.privacyLevel === "hipaa" && p.privacyLevel !== "hipaa") return false;
+      if (constraints.maxCost && p.costPerToken * 1e3 > constraints.maxCost) return false;
+      if (constraints.maxLatency && p.avgLatency > constraints.maxLatency) return false;
+      return true;
+    });
+  }
+  determineRouting(strategy, candidates, constraints = {}) {
+    return candidates.map((candidate) => {
+      let score = 0;
+      switch (strategy) {
+        case "cost_optimized":
+          score = 100 - candidate.costPerToken * 1e4;
+          break;
+        case "performance":
+          score = 100 - candidate.avgLatency / 100;
+          break;
+        case "privacy_first":
+          score = candidate.privacyLevel === "hipaa" ? 100 : candidate.privacyLevel === "private" ? 80 : 60;
+          break;
+        case "balanced":
+        default:
+          score = candidate.qualityScore * 0.4 + (100 - candidate.costPerToken * 1e4) * 0.3 + (100 - candidate.avgLatency / 100) * 0.3;
+          break;
+      }
+      if (constraints.preferredProviders?.includes(candidate.provider)) {
+        score += 20;
+      }
+      return {
+        ...candidate,
+        score: Math.max(0, Math.min(100, score))
+      };
+    }).sort((a, b) => b.score - a.score);
+  }
+  determineFallbacks(candidates, constraints = {}) {
+    return candidates.slice(1);
+  }
+  shouldValidate(request, complexity) {
+    return request.validation?.enabled || complexity === "complex";
   }
 };
-function createChat(options) {
-  return new Chat2(options);
-}
-async function ask(message, options) {
-  const chat2 = new Chat2({ provider: options?.provider });
-  return chat2.ask(message, options);
-}
-async function chat(messages, options) {
-  const chatInstance = new Chat2({ provider: options?.provider });
-  return chatInstance.chat(messages, options);
-}
+var ProviderSelector = class {
+  /**
+   * Rank providers based on execution strategy
+   */
+  rank(strategy) {
+    return strategy.routing;
+  }
+  /**
+   * Select primary provider for request
+   */
+  selectPrimary(rankings) {
+    if (rankings.length === 0) {
+      throw new Error("No suitable providers available for request");
+    }
+    return rankings[0];
+  }
+  /**
+   * Get fallback providers in order of preference
+   */
+  getFallbacks(rankings) {
+    return rankings.slice(1);
+  }
+};
+var AIOrchestrator = class {
+  constructor() {
+    __publicField(this, "strategyEngine");
+    __publicField(this, "providerSelector");
+    __publicField(this, "cache", /* @__PURE__ */ new Map());
+    this.strategyEngine = new StrategyEngine();
+    this.providerSelector = new ProviderSelector();
+  }
+  /**
+   * Execute AI request with intelligent orchestration
+   */
+  async execute(request) {
+    const startTime = Date.now();
+    const cacheKey = this.generateCacheKey(request);
+    const cached = this.cache.get(cacheKey);
+    if (cached) {
+      return {
+        ...cached,
+        orchestration: {
+          ...cached.orchestration,
+          cacheHit: true
+        }
+      };
+    }
+    const strategy = this.strategyEngine.determine(request);
+    const rankings = this.providerSelector.rank(strategy);
+    const primary = this.providerSelector.selectPrimary(rankings);
+    const fallbacks = this.providerSelector.getFallbacks(rankings);
+    const result = await this.executeWithFallbacks(request, primary, fallbacks);
+    const orchestratedResult = {
+      ...result,
+      orchestration: {
+        strategy: request.strategy || "balanced",
+        providersUsed: [primary.provider],
+        fallbacksTriggered: false,
+        // TODO: Track this properly
+        cacheHit: false,
+        processingTime: Date.now() - startTime
+      },
+      confidence: await this.calculateConfidence(request, result, strategy),
+      cost: this.calculateCost(result, primary),
+      performance: this.calculatePerformance(result, primary, startTime)
+    };
+    this.cache.set(cacheKey, orchestratedResult);
+    return orchestratedResult;
+  }
+  async executeWithFallbacks(request, primary, fallbacks) {
+    try {
+      const provider = exports.providers[primary.provider];
+      return await provider.complete(request);
+    } catch (error) {
+      for (const fallback of fallbacks) {
+        try {
+          const provider = exports.providers[fallback.provider];
+          return await provider.complete(request);
+        } catch (fallbackError) {
+          console.warn(`Fallback provider ${fallback.provider} failed:`, fallbackError);
+        }
+      }
+      throw new Error(`All providers failed. Primary: ${primary.provider}, Fallbacks: ${fallbacks.map((f) => f.provider).join(", ")}`);
+    }
+  }
+  async calculateConfidence(request, result, strategy) {
+    return {
+      overall: 85,
+      providerAgreement: 90,
+      costEfficiency: 75,
+      latencyScore: 80,
+      qualityScore: 88
+    };
+  }
+  calculateCost(result, provider) {
+    const inputTokens = result.usage?.prompt_tokens || 0;
+    const outputTokens = result.usage?.completion_tokens || 0;
+    const totalCost = (inputTokens + outputTokens) * provider.costPerToken;
+    return {
+      total: totalCost,
+      breakdown: { [provider.provider]: totalCost },
+      savings: 0,
+      // TODO: Calculate vs most expensive option
+      efficiency: 85
+      // TODO: Calculate efficiency score
+    };
+  }
+  calculatePerformance(result, provider, startTime) {
+    const totalTime = Date.now() - startTime;
+    const totalTokens = result.usage?.completion_tokens || 0;
+    return {
+      latency: totalTime,
+      tokensPerSecond: totalTokens / (totalTime / 1e3),
+      providerLatencies: { [provider.provider]: totalTime }
+    };
+  }
+  generateCacheKey(request) {
+    const { messages, strategy, requirements, constraints } = request;
+    const keyData = { messages, strategy, requirements, constraints };
+    return Buffer.from(JSON.stringify(keyData)).toString("base64").slice(0, 32);
+  }
+};
+var AIService = class {
+  constructor() {
+    __publicField(this, "orchestrator");
+    this.orchestrator = new AIOrchestrator();
+  }
+  /**
+   * Complete an AI request with intelligent orchestration
+   */
+  async complete(request) {
+    return this.orchestrator.execute(request);
+  }
+  /**
+   * Simple completion with strategy shorthand
+   */
+  async ask(prompt, options = {}) {
+    return this.complete({
+      messages: [{ role: "user", content: prompt }],
+      ...options
+    });
+  }
+  /**
+   * Multi-step workflow execution
+   */
+  async workflow(steps) {
+    const results = {};
+    for (const step of steps) {
+      const prompt = this.replaceTemplateVars(step.prompt, results);
+      const result = await this.complete({
+        messages: [{ role: "user", content: prompt }],
+        strategy: step.strategy,
+        requirements: step.requirements,
+        constraints: step.constraints
+      });
+      results[step.name] = result;
+    }
+    return { results };
+  }
+  replaceTemplateVars(prompt, results) {
+    return prompt.replace(/\{\{\s*(\w+)\.output\s*\}\}/g, (match, stepName) => {
+      const stepResult = results[stepName];
+      return stepResult?.choices?.[0]?.message?.content || match;
+    });
+  }
+};
+var ai = new AIService();
 
 // src/index.ts
 init_providers();
@@ -1936,7 +3079,8 @@ var _SDK = class _SDK {
    * Create Chat instance with SDK config
    */
   createChat(options = {}) {
-    return new Chat({
+    const { Chat: Chat2 } = (init_chat(), __toCommonJS(chat_exports));
+    return new Chat2({
       provider: this.config.defaultProvider ? {
         provider: this.config.defaultProvider,
         model: this.config.defaultModel || "gpt-4o",
@@ -1996,16 +3140,16 @@ var defaultExports = {
 };
 var src_default = defaultExports;
 
-exports.Chat = Chat2;
-exports.Conversation = Conversation;
+exports.AIOrchestrator = AIOrchestrator;
+exports.AIService = AIService;
 exports.DEFAULT_CONFIG = DEFAULT_CONFIG;
+exports.ProviderSelector = ProviderSelector;
 exports.SDK = SDK;
+exports.StrategyEngine = StrategyEngine;
 exports.VERSION = VERSION;
-exports.ask = ask;
-exports.chat = chat;
+exports.ai = ai;
 exports.checkProviderHealth = checkProviderHealth;
 exports.claude = claude;
-exports.createChat = createChat;
 exports.default = src_default;
 exports.getSupportedProviders = getSupportedProviders;
 exports.initSDK = initSDK;
@@ -2014,7 +3158,6 @@ exports.isProviderSupported = isProviderSupported;
 exports.isRateLimitError = isRateLimitError;
 exports.isSDKError = isSDKError;
 exports.isValidationError = isValidationError;
-exports.openai = openai;
 exports.sanitizeErrorForLogging = sanitizeErrorForLogging;
 exports.withTimeout = withTimeout;
 //# sourceMappingURL=index.js.map

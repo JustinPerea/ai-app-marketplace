@@ -152,7 +152,8 @@ var Chat = class {
       ...options?.maxTokens && { max_tokens: options.maxTokens }
     };
     const response = await this.complete(request, options);
-    return response.choices[0]?.message.content || "";
+    const content = response.choices[0]?.message.content || "";
+    return typeof content === "string" ? content : JSON.stringify(content);
   }
   /**
    * Chat with conversation history

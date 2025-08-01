@@ -119,7 +119,8 @@ export class Chat {
     };
 
     const response = await this.complete(request, options);
-    return response.choices[0]?.message.content || '';
+    const content = response.choices[0]?.message.content || '';
+    return typeof content === 'string' ? content : JSON.stringify(content);
   }
 
   /**

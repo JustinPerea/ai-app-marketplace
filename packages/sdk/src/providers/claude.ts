@@ -1,9 +1,13 @@
 /**
- * Claude Provider Implementation
+ * Native Anthropic Provider Implementation
  * 
- * Provides Anthropic Claude API integration with unified interface
+ * Zero-dependency Anthropic/Claude provider eliminating the ~50KB @anthropic-ai/sdk
+ * Maintains full compatibility with Claude's message API
  */
 
+import { BaseProvider, BaseProviderOptions } from './base';
+import { HTTPClient, createHTTPClient, HTTPError } from '../utils/http';
+import { v, parse, ValidationError } from '../utils/validation';
 import type {
   ApiProvider,
   ChatCompletionRequest,
@@ -11,59 +15,177 @@ import type {
   ChatCompletionChunk,
   ProviderConfig,
   ProviderCapabilities,
-  RequestMetrics,
   Usage,
   Message
 } from '../types';
 
-import { BaseProvider, type BaseProviderOptions, type ProviderFactory } from './base';
-import { ErrorFactory } from '../utils/errors';
+// Anthropic-specific types (matching official API)
+export interface AnthropicMessage {
+  role: 'user' | 'assistant';
+  content: string | AnthropicContent[];
+}
 
-/**
- * Claude-specific configuration
- */
-export interface ClaudeConfig extends BaseProviderOptions {
-  anthropicVersion?: string;
+export interface AnthropicContent {
+  type: 'text' | 'image';
+  text?: string;
+  source?: {
+    type: 'base64';
+    media_type: string;
+    data: string;
+  };
+}
+
+export interface AnthropicTool {
+  name: string;
+  description?: string;
+  input_schema: Record<string, any>;
+}
+
+export interface AnthropicRequest {
+  model: string;
+  messages: AnthropicMessage[];
+  max_tokens: number;
+  system?: string;
+  temperature?: number;
+  top_p?: number;
+  stop_sequences?: string[];
+  tools?: AnthropicTool[];
+  stream?: boolean;
+}
+
+export interface AnthropicResponse {
+  id: string;
+  type: 'message';
+  role: 'assistant';
+  content: Array<{
+    type: 'text' | 'tool_use';
+    text?: string;
+    id?: string;
+    name?: string;
+    input?: Record<string, any>;
+  }>;
+  model: string;
+  stop_reason: 'end_turn' | 'max_tokens' | 'stop_sequence' | 'tool_use';
+  stop_sequence?: string | null;
+  usage: {
+    input_tokens: number;
+    output_tokens: number;
+  };
+}
+
+export interface AnthropicStreamEvent {
+  type: 'message_start' | 'message_delta' | 'content_block_start' | 'content_block_delta' | 'content_block_stop' | 'message_stop';
+  message?: Partial<AnthropicResponse>;
+  delta?: {
+    type?: string;
+    text?: string;
+    stop_reason?: string;
+  };
+  content_block?: {
+    type: 'text' | 'tool_use';
+    text?: string;
+  };
+  index?: number;
+  usage?: {
+    input_tokens: number;
+    output_tokens: number;
+  };
 }
 
 /**
- * Claude Provider Implementation
+ * Anthropic model pricing (per 1K tokens)
  */
-export class ClaudeProvider extends BaseProvider {
-  private readonly claudeConfig: ClaudeConfig;
+const ANTHROPIC_PRICING = {
+  'claude-3-5-sonnet-20241022': { input: 0.003, output: 0.015 },
+  'claude-3-5-haiku-20241022': { input: 0.00025, output: 0.00125 },
+  'claude-3-opus-20240229': { input: 0.015, output: 0.075 },
+  'claude-3-sonnet-20240229': { input: 0.003, output: 0.015 },
+  'claude-3-haiku-20240307': { input: 0.00025, output: 0.00125 }
+} as const;
 
-  constructor(config: ProviderConfig & ClaudeConfig) {
-    super('claude', config);
-    this.claudeConfig = config;
+/**
+ * Request validation schemas
+ */
+const anthropicContentSchema = v.union(
+  v.string(),
+  v.array(v.object({
+    type: v.string().enum('text', 'image'),
+    text: v.string().optional(),
+    source: v.object({
+      type: v.literal('base64'),
+      media_type: v.string(),
+      data: v.string()
+    }).optional()
+  }))
+);
+
+const anthropicMessageSchema = v.object({
+  role: v.string().enum('user', 'assistant'),
+  content: anthropicContentSchema
+});
+
+const anthropicRequestSchema = v.object({
+  model: v.string(),
+  messages: v.array(anthropicMessageSchema),
+  max_tokens: v.number().int().min(1).max(4096),
+  system: v.string().optional(),
+  temperature: v.number().min(0).max(1).optional(),
+  top_p: v.number().min(0).max(1).optional(),
+  stop_sequences: v.array(v.string()).optional(),
+  tools: v.array(v.object({
+    name: v.string(),
+    description: v.string().optional(),
+    input_schema: v.object({}).optional()
+  })).optional(),
+  stream: v.boolean().default(false)
+});
+
+/**
+ * Native Anthropic Provider
+ */
+export class AnthropicProvider extends BaseProvider {
+  private client: HTTPClient;
+  private apiKey: string;
+
+  constructor(config: ProviderConfig) {
+    super('anthropic', config);
+    
+    if (!config.apiKey) {
+      throw new Error('Anthropic API key is required');
+    }
+
+    this.apiKey = config.apiKey;
+    this.client = createHTTPClient({
+      baseURL: config.baseURL || 'https://api.anthropic.com/v1',
+      timeout: config.timeout || 30000,
+      headers: {
+        'x-api-key': this.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'messages-2023-12-15'
+      }
+    });
   }
 
-  /**
-   * Get Claude provider capabilities
-   */
   getCapabilities(): ProviderCapabilities {
     return {
-      chat: true,
-      images: false,
-      embeddings: false,
-      tools: true,
-      streaming: true,
-      vision: true,
-      maxTokens: 200000,
-      costPer1kTokens: { input: 0.003, output: 0.015 }
+      chatCompletion: true,
+      streamingCompletion: true,
+      functionCalling: true,
+      imageGeneration: false,
+      imageAnalysis: true,
+      jsonMode: false,
+      systemMessages: true,
+      toolUse: true,
+      multipleMessages: true,
+      maxContextTokens: this.getContextLimit(),
+      supportedModels: this.getAvailableModels()
     };
   }
 
-  /**
-   * Validate Claude model
-   */
   validateModel(model: string): boolean {
-    const validModels = this.getAvailableModels();
-    return validModels.includes(model);
+    return this.getAvailableModels().includes(model);
   }
 
-  /**
-   * Get available Claude models
-   */
   getAvailableModels(): string[] {
     return [
       'claude-3-5-sonnet-20241022',
@@ -74,115 +196,281 @@ export class ClaudeProvider extends BaseProvider {
     ];
   }
 
-  /**
-   * Estimate cost for Claude request
-   */
   estimateCost(request: ChatCompletionRequest): number {
-    const model = request.model || this.config.model;
-    const tokenCount = this.estimateTokenCount(request);
+    const model = request.model as keyof typeof ANTHROPIC_PRICING;
+    const pricing = ANTHROPIC_PRICING[model];
     
-    // Model-specific pricing (per 1k tokens)
-    const pricing = this.getModelPricing(model);
-    const inputCost = (tokenCount.input / 1000) * pricing.input;
-    const outputCost = (tokenCount.output / 1000) * pricing.output;
-    
-    return inputCost + outputCost;
+    if (!pricing) {
+      return 0; // Unknown model
+    }
+
+    // Rough token estimation: ~4 characters per token
+    const inputText = request.messages.map(m => 
+      typeof m.content === 'string' ? m.content : JSON.stringify(m.content)
+    ).join(' ');
+    const estimatedInputTokens = Math.ceil(inputText.length / 4);
+    const estimatedOutputTokens = request.max_tokens || 1000;
+
+    return (estimatedInputTokens * pricing.input / 1000) + 
+           (estimatedOutputTokens * pricing.output / 1000);
   }
 
-  /**
-   * Chat completion implementation
-   */
   async chatCompletion(request: ChatCompletionRequest): Promise<ChatCompletionResponse> {
     const requestId = this.generateRequestId();
     const startTime = Date.now();
-    const metrics = this.createRequestMetrics(requestId, request.model || this.config.model, startTime);
-
-    return this.executeWithRetry(async () => {
-      const claudeRequest = this.transformRequest(request);
+    
+    try {
+      // Validate and transform request
+      const anthropicRequest = this.transformRequest(request);
       
-      const response = await this.executeWithTimeout(
-        this.makeClaudeRequest('/messages', claudeRequest),
-        'chat_completion'
+      // Make API call
+      const response = await this.executeWithRetry(
+        () => this.client.post<AnthropicResponse>('/messages', anthropicRequest),
+        { requestId, operation: 'chat_completion' }
       );
 
-      const usage = this.calculateUsage(response, request);
-      const transformedResponse = this.transformResponse(response, request, metrics);
-      
-      // Log successful request metrics
-      this.logRequestMetrics(this.finalizeMetrics(metrics, usage, true));
-      
-      return transformedResponse;
-    }, { requestId, operation: 'chat_completion' });
-  }
-
-  /**
-   * Streaming chat completion implementation
-   */
-  async* streamChatCompletion(
-    request: ChatCompletionRequest
-  ): AsyncGenerator<ChatCompletionChunk, void, unknown> {
-    const requestId = this.generateRequestId();
-    const claudeRequest = { ...this.transformRequest(request), stream: true };
-
-    const response = await this.executeWithTimeout(
-      this.makeClaudeStreamRequest('/messages', claudeRequest),
-      'stream_chat_completion'
-    );
-
-    let totalUsage: Usage = {
-      prompt_tokens: 0,
-      completion_tokens: 0,
-      total_tokens: 0,
-      estimated_cost: 0
-    };
-
-    try {
-      for await (const chunk of response) {
-        const transformedChunk = this.transformStreamChunk(chunk, request);
-        if (transformedChunk) {
-          if (transformedChunk.usage) {
-            totalUsage = transformedChunk.usage;
-          }
-          yield transformedChunk;
-        }
-      }
+      // Transform response to unified format
+      return this.transformResponse(
+        response.data,
+        request,
+        this.createRequestMetrics(requestId, request.model, startTime)
+      );
     } catch (error) {
-      throw ErrorFactory.fromProviderError(error, 'claude', requestId);
+      throw this.handleError(error, requestId);
     }
   }
 
-  /**
-   * Transform unified request to Claude format
-   */
-  private transformRequest(request: ChatCompletionRequest): any {
-    // Extract system message if present
-    const systemMessage = request.messages.find(m => m.role === 'system');
-    const messages = request.messages.filter(m => m.role !== 'system');
+  async *streamChatCompletion(
+    request: ChatCompletionRequest
+  ): AsyncGenerator<ChatCompletionChunk, void, unknown> {
+    const requestId = this.generateRequestId();
+    
+    try {
+      // Validate and transform request
+      const anthropicRequest = this.transformRequest({ ...request, stream: true });
+      
+      // Start streaming request
+      const stream = this.client.stream({
+        url: '/messages',
+        method: 'POST',
+        body: anthropicRequest
+      });
 
-    // Convert messages to Claude format
-    const claudeMessages = messages.map(msg => ({
-      role: msg.role === 'assistant' ? 'assistant' : 'user',
-      content: this.transformMessageContent(msg)
-    }));
-
-    const claudeRequest: any = {
-      model: request.model || this.config.model,
-      messages: claudeMessages,
-      max_tokens: request.max_tokens || 1000,
-      ...(systemMessage && { system: systemMessage.content }),
-      ...(request.temperature !== undefined && { temperature: request.temperature }),
-      ...(request.top_p !== undefined && { top_p: request.top_p }),
-      ...(request.stop && { stop_sequences: Array.isArray(request.stop) ? request.stop : [request.stop] }),
-      ...(request.tools && { tools: this.transformTools(request.tools) })
-    };
-
-    return claudeRequest;
+      for await (const chunk of stream) {
+        // Parse SSE chunk
+        const lines = chunk.split('\n').filter(line => line.trim());
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            
+            if (data === '[DONE]') {
+              return;
+            }
+            
+            try {
+              const parsed = JSON.parse(data) as AnthropicStreamEvent;
+              const transformedChunk = this.transformStreamChunk(parsed, request);
+              
+              if (transformedChunk) {
+                yield transformedChunk;
+              }
+            } catch (parseError) {
+              // Skip invalid JSON chunks
+              continue;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      throw this.handleError(error, requestId);
+    }
   }
 
-  /**
-   * Transform message content for Claude format
-   */
-  private transformMessageContent(message: Message): any {
+  protected transformResponse(
+    response: AnthropicResponse,
+    request: ChatCompletionRequest,
+    metrics: Partial<any>
+  ): ChatCompletionResponse {
+    const usage: Usage = {
+      prompt_tokens: response.usage.input_tokens,
+      completion_tokens: response.usage.output_tokens,
+      total_tokens: response.usage.input_tokens + response.usage.output_tokens,
+      estimated_cost: this.calculateActualCost(response.usage, request.model)
+    };
+
+    // Extract text content from Anthropic response
+    const textContent = response.content
+      .filter(item => item.type === 'text')
+      .map(item => item.text)
+      .join('');
+
+    // Extract tool calls if present
+    const toolCalls = response.content
+      .filter(item => item.type === 'tool_use')
+      .map((item, index) => ({
+        id: item.id || `call_${index}`,
+        type: 'function' as const,
+        function: {
+          name: item.name || '',
+          arguments: JSON.stringify(item.input || {})
+        }
+      }));
+
+    return {
+      id: response.id,
+      object: 'chat.completion',
+      created: Math.floor(Date.now() / 1000),
+      model: response.model,
+      provider: 'anthropic',
+      choices: [{
+        index: 0,
+        message: {
+          role: 'assistant',
+          content: textContent,
+          ...(toolCalls.length > 0 && { tool_calls: toolCalls })
+        },
+        finish_reason: this.mapStopReason(response.stop_reason)
+      }],
+      usage
+    };
+  }
+
+  protected transformStreamChunk(
+    chunk: AnthropicStreamEvent,
+    request: ChatCompletionRequest
+  ): ChatCompletionChunk | null {
+    if (!chunk.type) {
+      return null;
+    }
+
+    const baseChunk = {
+      id: chunk.message?.id || 'unknown',
+      object: 'chat.completion.chunk' as const,
+      created: Math.floor(Date.now() / 1000),
+      model: request.model,
+      provider: 'anthropic' as const
+    };
+
+    switch (chunk.type) {
+      case 'message_start':
+        return {
+          ...baseChunk,
+          choices: [{
+            index: 0,
+            delta: { role: 'assistant' as const },
+            finish_reason: null
+          }]
+        };
+
+      case 'content_block_delta':
+        if (chunk.delta?.text) {
+          return {
+            ...baseChunk,
+            choices: [{
+              index: 0,
+              delta: { content: chunk.delta.text },
+              finish_reason: null
+            }]
+          };
+        }
+        break;
+
+      case 'message_delta':
+        const usage = chunk.usage ? {
+          prompt_tokens: chunk.usage.input_tokens,
+          completion_tokens: chunk.usage.output_tokens,
+          total_tokens: chunk.usage.input_tokens + chunk.usage.output_tokens,
+          estimated_cost: this.calculateActualCost(chunk.usage, request.model)
+        } : undefined;
+
+        return {
+          ...baseChunk,
+          choices: [{
+            index: 0,
+            delta: {},
+            finish_reason: this.mapStopReason(chunk.delta?.stop_reason || 'end_turn')
+          }],
+          ...(usage && { usage })
+        };
+
+      case 'message_stop':
+        return {
+          ...baseChunk,
+          choices: [{
+            index: 0,
+            delta: {},
+            finish_reason: 'stop'
+          }]
+        };
+    }
+
+    return null;
+  }
+
+  protected validateApiKey(apiKey: string): boolean {
+    return /^sk-ant-api03-[a-zA-Z0-9\-_]{95}$/.test(apiKey);
+  }
+
+  protected getAuthHeader(apiKey: string): string {
+    return apiKey; // Anthropic uses x-api-key header, not Authorization
+  }
+
+  protected async testConnection(): Promise<void> {
+    try {
+      // Test with minimal request
+      const testRequest: AnthropicRequest = {
+        model: this.config.model || 'claude-3-5-haiku-20241022',
+        messages: [{ role: 'user', content: 'Hi' }],
+        max_tokens: 1
+      };
+      
+      await this.client.post('/messages', testRequest);
+    } catch (error) {
+      if (error instanceof HTTPError && error.status === 401) {
+        throw new Error('Invalid Anthropic API key');
+      }
+      throw error;
+    }
+  }
+
+  private transformRequest(request: ChatCompletionRequest): AnthropicRequest {
+    try {
+      // Extract system message if present
+      const systemMessage = request.messages.find(m => m.role === 'system');
+      const messages = request.messages.filter(m => m.role !== 'system');
+
+      // Convert messages to Anthropic format
+      const anthropicMessages: AnthropicMessage[] = messages.map(msg => ({
+        role: msg.role === 'assistant' ? 'assistant' : 'user',
+        content: this.transformMessageContent(msg)
+      }));
+
+      const anthropicRequest: AnthropicRequest = {
+        model: request.model,
+        messages: anthropicMessages,
+        max_tokens: request.max_tokens || 1000,
+        ...(systemMessage && { system: systemMessage.content as string }),
+        ...(request.temperature !== undefined && { temperature: request.temperature }),
+        ...(request.top_p !== undefined && { top_p: request.top_p }),
+        ...(request.stop && { 
+          stop_sequences: Array.isArray(request.stop) ? request.stop : [request.stop] 
+        }),
+        ...(request.tools && { tools: this.transformTools(request.tools) }),
+        ...(request.stream && { stream: true })
+      };
+
+      // Validate request
+      return parse(anthropicRequestSchema, anthropicRequest);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        throw new Error(`Invalid request: ${error.message}`);
+      }
+      throw error;
+    }
+  }
+
+  private transformMessageContent(message: Message): string | AnthropicContent[] {
     if (typeof message.content === 'string') {
       return message.content;
     }
@@ -195,97 +483,39 @@ export class ClaudeProvider extends BaseProvider {
           text: content.text
         };
       } else if (content.type === 'image_url') {
+        // Extract base64 data from data URL
+        const dataUrl = content.image_url?.url || '';
+        const [header, data] = dataUrl.split(',');
+        const mediaType = header.match(/data:([^;]+)/)?.[1] || 'image/jpeg';
+        
         return {
           type: 'image',
           source: {
             type: 'base64',
-            media_type: 'image/jpeg', // Assume JPEG, could be improved
-            data: content.image_url?.url.split(',')[1] || '' // Remove data:image/jpeg;base64, prefix
+            media_type: mediaType,
+            data: data || ''
           }
         };
       }
-      return content;
+      
+      // Fallback for other content types
+      return {
+        type: 'text',
+        text: JSON.stringify(content)
+      };
     });
   }
 
-  /**
-   * Transform tools for Claude format
-   */
-  private transformTools(tools: any[]): any[] {
+  private transformTools(tools: any[]): AnthropicTool[] {
     return tools.map(tool => ({
       name: tool.function.name,
       description: tool.function.description,
-      input_schema: tool.function.parameters
+      input_schema: tool.function.parameters || {}
     }));
   }
 
-  /**
-   * Transform Claude response to unified format
-   */
-  protected transformResponse(
-    response: any,
-    request: ChatCompletionRequest,
-    metrics: Partial<RequestMetrics>
-  ): ChatCompletionResponse {
-    // Calculate usage from Claude response
-    const usage: Usage = {
-      prompt_tokens: response.usage?.input_tokens || 0,
-      completion_tokens: response.usage?.output_tokens || 0,
-      total_tokens: (response.usage?.input_tokens || 0) + (response.usage?.output_tokens || 0),
-      estimated_cost: this.calculateCost(response.usage, request.model || this.config.model)
-    };
-
-    return {
-      id: response.id,
-      object: 'chat.completion',
-      created: Math.floor(Date.now() / 1000),
-      model: response.model,
-      provider: 'claude',
-      choices: [{
-        index: 0,
-        message: {
-          role: 'assistant',
-          content: this.extractContentFromResponse(response),
-          ...(response.tool_calls && { tool_calls: this.transformToolCallsFromClaude(response.tool_calls) })
-        },
-        finish_reason: this.mapStopReason(response.stop_reason)
-      }],
-      usage
-    };
-  }
-
-  /**
-   * Extract content from Claude response
-   */
-  private extractContentFromResponse(response: any): string {
-    if (response.content && Array.isArray(response.content)) {
-      return response.content
-        .filter((item: any) => item.type === 'text')
-        .map((item: any) => item.text)
-        .join('');
-    }
-    return response.content || '';
-  }
-
-  /**
-   * Transform tool calls from Claude format
-   */
-  private transformToolCallsFromClaude(toolCalls: any[]): any[] {
-    return toolCalls.map((call, index) => ({
-      id: `call_${index}`,
-      type: 'function',
-      function: {
-        name: call.name,
-        arguments: JSON.stringify(call.input)
-      }
-    }));
-  }
-
-  /**
-   * Map Claude stop reason to unified format
-   */
-  private mapStopReason(stopReason: string): string {
-    const reasonMap: Record<string, string> = {
+  private mapStopReason(stopReason: string): 'stop' | 'length' | 'tool_calls' | 'content_filter' | null {
+    const reasonMap: Record<string, 'stop' | 'length' | 'tool_calls'> = {
       'end_turn': 'stop',
       'max_tokens': 'length',
       'stop_sequence': 'stop',
@@ -294,285 +524,84 @@ export class ClaudeProvider extends BaseProvider {
     return reasonMap[stopReason] || 'stop';
   }
 
-  /**
-   * Transform Claude streaming chunk to unified format
-   */
-  protected transformStreamChunk(
-    chunk: any,
-    request: ChatCompletionRequest
-  ): ChatCompletionChunk | null {
-    if (!chunk || !chunk.type) {
-      return null;
+  private calculateActualCost(
+    usage: { input_tokens: number; output_tokens: number }, 
+    model: string
+  ): number {
+    const modelKey = model as keyof typeof ANTHROPIC_PRICING;
+    const pricing = ANTHROPIC_PRICING[modelKey];
+    
+    if (!pricing) {
+      return 0;
     }
 
-    // Handle different event types
-    if (chunk.type === 'message_start') {
-      return {
-        id: chunk.message.id,
-        object: 'chat.completion.chunk',
-        created: Math.floor(Date.now() / 1000),
-        model: chunk.message.model,
-        provider: 'claude',
-        choices: [{
-          index: 0,
-          delta: { role: 'assistant' },
-          finish_reason: null
-        }]
-      };
-    }
-
-    if (chunk.type === 'content_block_delta') {
-      return {
-        id: chunk.message?.id || 'unknown',
-        object: 'chat.completion.chunk',
-        created: Math.floor(Date.now() / 1000),
-        model: request.model || this.config.model,
-        provider: 'claude',
-        choices: [{
-          index: 0,
-          delta: { content: chunk.delta.text },
-          finish_reason: null
-        }]
-      };
-    }
-
-    if (chunk.type === 'message_delta') {
-      const usage = chunk.usage ? {
-        prompt_tokens: chunk.usage.input_tokens || 0,
-        completion_tokens: chunk.usage.output_tokens || 0,
-        total_tokens: (chunk.usage.input_tokens || 0) + (chunk.usage.output_tokens || 0),
-        estimated_cost: this.calculateCost(chunk.usage, request.model || this.config.model)
-      } : undefined;
-
-      return {
-        id: chunk.message?.id || 'unknown',
-        object: 'chat.completion.chunk',
-        created: Math.floor(Date.now() / 1000),
-        model: request.model || this.config.model,
-        provider: 'claude',
-        choices: [{
-          index: 0,
-          delta: {},
-          finish_reason: this.mapStopReason(chunk.delta.stop_reason || 'end_turn')
-        }],
-        ...(usage && { usage })
-      };
-    }
-
-    return null;
+    return (usage.input_tokens * pricing.input / 1000) + 
+           (usage.output_tokens * pricing.output / 1000);
   }
 
-  /**
-   * Make HTTP request to Claude API
-   */
-  private async makeClaudeRequest(endpoint: string, data: any): Promise<any> {
-    const url = `${this.config.baseURL || 'https://api.anthropic.com/v1'}${endpoint}`;
-    const headers = this.getDefaultHeaders();
+  private getContextLimit(): number {
+    const model = this.config.model;
+    
+    switch (model) {
+      case 'claude-3-5-sonnet-20241022':
+      case 'claude-3-opus-20240229':
+      case 'claude-3-sonnet-20240229':
+        return 200000;
+      case 'claude-3-5-haiku-20241022':
+      case 'claude-3-haiku-20240307':
+        return 200000;
+      default:
+        return 200000;
+    }
+  }
 
-    // Add Claude-specific headers
-    headers['anthropic-version'] = this.claudeConfig.anthropicVersion || '2023-06-01';
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(data)
-      });
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: response.statusText }));
-        throw ErrorFactory.fromProviderError({ ...error, status: response.status }, 'claude');
+  private handleError(error: unknown, requestId: string): Error {
+    if (error instanceof HTTPError) {
+      switch (error.status) {
+        case 401:
+          return new Error('Invalid Anthropic API key');
+        case 429:
+          return new Error('Anthropic rate limit exceeded');
+        case 400:
+          return new Error(`Invalid request: ${error.data?.error?.message || error.statusText}`);
+        case 500:
+        case 502:
+        case 503:
+          return new Error('Anthropic service temporarily unavailable');
+        default:
+          return new Error(`Anthropic API error: ${error.message}`);
       }
-
-      return await response.json();
-    } catch (error) {
-      throw ErrorFactory.fromProviderError(error, 'claude');
     }
-  }
-
-  /**
-   * Make streaming HTTP request to Claude API
-   */
-  private async makeClaudeStreamRequest(endpoint: string, data: any): Promise<AsyncGenerator<any>> {
-    const url = `${this.config.baseURL || 'https://api.anthropic.com/v1'}${endpoint}`;
-    const headers = { ...this.getDefaultHeaders(), 'Accept': 'text/event-stream' };
-
-    // Add Claude-specific headers
-    headers['anthropic-version'] = this.claudeConfig.anthropicVersion || '2023-06-01';
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(data)
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: response.statusText }));
-      throw ErrorFactory.fromProviderError({ ...error, status: response.status }, 'claude');
-    }
-
-    return this.parseSSEStream(response);
-  }
-
-  /**
-   * Parse Server-Sent Events stream for Claude
-   */
-  private async* parseSSEStream(response: Response): AsyncGenerator<any> {
-    const reader = response.body?.getReader();
-    if (!reader) throw new Error('No response body');
-
-    const decoder = new TextDecoder();
-    let buffer = '';
-
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') return;
-            
-            try {
-              yield JSON.parse(data);
-            } catch {
-              // Skip malformed JSON
-            }
-          }
-        }
-      }
-    } finally {
-      reader.releaseLock();
-    }
-  }
-
-  /**
-   * Validate Claude API key format
-   */
-  protected validateApiKey(apiKey: string): boolean {
-    return /^sk-ant-api[a-zA-Z0-9\-]{95}$/.test(apiKey);
-  }
-
-  /**
-   * Get Claude authorization header
-   */
-  protected getAuthHeader(apiKey: string): string {
-    return `Bearer ${apiKey}`;
-  }
-
-  /**
-   * Test connection to Claude API
-   */
-  protected async testConnection(): Promise<void> {
-    // Simple test with minimal request
-    const testRequest = {
-      model: this.config.model,
-      messages: [{ role: 'user' as const, content: 'Hi' }],
-      max_tokens: 1
-    };
     
-    await this.makeClaudeRequest('/messages', testRequest).catch(() => {
-      // Simple connectivity test
-    });
-  }
-
-  /**
-   * Calculate usage and cost
-   */
-  private calculateUsage(response: any, request: ChatCompletionRequest): Usage {
-    const usage = response.usage || {};
-    const cost = this.calculateCost(usage, request.model || this.config.model);
-    
-    return {
-      prompt_tokens: usage.input_tokens || 0,
-      completion_tokens: usage.output_tokens || 0,
-      total_tokens: (usage.input_tokens || 0) + (usage.output_tokens || 0),
-      estimated_cost: cost
-    };
-  }
-
-  /**
-   * Calculate cost based on usage and model
-   */
-  private calculateCost(usage: any, model: string): number {
-    const pricing = this.getModelPricing(model);
-    const inputCost = ((usage.input_tokens || 0) / 1000) * pricing.input;
-    const outputCost = ((usage.output_tokens || 0) / 1000) * pricing.output;
-    return inputCost + outputCost;
-  }
-
-  /**
-   * Get model-specific pricing
-   */
-  private getModelPricing(model: string): { input: number; output: number } {
-    const pricingMap: Record<string, { input: number; output: number }> = {
-      'claude-3-5-sonnet-20241022': { input: 0.003, output: 0.015 },
-      'claude-3-5-haiku-20241022': { input: 0.00025, output: 0.00125 },
-      'claude-3-opus-20240229': { input: 0.015, output: 0.075 },
-      'claude-3-sonnet-20240229': { input: 0.003, output: 0.015 },
-      'claude-3-haiku-20240307': { input: 0.00025, output: 0.00125 }
-    };
-
-    return pricingMap[model] || { input: 0.003, output: 0.015 }; // Default to Sonnet pricing
-  }
-
-  /**
-   * Estimate token count for cost calculation
-   */
-  private estimateTokenCount(request: ChatCompletionRequest): { input: number; output: number } {
-    // Rough estimation - Claude typically uses ~4 characters per token
-    const messageText = request.messages
-      .map(m => typeof m.content === 'string' ? m.content : JSON.stringify(m.content))
-      .join(' ');
-    
-    const inputTokens = Math.ceil(messageText.length / 4);
-    const outputTokens = request.max_tokens || 1000;
-
-    return { input: inputTokens, output: outputTokens };
-  }
-
-  /**
-   * Log request metrics for analytics
-   */
-  private logRequestMetrics(metrics: RequestMetrics): void {
-    if (this.config.debug) {
-      console.log('Claude Request Metrics:', {
-        requestId: metrics.requestId,
-        provider: metrics.provider,
-        model: metrics.model,
-        duration: metrics.endTime - metrics.startTime,
-        tokens: metrics.tokens,
-        cost: metrics.cost,
-        success: metrics.success
-      });
+    if (error instanceof Error) {
+      return error;
     }
+    
+    return new Error(`Unknown error in Anthropic request ${requestId}`);
   }
 }
 
 /**
- * Claude Provider Factory
+ * Create Anthropic provider instance
  */
-export class ClaudeProviderFactory implements ProviderFactory {
-  create(config: ProviderConfig): ClaudeProvider {
-    return new ClaudeProvider(config as ProviderConfig & ClaudeConfig);
-  }
-
-  supports(provider: ApiProvider): boolean {
-    return provider === 'claude';
-  }
+export function createAnthropicProvider(config: Omit<ProviderConfig, 'provider'>): AnthropicProvider {
+  return new AnthropicProvider({ ...config, provider: 'anthropic' });
 }
 
 /**
- * Convenience function to create Claude provider
+ * Anthropic provider factory
  */
-export function claude(options: ClaudeConfig = {}): ProviderConfig & ClaudeConfig {
+export const anthropicFactory = {
+  create: (config: ProviderConfig) => new AnthropicProvider(config),
+  supports: (provider: ApiProvider) => provider === 'anthropic'
+};
+
+/**
+ * Convenience function to create Claude provider (alias for Anthropic)
+ */
+export function claude(options: Omit<ProviderConfig, 'provider'> = {}): ProviderConfig {
   return {
-    provider: 'claude',
+    provider: 'anthropic',
     model: options.model || 'claude-3-5-sonnet-20241022',
     ...options
   };

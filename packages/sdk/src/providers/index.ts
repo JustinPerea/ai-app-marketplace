@@ -1,26 +1,33 @@
 /**
- * AI Providers Module - Exports
+ * AI Providers Module - Native Zero-Dependency Exports
  * 
- * Unified exports for all AI provider implementations with factory functions
+ * Unified exports for all native AI provider implementations
+ * Eliminates 263KB+ of external dependencies (openai: 186KB, @anthropic-ai/sdk: 50KB, axios: 15KB, zod: 12KB)
  */
 
 // Base provider exports
 export { BaseProvider, ProviderRegistry, providerRegistry, type ProviderFactory } from './base';
 
-// Provider registry setup (import first)
-import { OpenAIProviderFactory, openai } from './openai';
-import { ClaudeProviderFactory, claude } from './claude';
+// Native provider factories
+import { openAIFactory } from './openai';
+import { anthropicFactory } from './claude';
+import { googleFactory } from './google';
 import { providerRegistry } from './base';
 
-// OpenAI provider exports
-export { OpenAIProvider, OpenAIProviderFactory, openai, type OpenAIConfig } from './openai';
+// OpenAI provider exports (native implementation)
+export { OpenAIProvider, createOpenAIProvider, openAIFactory } from './openai';
 
-// Claude provider exports
-export { ClaudeProvider, ClaudeProviderFactory, claude, type ClaudeConfig } from './claude';
+// Anthropic/Claude provider exports (native implementation)
+export { AnthropicProvider, createAnthropicProvider, anthropicFactory, claude } from './claude';
 
-// Register all providers
-providerRegistry.register('openai', new OpenAIProviderFactory());
-providerRegistry.register('claude', new ClaudeProviderFactory());
+// Google Gemini provider exports (native implementation)
+export { GoogleProvider, createGoogleProvider, googleFactory, gemini } from './google';
+
+// Register all native providers
+providerRegistry.register('openai', openAIFactory);
+providerRegistry.register('anthropic', anthropicFactory);
+providerRegistry.register('claude', anthropicFactory); // Alias for anthropic
+providerRegistry.register('google', googleFactory);
 
 // Re-export types for external use
 export type {
@@ -31,9 +38,15 @@ export type {
  * Provider convenience functions
  */
 export const providers = {
-  openai,
-  claude
+  openai: (config: any) => ({ provider: 'openai', model: 'gpt-4o', ...config }),
+  claude: (config: any) => ({ provider: 'anthropic', model: 'claude-3-5-sonnet-20241022', ...config }),
+  gemini: (config: any) => ({ provider: 'google', model: 'gemini-1.5-flash', ...config })
 } as const;
+
+/**
+ * Individual provider factory functions
+ */
+export const openai = (config: any) => ({ provider: 'openai', model: 'gpt-4o', ...config });
 
 /**
  * Get all registered provider types

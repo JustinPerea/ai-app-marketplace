@@ -102,6 +102,24 @@
 - **Cross-agent communication** and handoff coordination
 - **Emergency protocols** and homepage protection oversight
 
+### **MANDATORY DOCUMENTATION UPDATES** ⚠️ **CRITICAL**
+
+**After Every Completed Task (All Agents MUST Follow)**:
+1. **Update Main CLAUDE.md**: Add completion status and key achievements
+2. **Update Specialized Agent CLAUDE.md**: Document agent-specific progress and context
+3. **Update Last Modified Date**: Change date to current completion date
+4. **Document Decision Points**: Record key technical and strategic decisions made
+5. **Update Status Sections**: Reflect current development phase and readiness
+6. **Cross-Reference Documentation**: Ensure all related docs are consistent
+
+**Documentation Update Checklist**:
+- [ ] Main CLAUDE.md updated with completion status
+- [ ] Agent-specific CLAUDE.md updated (if specialized agent)
+- [ ] PROJECT_STATUS_BENCHMARK.md updated with new achievements
+- [ ] Last modified dates updated throughout
+- [ ] Status sections reflect current reality
+- [ ] New features documented with examples
+
 This directive has successfully guided the multi-agent system through:
 - ✅ **Bug Testing Mode**: Settings debugging, hydration errors, dashboard fixes
 - ✅ **Research Mode**: Critical market research integration via Research Agent

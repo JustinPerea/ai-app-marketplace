@@ -17,7 +17,7 @@
  */
 
 // Core SDK exports
-export { Chat, Conversation, createChat, ask, chat } from './chat';
+export { Chat } from './chat';
 
 // Enhanced Orchestration Engine (our competitive moat!)
 export { 
@@ -161,6 +161,7 @@ export class SDK {
    * Create Chat instance with SDK config
    */
   createChat(options: any = {}): any {
+    const { Chat } = require('./chat');
     return new Chat({
       provider: this.config.defaultProvider ? {
         provider: this.config.defaultProvider,

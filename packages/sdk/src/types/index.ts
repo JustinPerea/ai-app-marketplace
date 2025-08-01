@@ -5,7 +5,7 @@
  */
 
 // Base Types
-export type ApiProvider = 'openai' | 'claude' | 'google' | 'azure' | 'cohere' | 'huggingface';
+export type ApiProvider = 'openai' | 'anthropic' | 'claude' | 'google' | 'azure' | 'cohere' | 'huggingface';
 
 export interface BaseConfig {
   apiKey?: string;
@@ -166,17 +166,17 @@ export interface ProviderConfig extends BaseConfig {
 }
 
 export interface ProviderCapabilities {
-  chat: boolean;
-  images: boolean;
-  embeddings: boolean;
-  tools: boolean;
-  streaming: boolean;
-  vision: boolean;
-  maxTokens: number;
-  costPer1kTokens: {
-    input: number;
-    output: number;
-  };
+  chatCompletion: boolean;
+  streamingCompletion: boolean;
+  functionCalling: boolean;
+  imageGeneration: boolean;
+  imageAnalysis: boolean;
+  jsonMode: boolean;
+  systemMessages: boolean;
+  toolUse: boolean;
+  multipleMessages: boolean;
+  maxContextTokens: number;
+  supportedModels: string[];
 }
 
 // Error Types
@@ -319,6 +319,7 @@ export function isValidationError(error: any): error is ValidationError {
 // Constants
 export const SUPPORTED_PROVIDERS: ApiProvider[] = [
   'openai',
+  'anthropic',
   'claude',
   'google',
   'azure',
@@ -328,6 +329,7 @@ export const SUPPORTED_PROVIDERS: ApiProvider[] = [
 
 export const DEFAULT_MODELS: Record<ApiProvider, string> = {
   openai: 'gpt-4o',
+  anthropic: 'claude-3-5-sonnet-20241022',
   claude: 'claude-3-5-sonnet-20241022',
   google: 'gemini-pro',
   azure: 'gpt-4',
@@ -337,63 +339,94 @@ export const DEFAULT_MODELS: Record<ApiProvider, string> = {
 
 export const PROVIDER_CAPABILITIES: Record<ApiProvider, ProviderCapabilities> = {
   openai: {
-    chat: true,
-    images: true,
-    embeddings: true,
-    tools: true,
-    streaming: true,
-    vision: true,
-    maxTokens: 128000,
-    costPer1kTokens: { input: 0.01, output: 0.03 }
+    chatCompletion: true,
+    streamingCompletion: true,
+    functionCalling: true,
+    imageGeneration: true,
+    imageAnalysis: true,
+    jsonMode: true,
+    systemMessages: true,
+    toolUse: true,
+    multipleMessages: true,
+    maxContextTokens: 128000,
+    supportedModels: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4', 'gpt-3.5-turbo']
+  },
+  anthropic: {
+    chatCompletion: true,
+    streamingCompletion: true,
+    functionCalling: true,
+    imageGeneration: false,
+    imageAnalysis: true,
+    jsonMode: false,
+    systemMessages: true,
+    toolUse: true,
+    multipleMessages: true,
+    maxContextTokens: 200000,
+    supportedModels: ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022', 'claude-3-opus-20240229']
   },
   claude: {
-    chat: true,
-    images: false,
-    embeddings: false,
-    tools: true,
-    streaming: true,
-    vision: true,
-    maxTokens: 200000,
-    costPer1kTokens: { input: 0.003, output: 0.015 }
+    chatCompletion: true,
+    streamingCompletion: true,
+    functionCalling: true,
+    imageGeneration: false,
+    imageAnalysis: true,
+    jsonMode: false,
+    systemMessages: true,
+    toolUse: true,
+    multipleMessages: true,
+    maxContextTokens: 200000,
+    supportedModels: ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022', 'claude-3-opus-20240229']
   },
   google: {
-    chat: true,
-    images: false,
-    embeddings: true,
-    tools: true,
-    streaming: true,
-    vision: true,
-    maxTokens: 1000000,
-    costPer1kTokens: { input: 0.000125, output: 0.000375 }
+    chatCompletion: true,
+    streamingCompletion: true,
+    functionCalling: false,
+    imageGeneration: false,
+    imageAnalysis: true,
+    jsonMode: false,
+    systemMessages: false,
+    toolUse: false,
+    multipleMessages: true,
+    maxContextTokens: 1000000,
+    supportedModels: ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-pro', 'gemini-pro-vision']
   },
   azure: {
-    chat: true,
-    images: true,
-    embeddings: true,
-    tools: true,
-    streaming: true,
-    vision: true,
-    maxTokens: 128000,
-    costPer1kTokens: { input: 0.01, output: 0.03 }
+    chatCompletion: true,
+    streamingCompletion: true,
+    functionCalling: true,
+    imageGeneration: true,
+    imageAnalysis: true,
+    jsonMode: true,
+    systemMessages: true,
+    toolUse: true,
+    multipleMessages: true,
+    maxContextTokens: 128000,
+    supportedModels: ['gpt-4', 'gpt-3.5-turbo']
   },
   cohere: {
-    chat: true,
-    images: false,
-    embeddings: true,
-    tools: true,
-    streaming: true,
-    vision: false,
-    maxTokens: 128000,
-    costPer1kTokens: { input: 0.0015, output: 0.002 }
+    chatCompletion: true,
+    streamingCompletion: true,
+    functionCalling: true,
+    imageGeneration: false,
+    imageAnalysis: false,
+    jsonMode: false,
+    systemMessages: true,
+    toolUse: true,
+    multipleMessages: true,
+    maxContextTokens: 128000,
+    supportedModels: ['command-r-plus', 'command-r']
   },
   huggingface: {
-    chat: true,
-    images: false,
-    embeddings: true,
-    tools: false,
-    streaming: true,
-    vision: false,
-    maxTokens: 4096,
-    costPer1kTokens: { input: 0.0002, output: 0.0002 }
+    chatCompletion: true,
+    streamingCompletion: true,
+    functionCalling: false,
+    imageGeneration: false,
+    imageAnalysis: false,
+    jsonMode: false,
+    systemMessages: true,
+    toolUse: false,
+    multipleMessages: true,
+    maxContextTokens: 4096,
+    supportedModels: ['meta-llama/Llama-2-70b-chat-hf']
   }
 };
