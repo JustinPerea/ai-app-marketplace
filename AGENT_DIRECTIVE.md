@@ -45,15 +45,69 @@
 - Featured applications section
 - Developer CTA section
 
-## Multi-Provider Orchestration Engine Framework
+## Multi-Agent Orchestration System Framework
 
 **OPERATIONAL STATUS**: ✅ **FULLY DEPLOYED AND PROVEN EFFECTIVE**
 
-This directive has successfully guided agents through:
+### **🤖 Specialized Agent Ecosystem**
+
+**Master Orchestrator (This Agent)**:
+- **Role**: Project coordination, strategic decisions, context management
+- **Location**: Primary interface for project oversight and direction
+- **Responsibilities**: Cross-agent coordination, homepage protection oversight, quality gates
+
+**Specialized Development Agents**:
+1. **🎨 UX/Frontend Agent** (`/.ai-agents/ui-frontend/`)
+   - **Specialization**: Cosmara Cosmic Design System implementation
+   - **Use When**: UI components, visual design, branding, responsive layouts
+   - **Status**: ✅ Operational with homepage protection protocols
+
+2. **🏗️ Platform Architecture Agent** (`/.ai-agents/platform-architecture/`)
+   - **Specialization**: Next.js platform, APIs, database architecture
+   - **Use When**: Backend systems, database changes, API development
+   - **Status**: ✅ Foundation complete - Auth0, database, APIs operational
+
+3. **🔒 Security & Compliance Agent** (`/.ai-agents/security-compliance/`)
+   - **Specialization**: BYOK encryption, Auth0, enterprise security
+   - **Use When**: Security implementations, API key management, compliance
+   - **Status**: ✅ Google Cloud KMS operational, enterprise-grade security
+
+4. **🛠️ Developer Ecosystem Agent** (`/.ai-agents/developer-ecosystem/`)
+   - **Specialization**: TypeScript SDK, developer experience, documentation
+   - **Use When**: SDK development, developer tools, API integration guides
+   - **Status**: ✅ TypeScript SDK in progress, 0% commission model
+
+5. **🔍 Research & Intelligence Agent** (`/.ai-agents/research-intelligence/`)
+   - **Specialization**: Market research, competitive analysis, strategic insights
+   - **Use When**: Complex research tasks, market validation, competitive intelligence
+   - **Status**: ✅ All research phases complete, ongoing monitoring
+
+6. **🧪 Quality Assurance Agent** (`/.ai-agents/quality-assurance/`)
+   - **Specialization**: Automated testing with Playwright/Puppeteer MCPs
+   - **Use When**: Verifying implementations, performance testing, QA validation
+   - **Status**: ✅ Operational with >95% pass rates, enterprise testing protocols
+
+### **Agent Selection Guidelines**
+
+**When to Use Specialized Agents**:
+- **Complex multi-step tasks** requiring domain expertise
+- **Cross-system integration** affecting multiple components  
+- **Quality-critical implementations** needing specialized validation
+- **Research tasks** requiring extensive information gathering
+- **UI/UX work** affecting visual design or user experience
+
+**When to Handle Directly (Master Orchestrator)**:
+- **Simple, single-step tasks** not requiring specialized knowledge
+- **Project coordination** and strategic decision-making
+- **Cross-agent communication** and handoff coordination
+- **Emergency protocols** and homepage protection oversight
+
+This directive has successfully guided the multi-agent system through:
 - ✅ **Bug Testing Mode**: Settings debugging, hydration errors, dashboard fixes
-- ✅ **Research Mode**: Critical market research integration
-- ✅ **Development Mode**: Developer Portal implementation, API integration
+- ✅ **Research Mode**: Critical market research integration via Research Agent
+- ✅ **Development Mode**: Platform, Security, and Frontend agent coordination
 - ✅ **Platform Stability**: Emergency recovery and prevention protocols
+- ✅ **Quality Assurance**: Automated testing and verification protocols
 
 ### Decision Tree Framework
 
@@ -74,11 +128,37 @@ This directive has successfully guided agents through:
 - **SCOPE**: Research tasks should not modify protected files
 
 **⚙️ DEVELOPMENT MODE** - When building features, implementing code, or enhancing functionality:
-- Review existing architecture before adding new features
-- Follow established patterns and conventions
-- Test thoroughly before considering complete
-- Update documentation for significant changes
-- **HOMEPAGE PROTECTION**: Any layout or navigation changes require explicit permission
+- **Agent Selection**: Choose appropriate specialized agent based on task domain
+- **Cross-Agent Coordination**: Coordinate with Master Orchestrator for integration points
+- **Quality Gates**: All implementations must pass QA Agent verification
+- **Context Preservation**: Update relevant agent CLAUDE.md files with progress
+- **Homepage Protection**: Any layout or navigation changes require explicit permission
+
+### **3. SPECIALIZED AGENT COORDINATION PROTOCOLS** ⭐ **MULTI-AGENT SYSTEM**
+
+#### **Agent Handoff Workflow**
+1. **Task Assessment**: Master Orchestrator determines appropriate specialized agent
+2. **Agent Activation**: Activate specialized agent with comprehensive context
+3. **Implementation**: Specialized agent executes with domain expertise
+4. **QA Verification**: Quality Assurance Agent validates implementation
+5. **Integration**: Master Orchestrator ensures cross-agent compatibility
+6. **Documentation**: Update all relevant context files and decision logs
+
+#### **Cross-Agent Integration Points**
+- **UX/Frontend ↔ Platform Architecture**: UI components with API endpoints
+- **Security ↔ Platform Architecture**: Authentication flows and API security
+- **Developer Ecosystem ↔ All Agents**: SDK integration across all systems
+- **Quality Assurance ↔ All Agents**: Verification of all implementations
+- **Research Intelligence → All Agents**: Strategic insights and market data
+
+#### **Quality Assurance Integration** ⭐ **MANDATORY**
+**After Every Specialized Agent Implementation**:
+1. **Automatic QA Activation**: QA Agent verifies all completed work
+2. **Browser Automation Testing**: Playwright/Puppeteer MCP validation
+3. **Integration Testing**: Cross-agent functionality verification
+4. **Performance Benchmarking**: Maintain enterprise-grade standards
+5. **Quality Gate Decision**: Pass/Fail determination with detailed feedback
+6. **Documentation Updates**: Record all findings and improvements
 
 ### **2. APPLY MODE-SPECIFIC PROTOCOLS:**
 
@@ -408,6 +488,14 @@ npm run dev:stable && npm run health-check
 - **Homepage integrity: 100% preservation rate**
 
 ## Emergency Contacts and References
+
+### **Specialized Agent Documentation**
+- **[/.ai-agents/ui-frontend/CLAUDE.md](/.ai-agents/ui-frontend/CLAUDE.md)** - UX/Frontend Agent context and brand guide
+- **[/.ai-agents/platform-architecture/CLAUDE.md](/.ai-agents/platform-architecture/CLAUDE.md)** - Platform Architecture Agent context
+- **[/.ai-agents/security-compliance/CLAUDE.md](/.ai-agents/security-compliance/CLAUDE.md)** - Security & Compliance Agent context
+- **[/.ai-agents/developer-ecosystem/CLAUDE.md](/.ai-agents/developer-ecosystem/CLAUDE.md)** - Developer Ecosystem Agent context
+- **[/.ai-agents/research-intelligence/CLAUDE.md](/.ai-agents/research-intelligence/CLAUDE.md)** - Research & Intelligence Agent context
+- **[/.ai-agents/quality-assurance/CLAUDE.md](/.ai-agents/quality-assurance/CLAUDE.md)** - Quality Assurance Agent context
 
 **Critical Documentation:**
 - [SERVER_TROUBLESHOOTING.md](./SERVER_TROUBLESHOOTING.md) - Server issue resolution
