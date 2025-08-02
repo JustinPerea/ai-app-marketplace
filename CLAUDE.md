@@ -497,12 +497,33 @@ cp src/app/page-PROTECTED-BASELINE.tsx src/app/page.tsx
 
 This comprehensive directive document contains:
 - **Homepage protection protocols (NEW)** ⚠️ **CRITICAL**
+- **Implementation Quality Checklist (NEW)** ⚠️ **MANDATORY FOR ALL IMPLEMENTATIONS**
 - Functionality preservation requirements (CRITICAL)
 - Error resolution protocols
 - Server stability requirements
 - Todo tracking guidelines
 - Automated scripts reference
 - Documentation links
+
+### **🔍 Implementation Quality Checklist Integration**
+
+**MANDATORY FOR ALL SDK IMPLEMENTATIONS:**
+Before adding models, providers, or making significant changes, agents MUST complete:
+`/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/sdk/IMPLEMENTATION_QUALITY_CHECKLIST.md`
+
+**Key Research Areas:**
+- ✅ **API Compatibility** - Check for model deprecations and breaking changes
+- ✅ **Security Impact** - Assess vulnerabilities and attack vectors  
+- ✅ **Performance Impact** - Measure bundle size and runtime performance
+- ✅ **Documentation** - Update all relevant docs and migration guides
+- ✅ **Testing Strategy** - Define comprehensive testing approach
+- ✅ **Breaking Changes** - Assess semver impact and user migration needs
+
+**Research Session Triggers:**
+- 🚨 New AI provider models (HIGH PRIORITY - many models deprecated in 2025)
+- 🚨 API breaking changes (IMMEDIATE ACTION REQUIRED)
+- 🚨 Security vulnerabilities (STOP ALL WORK)
+- 🚨 Performance degradation >10%
 
 ### Quick Agent Selection:
 

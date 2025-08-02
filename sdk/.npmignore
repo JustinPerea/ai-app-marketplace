@@ -1,0 +1,90 @@
+# NPM Package Ignore File
+# Optimizes package size by excluding unnecessary files
+
+# Source files and development artifacts
+src/
+*.tsbuildinfo
+*.map
+*.log
+*.tmp
+
+# Development and CI/CD files
+.github/
+scripts/
+docs/
+examples/
+tests/
+test/
+__tests__/
+coverage/
+
+# Configuration files
+.eslintrc*
+.prettierrc*
+.editorconfig
+.gitignore
+.gitattributes
+tsconfig*.json
+jest.config*
+vitest.config*
+rollup.config*
+webpack.config*
+vite.config*
+
+# Build and cache directories
+node_modules/
+.cache/
+.turbo/
+.nyc_output/
+.next/
+.nuxt/
+dist-dev/
+build-dev/
+
+# Documentation and meta files
+*.md
+!README.md
+!CHANGELOG.md
+!LICENSE
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+SECURITY.md
+PUBLISHING.md
+SETUP_PUBLISHING.md
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.pnpm-debug.log
+
+# Environment and local files
+.env*
+.local
+.cache
+*.local
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Temporary files
+tmp/
+temp/

@@ -5,6 +5,8 @@ import { MainLayout } from '@/components/layouts/main-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   TrendingUp, 
   DollarSign, 
@@ -17,7 +19,18 @@ import {
   RefreshCw,
   Star,
   Zap,
-  Target
+  Target,
+  Brain,
+  AlertTriangle,
+  TrendingDown,
+  Calculator,
+  Eye,
+  Clock,
+  Shield,
+  Award,
+  Settings,
+  Search,
+  Filter
 } from 'lucide-react';
 import {
   XAxis,
@@ -29,7 +42,18 @@ import {
   Cell,
   Pie,
   Area,
-  AreaChart
+  AreaChart,
+  ComposedChart,
+  Line,
+  Bar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  ScatterChart,
+  Scatter,
+  Legend
 } from 'recharts';
 
 interface AnalyticsData {
@@ -40,12 +64,18 @@ interface AnalyticsData {
     activeSubscriptions: number;
     averageRevenuePerUser: number;
     growthRate: number;
+    costSavings: number;
+    costSavingsPercent: number;
+    totalApiCalls: number;
+    avgResponseTime: number;
   };
   revenueChart: Array<{
     date: string;
     revenue: number;
     subscriptions: number;
     users: number;
+    costSavings: number;
+    predictions?: number;
   }>;
   topApps: Array<{
     id: string;
@@ -55,11 +85,14 @@ interface AnalyticsData {
     users: number;
     rating: number;
     growth: number;
+    costEfficiency: number;
+    performance: number;
   }>;
   userEngagement: Array<{
     metric: string;
     value: number;
     change: number;
+    trend: 'up' | 'down' | 'stable';
   }>;
   categoryBreakdown: Array<{
     category: string;
@@ -67,13 +100,76 @@ interface AnalyticsData {
     revenue: number;
     users: number;
     color: string;
+    efficiency: number;
   }>;
   aiUsage: Array<{
     provider: string;
     requests: number;
     cost: number;
     apps: number;
+    avgLatency: number;
+    reliability: number;
+    costPerRequest: number;
   }>;
+  // NEW: Phase 3 Advanced Analytics
+  usagePatterns: {
+    peakHours: Array<{ hour: number; usage: number }>;
+    dailyTrends: Array<{ day: string; usage: number; cost: number }>;
+    seasonality: Array<{ month: string; usage: number; forecast: number }>;
+  };
+  costOptimization: {
+    currentSavings: number;
+    potentialSavings: number;
+    recommendations: Array<{
+      title: string;
+      impact: string;
+      effort: 'low' | 'medium' | 'high';
+      priority: 'low' | 'medium' | 'high';
+      description: string;
+      expectedSavings: number;
+    }>;
+    efficiency: {
+      current: number;
+      target: number;
+      improvement: number;
+    };
+  };
+  performanceBenchmarks: {
+    responseTime: { current: number; target: number; percentile95: number };
+    availability: { current: number; target: number; sla: number };
+    errorRate: { current: number; target: number; threshold: number };
+    throughput: { current: number; target: number; peak: number };
+  };
+  predictiveInsights: {
+    costForecast: Array<{ month: string; predicted: number; confidence: number }>;
+    usageForecast: Array<{ month: string; predicted: number; confidence: number }>;
+    anomalies: Array<{
+      type: 'cost' | 'usage' | 'performance';
+      severity: 'low' | 'medium' | 'high';
+      description: string;
+      timestamp: string;
+      impact: string;
+    }>;
+    trends: Array<{
+      metric: string;
+      trend: 'increasing' | 'decreasing' | 'stable';
+      velocity: number;
+      projection: string;
+    }>;
+  };
+  roiAnalysis: {
+    totalInvestment: number;
+    totalSavings: number;
+    netReturn: number;
+    roiPercentage: number;
+    paybackPeriod: number;
+    breakdown: Array<{
+      category: string;
+      investment: number;
+      savings: number;
+      roi: number;
+    }>;
+  };
 }
 
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
@@ -83,6 +179,8 @@ export default function AnalyticsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('30d');
   const [viewType, setViewType] = useState<'platform' | 'developer'>('platform');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();

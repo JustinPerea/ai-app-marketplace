@@ -1,0 +1,87 @@
+{
+  "name": "@ai-marketplace/sdk",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for intelligent AI provider routing with ML-powered optimization. Supports OpenAI, Anthropic, and Google AI with zero external dependencies.",
+  "keywords": [
+    "ai",
+    "openai",
+    "anthropic",
+    "google-ai",
+    "gemini",
+    "claude",
+    "gpt",
+    "machine-learning",
+    "routing",
+    "cost-optimization",
+    "typescript",
+    "sdk",
+    "api",
+    "llm",
+    "chatgpt"
+  ],
+  "author": "AI Marketplace",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JustinPerea/cosmara-ai-sdk.git"
+  },
+  "homepage": "https://github.com/JustinPerea/cosmara-ai-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/JustinPerea/cosmara-ai-sdk/issues"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run build:types && npm run build:esm && npm run build:cjs && npm run clean:tsbuildinfo",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist/types",
+    "build:esm": "tsc --module esnext --target es2018 --outDir dist/esm",
+    "build:cjs": "tsc --module commonjs --target es2018 --outDir dist/cjs && echo '{\"type\": \"commonjs\"}' > dist/cjs/package.json",
+    "clean": "rm -rf dist",
+    "clean:tsbuildinfo": "find dist -name '*.tsbuildinfo' -delete",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "echo \"No linting configured\"",
+    "format": "echo \"No formatting configured\"",
+    "validate": "npm run build && node -e \"const sdk = require('./dist/cjs/index.js'); console.log('SDK validation:', Object.keys(sdk));\"",
+    "publish:interactive": "./scripts/publish.sh",
+    "prepare-release": "node scripts/prepare-release.js",
+    "version:patch": "node scripts/prepare-release.js patch",
+    "version:minor": "node scripts/prepare-release.js minor",
+    "version:major": "node scripts/prepare-release.js major",
+    "check-publish": "npm pack --dry-run",
+    "validate-types": "npx tsc --noEmit --skipLibCheck dist/types/index.d.ts"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "bundleDependencies": [],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

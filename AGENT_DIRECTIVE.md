@@ -156,11 +156,41 @@ This directive has successfully guided the multi-agent system through:
 
 #### **Agent Handoff Workflow**
 1. **Task Assessment**: Master Orchestrator determines appropriate specialized agent
-2. **Agent Activation**: Activate specialized agent with comprehensive context
-3. **Implementation**: Specialized agent executes with domain expertise
-4. **QA Verification**: Quality Assurance Agent validates implementation
-5. **Integration**: Master Orchestrator ensures cross-agent compatibility
-6. **Documentation**: Update all relevant context files and decision logs
+2. **Quality Checklist**: MANDATORY execution of Implementation Quality Checklist
+3. **Agent Activation**: Activate specialized agent with comprehensive context
+4. **Implementation**: Specialized agent executes with domain expertise
+5. **QA Verification**: Quality Assurance Agent validates implementation
+6. **Integration**: Master Orchestrator ensures cross-agent compatibility
+7. **Documentation**: Update all relevant context files and decision logs
+
+#### **🚨 MANDATORY: Implementation Quality Checklist** ⚠️ **CRITICAL**
+
+**BEFORE ANY IMPLEMENTATION OR MODEL ADDITION:**
+All agents MUST complete the Implementation Quality Checklist located at:
+`/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/sdk/IMPLEMENTATION_QUALITY_CHECKLIST.md`
+
+**Required Checklist Areas (ALL MUST BE COMPLETED):**
+- [ ] **API Compatibility Research** - Check model deprecations, breaking changes
+- [ ] **Security Impact Assessment** - Verify no new vulnerabilities introduced
+- [ ] **Performance Impact Analysis** - Measure bundle size and runtime impact
+- [ ] **Documentation Requirements** - Update all relevant documentation
+- [ ] **Testing Strategy** - Define and execute comprehensive testing
+- [ ] **Breaking Change Assessment** - Determine semver impact and migration needs
+
+**Escalation Triggers (IMMEDIATE QUALITY RESEARCH SESSION REQUIRED):**
+- 🚨 **New AI Provider Model Addition** - Complete full compatibility research
+- 🚨 **API Breaking Changes** - Immediate research session within 24 hours
+- 🚨 **Security Vulnerabilities** - Stop all work, research mitigation immediately
+- 🚨 **Performance Degradation >10%** - Deep dive performance research required
+- 🚨 **Major Framework Updates** - Compatibility research across all integrations
+
+**Research Session Protocol:**
+1. **Trigger Identification**: Detect when checklist research session required
+2. **Immediate Documentation**: Log research trigger and scope
+3. **Research Agent Activation**: Use Research Agent for complex multi-step research
+4. **Findings Documentation**: Create detailed research report
+5. **Implementation Decision**: Go/No-Go based on research findings
+6. **Quality Gate**: All findings must pass quality gates before proceeding
 
 #### **Cross-Agent Integration Points**
 - **UX/Frontend ↔ Platform Architecture**: UI components with API endpoints

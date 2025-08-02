@@ -1,0 +1,37 @@
+{
+  "name": "llamaindex-knowledge-base-test",
+  "version": "1.0.0",
+  "description": "LlamaIndex knowledge base integration test application for AI Marketplace SDK",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "interactive": "node src/knowledge-assistant.js",
+    "build-index": "node src/index-builder.js",
+    "advanced-queries": "node src/advanced-queries.js",
+    "benchmark": "node src/benchmark.js",
+    "test": "npm run start"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "llamaindex": "^0.1.0",
+    "@llamaindex/env": "^0.1.0",
+    "pdf-parse": "^1.1.1",
+    "csv-parser": "^3.0.0",
+    "cheerio": "^1.0.0-rc.12",
+    "axios": "^1.6.0",
+    "readline": "^1.3.0",
+    "fs-extra": "^11.2.0"
+  },
+  "keywords": [
+    "llamaindex",
+    "knowledge-base",
+    "rag",
+    "ai-marketplace",
+    "sdk",
+    "framework-integration",
+    "document-processing",
+    "query-engine"
+  ],
+  "author": "AI Marketplace Team",
+  "license": "MIT"
+}
