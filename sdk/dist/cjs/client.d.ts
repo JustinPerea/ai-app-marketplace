@@ -67,6 +67,17 @@ export declare class AIMarketplaceClient {
             recommendedProvider: APIProvider;
             expectedSavings: number;
         }>;
+        monitoringData?: {
+            driftDetections: number;
+            activeAlerts: number;
+            systemHealth: string;
+            claude4Performance: any;
+        };
+        abTestingSummary?: {
+            activeTests: number;
+            completedTests: number;
+            significantResults: number;
+        };
     }>;
     /**
      * Estimate cost for a request

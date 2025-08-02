@@ -43,6 +43,9 @@ model User {
   appExecutions AppExecution[]
   appInstalls   AppInstall[]
 
+  // SDK Protection Phase 3 - SDK App management
+  sdkApps SdkApp[]
+
   // Legacy support for video-to-notes app
   creditsUsed  Int     @default(0)
   creditsLimit Int     @default(3)
@@ -705,6 +708,8 @@ enum AppStatus {
   PENDING_REVIEW
   APPROVED
   PUBLISHED
+  REJECTED
+  NEEDS_CHANGES
   SUSPENDED
   ARCHIVED
 }
@@ -778,4 +783,187 @@ enum JobStatus {
   PROCESSING
   COMPLETED
   FAILED
+}
+
+// =============================================================================
+// SDK PROTECTION PHASE 3 - PLATFORM API MODELS
+// =============================================================================
+
+// SDK App Registration and Management
+model SdkApp {
+  id String @id @default(cuid())
+  
+  // App identification
+  name        String
+  description String? @db.Text
+  
+  // Authentication credentials
+  appId     String  @unique // app_${uuid}
+  secretKey String  @unique // sk_${secureKey}
+  
+  // Ownership and management
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Subscription tier
+  tier   SdkTier @default(COMMUNITY)
+  status SdkAppStatus @default(ACTIVE)
+  
+  // Usage limits based on tier
+  requestsPerMonth  Int @default(1000)
+  requestsPerMinute Int @default(10)
+  
+  // Feature flags based on tier
+  features SdkFeatures
+  
+  // Usage tracking
+  currentPeriodStart DateTime @default(now())
+  currentPeriodEnd   DateTime
+  requestsThisPeriod Int      @default(0)
+  
+  // Metadata
+  lastUsed  DateTime?
+  userAgent String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relationships
+  usageRecords     SdkUsage[]
+  mlRoutingLogs    MlRoutingLog[]
+  analyticsRecords SdkAnalytics[]
+  
+  @@index([userId])
+  @@index([tier])
+  @@index([status])
+  @@index([appId])
+}
+
+// SDK Usage Tracking for Billing and Analytics
+model SdkUsage {
+  id String @id @default(cuid())
+  
+  // App reference
+  appId String
+  app   SdkApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+  
+  // Usage metrics
+  requestsCount     Int     @default(0)
+  mlRoutingCount    Int     @default(0)
+  analyticsRequests Int     @default(0)
+  totalCost         Decimal @default(0) @db.Decimal(10, 4)
+  
+  // Billing period
+  billingPeriod DateTime // Monthly billing cycle
+  
+  // Additional metrics
+  successfulRequests Int @default(0)
+  failedRequests     Int @default(0)
+  avgResponseTime    Int? // Average response time in ms
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([appId])
+  @@index([billingPeriod])
+  @@unique([appId, billingPeriod]) // One record per app per billing period
+}
+
+// ML Routing Decision Logs (for analytics and improvement)
+model MlRoutingLog {
+  id String @id @default(cuid())
+  
+  // App and request context
+  appId String
+  app   SdkApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+  
+  requestId String @unique // For correlation
+  
+  // Request details (sanitized)
+  requestData Json // Sanitized request features (no sensitive data)
+  
+  // ML Routing decision
+  routingDecision Json // Provider, model, estimated metrics
+  
+  // Actual performance (for learning)
+  actualCost     Decimal? @db.Decimal(8, 4)
+  actualLatency  Int? // Actual response time in ms
+  actualProvider ApiProvider?
+  actualModel    String?
+  
+  // Success tracking
+  success      Boolean @default(true)
+  errorMessage String?
+  errorCode    String?
+  
+  // ML confidence and reasoning
+  confidence   Float?
+  mlReasoning  String? @db.Text
+  
+  createdAt DateTime @default(now())
+  
+  @@index([appId])
+  @@index([success])
+  @@index([createdAt])
+  @@index([requestId])
+}
+
+// SDK Analytics and Insights
+model SdkAnalytics {
+  id String @id @default(cuid())
+  
+  // App reference
+  appId String
+  app   SdkApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+  
+  // Analytics event details
+  eventType String // "ml_route", "api_call", "error", etc.
+  eventData Json   // Event-specific data
+  
+  // Context
+  userAgent String?
+  ipAddress String?
+  
+  // Performance metrics
+  responseTime Int? // Response time in ms
+  cost         Decimal? @db.Decimal(8, 4)
+  
+  // Success tracking
+  successful   Boolean @default(true)
+  errorCode    String?
+  errorMessage String?
+  
+  createdAt DateTime @default(now())
+  
+  @@index([appId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@index([successful])
+}
+
+// SDK Feature Configuration (embedded in SdkApp)
+type SdkFeatures {
+  mlRouting     Boolean @default(false)
+  analytics     Boolean @default(false)
+  caching       Boolean @default(false)
+  customModels  Boolean @default(false)
+  batchRouting  Boolean @default(false)
+  prioritySupport Boolean @default(false)
+}
+
+// SDK Subscription Tiers
+enum SdkTier {
+  COMMUNITY    // Free tier - 1K requests/month, basic features
+  DEVELOPER    // $49/month - 50K requests, ML routing, analytics
+  PROFESSIONAL // $199/month - 500K requests, all features
+  ENTERPRISE   // Custom pricing - unlimited, custom features
+}
+
+// SDK App Status
+enum SdkAppStatus {
+  ACTIVE
+  SUSPENDED
+  RATE_LIMITED
+  QUOTA_EXCEEDED
+  INACTIVE
 }

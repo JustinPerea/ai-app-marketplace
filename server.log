@@ -1,897 +1,358 @@
 
+> byok-developer-app-marketplace@0.1.0 dev:stable
+> ./scripts/dev-server-stable.sh
+
+🔄 Starting robust dev server...
+🧹 Cleaning up existing processes...
+🗑️  Clearing all Next.js caches...
+🚀 Starting fresh dev server...
+
 > byok-developer-app-marketplace@0.1.0 dev
 > next dev
 
    ▲ Next.js 15.4.3
    - Local:        http://localhost:3000
-   - Network:      http://192.0.0.2:3000
+   - Network:      http://10.0.0.38:3000
    - Environments: .env.local, .env
    - Experiments (use with caution):
      · optimizePackageImports
 
  ✓ Starting...
- ✓ Ready in 1187ms
+ ✓ Ready in 1273ms
  ○ Compiling / ...
- ✓ Compiled / in 2.7s (901 modules)
+ ✓ Compiled / in 2.5s (904 modules)
  ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET / 200 in 3006ms
+ GET / 200 in 2875ms
+ ✓ Compiled /favicon.ico in 217ms (545 modules)
+ GET /favicon.ico 200 in 325ms
+ GET /favicon.ico 200 in 5ms
+ HEAD / 200 in 166ms
  ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET / 200 in 92ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 557ms (998 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /api/auth/user 200 in 746ms
- GET /auth/profile 404 in 742ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET / 200 in 217ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 24ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 20ms
- ✓ Compiled /marketplace in 312ms (1055 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 372ms
- ✓ Compiled /api/users/subscriptions in 119ms (1059 modules)
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 140ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 141ms
- ✓ Compiled /marketplace/apps/simple-ai-chat in 436ms (1082 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace/apps/simple-ai-chat. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace/apps/simple-ai-chat 200 in 464ms
- ○ Compiling /api/keys ...
- ✓ Compiled /api/keys in 1080ms (1511 modules)
-Using Google Cloud KMS encryption service
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 1418ms
- GET /api/keys 200 in 1418ms
- ✓ Compiled /api/keys/migrate in 151ms (1513 modules)
-Using Google Cloud KMS encryption service
-Using Google Cloud KMS encryption service
- GET /api/keys/migrate 200 in 336ms
- GET /api/keys/migrate 200 in 337ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 12ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 13ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 8ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 9ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 6ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 7ms
- ✓ Compiled /api/keys/[keyId]/decrypt in 138ms (1515 modules)
-Using Google Cloud KMS encryption service
-Using Google Cloud KMS encryption service
-API key accessed for usage: {
-  userId: 'user-1',
-  keyId: 'cmdqinypy000bymydjh30bng5',
-  provider: 'GOOGLE',
-  timestamp: '2025-07-31T12:12:13.796Z',
-  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15'
-}
- GET /api/keys/cmdqinypy000bymydjh30bng5/decrypt 200 in 1151ms
-API key accessed for usage: {
-  userId: 'user-1',
-  keyId: 'cmdqinypy000bymydjh30bng5',
-  provider: 'GOOGLE',
-  timestamp: '2025-07-31T12:12:13.851Z',
-  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15'
-}
- GET /api/keys/cmdqinypy000bymydjh30bng5/decrypt 200 in 1206ms
- ✓ Compiled /api/test-provider in 140ms (1517 modules)
- POST /api/test-provider 200 in 731ms
- POST /api/test-provider 200 in 671ms
- GET /api/keys 200 in 5ms
-Using Google Cloud KMS encryption service
- ✓ Compiled /setup in 217ms (1550 modules)
- ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- GET /setup 200 in 347ms
+ ✓ Compiled /setup in 398ms (967 modules)
+ HEAD /setup 200 in 553ms
  ⚠ Unsupported metadata viewport is configured in metadata export in /setup. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace/apps/simple-ai-chat. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace/apps/simple-ai-chat 200 in 31ms
- GET /api/auth/user 200 in 12ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 105ms
-Using Google Cloud KMS encryption service
- GET /api/keys/migrate 200 in 7ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 4ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 4ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 3ms
-Using Google Cloud KMS encryption service
-API key accessed for usage: {
-  userId: 'user-1',
-  keyId: 'cmdqinypy000bymydjh30bng5',
-  provider: 'GOOGLE',
-  timestamp: '2025-07-31T12:12:15.713Z',
-  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15'
-}
- GET /api/keys/cmdqinypy000bymydjh30bng5/decrypt 200 in 333ms
- POST /api/test-provider 200 in 541ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 6ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 4ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 4ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 8ms
-Using Google Cloud KMS encryption service
-API key accessed for usage: {
-  userId: 'user-1',
-  keyId: 'cmdqinypy000bymydjh30bng5',
-  provider: 'GOOGLE',
-  timestamp: '2025-07-31T12:12:24.754Z',
-  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15'
-}
- GET /api/keys/cmdqinypy000bymydjh30bng5/decrypt 200 in 291ms
- ✓ Compiled /api/ai/chat in 292ms (1552 modules)
-Chat API error: Error: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
-    at callGoogleAI (src/app/api/ai/chat/route.ts:90:10)
-    at async POST (src/app/api/ai/chat/route.ts:172:19)
-  88 |     const errorData = await response.json().catch(() => ({}));
-  89 |     const errorMessage = errorData.error?.message || `Google AI API error: ${response.status} ${response.statusText}`;
-> 90 |     throw new Error(errorMessage);
-     |          ^
-  91 |   }
-  92 |
-  93 |   const data = await response.json();  
- POST /api/ai/chat 500 in 585ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 245ms
- GET /api/auth/user 200 in 21ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 32ms
- GET /auth/profile 404 in 33ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /setup. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /setup 200 in 23ms
-Using Google Cloud KMS encryption service
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 237ms
- GET /api/keys 200 in 238ms
-Using Google Cloud KMS encryption service
- GET /api/keys/migrate 200 in 11ms
-Using Google Cloud KMS encryption service
- GET /api/keys/migrate 200 in 13ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 5ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 8ms
- ✓ Compiled /api/keys/[keyId] in 422ms (1548 modules)
-Using Google Cloud KMS encryption service
-API key deactivation: {
-  userId: 'user-1',
-  keyId: 'cmdqinypy000bymydjh30bng5',
-  success: true,
-  timestamp: '2025-07-31T12:14:38.991Z'
-}
- DELETE /api/keys/cmdqinypy000bymydjh30bng5 200 in 1177ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 15ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 72ms
- ✓ Compiled /api/test-provider in 147ms (1141 modules)
- POST /api/test-provider 200 in 692ms
- POST /api/test-provider 200 in 345ms
-Using Google Cloud KMS encryption service
-API key stored successfully: {
-  userId: 'user-1',
-  keyId: 'cmdrcxhco0001ym3da9iyb5zk',
-  provider: 'GOOGLE',
-  timestamp: '2025-07-31T12:14:44.770Z'
-}
- POST /api/keys 200 in 966ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 13ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 45ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 18ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 23ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace/apps/simple-ai-chat. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace/apps/simple-ai-chat 200 in 38ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 14ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 17ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 12ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 14ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 10ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 19ms
- ✓ Compiled /api/keys/[keyId]/decrypt in 456ms (1143 modules)
-Using Google Cloud KMS encryption service
-Using Google Cloud KMS encryption service
-API key accessed for usage: {
-  userId: 'user-1',
-  keyId: 'cmdrcxhco0001ym3da9iyb5zk',
-  provider: 'GOOGLE',
-  timestamp: '2025-07-31T12:14:52.885Z',
-  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15'
-}
- GET /api/keys/cmdrcxhco0001ym3da9iyb5zk/decrypt 200 in 1430ms
-API key accessed for usage: {
-  userId: 'user-1',
-  keyId: 'cmdrcxhco0001ym3da9iyb5zk',
-  provider: 'GOOGLE',
-  timestamp: '2025-07-31T12:14:52.916Z',
-  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15'
-}
- GET /api/keys/cmdrcxhco0001ym3da9iyb5zk/decrypt 200 in 1449ms
- POST /api/test-provider 200 in 595ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 24ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 8ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 13ms
- POST /api/test-provider 200 in 912ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 16ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 11ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 9ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 16ms
-Using Google Cloud KMS encryption service
-API key accessed for usage: {
-  userId: 'user-1',
-  keyId: 'cmdrcxhco0001ym3da9iyb5zk',
-  provider: 'GOOGLE',
-  timestamp: '2025-07-31T12:15:00.742Z',
-  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15'
-}
- GET /api/keys/cmdrcxhco0001ym3da9iyb5zk/decrypt 200 in 366ms
- ✓ Compiled /api/ai/chat in 132ms (1145 modules)
- POST /api/ai/chat 200 in 736ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 130ms
-Using Google Cloud KMS encryption service
-API key accessed for usage: {
-  userId: 'user-1',
-  keyId: 'cmdrcxhco0001ym3da9iyb5zk',
-  provider: 'GOOGLE',
-  timestamp: '2025-07-31T12:16:11.818Z',
-  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15'
-}
- GET /api/keys/cmdrcxhco0001ym3da9iyb5zk/decrypt 200 in 386ms
- POST /api/ai/chat 200 in 1592ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 307ms
- GET /api/auth/user 200 in 18ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 31ms
- GET /auth/profile 404 in 32ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
  ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET / 200 in 78ms
- ○ Compiling /my-apps ...
- ✓ Compiled /my-apps in 1048ms (1128 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /my-apps. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /my-apps 200 in 1104ms
- GET /api/users/subscriptions?page=1&limit=10 200 in 16ms
- GET /api/users/subscriptions?page=1&limit=10 200 in 20ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 48ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 28ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 8ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 16ms
- POST /api/users/subscriptions 200 in 5ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 18ms
- ✓ Compiled /dashboard in 271ms (1147 modules)
+ GET / 200 in 121ms
+ ✓ Compiled /dashboard in 235ms (980 modules)
+ HEAD /dashboard 200 in 412ms
  ⚠ Unsupported metadata viewport is configured in metadata export in /dashboard. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /dashboard 200 in 340ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 17ms
- GET /api/users/subscriptions 200 in 22ms
- GET /api/users/subscriptions?status=ACTIVE 200 in 20ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 26ms
- GET /api/users/subscriptions 200 in 26ms
- GET /api/users/subscriptions?status=ACTIVE 200 in 26ms
+ GET /favicon.ico 200 in 11ms
+ GET /favicon.ico 200 in 6ms
  ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET / 200 in 177ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+ GET / 200 in 102ms
+ ✓ Compiled in 277ms (994 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /api/auth/user 200 in 41ms
- GET /auth/profile 404 in 43ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /my-apps. Please move it to viewport export instead.
+ GET / 200 in 138ms
+ GET /favicon.ico 200 in 9ms
+ GET /favicon.ico 200 in 5ms
+ ✓ Compiled in 196ms (994 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /my-apps 200 in 26ms
- GET /api/users/subscriptions?page=1&limit=10 200 in 14ms
- GET /api/users/subscriptions?page=1&limit=10 200 in 23ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+ GET / 200 in 136ms
+ GET /favicon.ico 200 in 8ms
+ GET /favicon.ico 200 in 7ms
+ ✓ Compiled in 227ms (950 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 24ms
- ✓ Compiled in 209ms (436 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /my-apps. Please move it to viewport export instead.
+ GET / 200 in 139ms
+ GET /favicon.ico 200 in 10ms
+ GET /favicon.ico 200 in 6ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /my-apps 200 in 16ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 15ms
- ✓ Compiled in 135ms (436 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /my-apps. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /my-apps 200 in 12ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 24ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 73ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 85ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 37ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET / 200 in 69ms
+ ✓ Compiled in 466ms (949 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: useAuth must be used within an AuthProvider
+    at useAuth (src/lib/auth/auth-context.tsx:136:10)
+    at Navigation (src/components/layouts/navigation.tsx:23:43)
+  134 |   const context = useContext(AuthContext);
+  135 |   if (context === undefined) {
+> 136 |     throw new Error('useAuth must be used within an AuthProvider');
+      |          ^
+  137 |   }
+  138 |   return context;
+  139 | } {
+  digest: '2659680058'
+}
+ GET / 500 in 127ms
+ GET /favicon.ico 200 in 7ms
+ ⨯ Error: useAuth must be used within an AuthProvider
+    at useAuth (src/lib/auth/auth-context.tsx:136:10)
+    at Navigation (src/components/layouts/navigation.tsx:23:43)
+  134 |   const context = useContext(AuthContext);
+  135 |   if (context === undefined) {
+> 136 |     throw new Error('useAuth must be used within an AuthProvider');
+      |          ^
+  137 |   }
+  138 |   return context;
+  139 | } {
+  digest: '2659680058'
+}
+ GET / 500 in 49ms
+ ⨯ Error: useAuth must be used within an AuthProvider
+    at useAuth (src/lib/auth/auth-context.tsx:136:10)
+    at Navigation (src/components/layouts/navigation.tsx:23:43)
+  134 |   const context = useContext(AuthContext);
+  135 |   if (context === undefined) {
+> 136 |     throw new Error('useAuth must be used within an AuthProvider');
+      |          ^
+  137 |   }
+  138 |   return context;
+  139 | } {
+  digest: '2659680058'
+}
+ HEAD / 500 in 51ms
+ ⨯ ./src/components/layouts/main-layout.tsx
+Error:   [31mx[0m Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+    ,-[[36;1;4m/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/src/components/layouts/main-layout.tsx[0m:82:1]
+ [2m79[0m |       </footer>
+ [2m80[0m |     </div>
+ [2m81[0m |   );
+ [2m82[0m | }
+    : [35;1m^[0m
+    `----
+  [31mx[0m Unexpected eof
+    ,-[[36;1;4m/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/src/components/layouts/main-layout.tsx[0m:82:1]
+ [2m79[0m |       </footer>
+ [2m80[0m |     </div>
+ [2m81[0m |   );
+ [2m82[0m | }
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layouts/main-layout.tsx
+./src/app/setup/page.tsx
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 306ms (919 modules)
+ GET / 200 in 107ms
+ GET / 200 in 72ms
+ ✓ Compiled /favicon.ico in 102ms (545 modules)
+ GET /favicon.ico 200 in 167ms
+ GET /favicon.ico 200 in 4ms
+ HEAD / 200 in 138ms
+ GET / 200 in 77ms
+ ✓ Compiled in 156ms (405 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET / 200 in 99ms
+ GET /favicon.ico 200 in 6ms
+ GET /favicon.ico 200 in 5ms
+ ⨯ ./src/components/layouts/main-layout.tsx
+Error:   [31mx[0m Expected corresponding JSX closing tag for <ClientProviders>
+    ,-[[36;1;4m/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/src/components/layouts/main-layout.tsx[0m:81:1]
+ [2m78[0m |         </div>
+ [2m79[0m |       </footer>
+ [2m80[0m |     </div>
+ [2m81[0m |     </AuthProvider>
+    : [35;1m      ^^^^^^^^^^^^[0m
+ [2m82[0m |   );
+ [2m83[0m | }
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layouts/main-layout.tsx
+./src/app/setup/page.tsx
+ ✓ Compiled in 318ms (952 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET / 200 in 245ms
+ GET /favicon.ico 200 in 13ms
+ GET /favicon.ico 200 in 5ms
+ GET / 200 in 64ms
+ ✓ Compiled in 178ms (952 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET / 200 in 154ms
+ GET /favicon.ico 200 in 9ms
+ GET /favicon.ico 200 in 6ms
+ GET / 200 in 57ms
+ ⨯ ./src/components/layouts/main-layout.tsx
+Error:   [31mx[0m Unterminated regexp literal
+    ,-[[36;1;4m/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/src/components/layouts/main-layout.tsx[0m:79:1]
+ [2m76[0m |         </div>
+ [2m77[0m |       </footer>
+ [2m78[0m |     </div>
+ [2m79[0m |     </ClientProviders>
+    : [35;1m     ^^^^^^^^^^^^^^^^^[0m
+ [2m80[0m |   );
+ [2m81[0m | }
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layouts/main-layout.tsx
+./src/app/setup/page.tsx
+ ✓ Compiled in 217ms (949 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+useAuth used outside of AuthProvider, using fallback
+ GET / 200 in 215ms
+ GET /favicon.ico 200 in 13ms
+ GET /favicon.ico 200 in 4ms
+useAuth used outside of AuthProvider, using fallback
+ GET / 200 in 79ms
+useAuth used outside of AuthProvider, using fallback
+ GET / 200 in 54ms
+ ✓ Compiled /setup in 245ms (556 modules)
+useAuth used outside of AuthProvider, using fallback
+ GET /setup 200 in 434ms
+ ✓ Compiled /_not-found in 280ms (952 modules)
+ GET /auth/profile 404 in 361ms
  GET /auth/profile 404 in 26ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 34ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 41ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 24ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET / 200 in 67ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 29ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 29ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 65ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 20ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 16ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 28ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 47ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 32ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 33ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 22ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 25ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 25ms
- ✓ Compiled in 279ms (436 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 29ms
- ✓ Compiled in 369ms (1033 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 83ms
- ✓ Compiled in 130ms (432 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 11ms
- ✓ Compiled /_not-found in 202ms (1019 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 302ms
- ✓ Compiled in 352ms (453 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 34ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 19ms
- ✓ Compiled in 127ms (453 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 8ms
- ✓ Compiled in 108ms (453 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 85ms
- ✓ Compiled in 116ms (453 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 8ms
- ✓ Compiled in 135ms (453 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 11ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 37ms
- ✓ Compiled in 124ms (453 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 8ms
- ✓ Compiled /api/users/subscriptions in 552ms (1050 modules)
- ✓ Compiled in 0ms (618 modules)
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 595ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 247ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 64ms
- ✓ Compiled in 396ms (1089 modules)
- ✓ Compiled in 1ms (636 modules)
- ✓ Compiled in 0ms (636 modules)
- ✓ Compiled in 0ms (636 modules)
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 452ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 406ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 69ms
- ✓ Compiled in 239ms (1089 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 37ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 41ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ✓ Compiled /developers in 170ms (962 modules)
+useAuth used outside of AuthProvider, using fallback
+ GET /developers 200 in 358ms
+ ✓ Compiled /developers/submit in 224ms (985 modules)
+useAuth used outside of AuthProvider, using fallback
+ GET /developers/submit 200 in 344ms
  GET /auth/profile 404 in 20ms
- ✓ Compiled /api/users/subscriptions in 514ms (1068 modules)
- ✓ Compiled in 0ms (636 modules)
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 435ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 259ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 60ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 53ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 37ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 37ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
  GET /auth/profile 404 in 29ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 28ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 35ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 28ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 27ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 24ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 29ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 30ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 35ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 42ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
  GET /auth/profile 404 in 19ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /setup. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /setup 200 in 45ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 25ms
- ○ Compiling /api/keys ...
- ✓ Compiled /api/keys in 844ms (1156 modules)
-Using Google Cloud KMS encryption service
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 1222ms
- GET /api/keys 200 in 1222ms
- ✓ Compiled /api/keys/migrate in 116ms (1158 modules)
-Using Google Cloud KMS encryption service
-Using Google Cloud KMS encryption service
- GET /api/keys/migrate 200 in 332ms
- GET /api/keys/migrate 200 in 337ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 11ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 13ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 110ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 42ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 24ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 48ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 33ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 38ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 45ms
- ✓ Compiled /api/users/subscriptions in 282ms (636 modules)
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 378ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 378ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 93ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 35ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 25ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 23ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 32ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 27ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 27ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 43ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 36ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 22ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 32ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 62ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 28ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 34ms
- ✓ Compiled in 605ms (1068 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 83ms
- ✓ Compiled /api/users/subscriptions in 107ms (636 modules)
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 165ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 91ms
- ✓ Compiled in 278ms (1089 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 34ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 10ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 51ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 195ms
- ○ Compiling /api/users/subscriptions ...
- ✓ Compiled /api/users/subscriptions in 802ms (1172 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 844ms
- GET /api/auth/user 200 in 938ms
- GET /auth/profile 404 in 852ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 41ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 30ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ✓ Compiled /dashboard in 114ms (595 modules)
+ GET /dashboard 200 in 229ms
+ ✓ Compiled /marketplace in 250ms (1035 modules)
+useAuth used outside of AuthProvider, using fallback
+ GET /marketplace 200 in 424ms
  GET /auth/profile 404 in 16ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET / 200 in 61ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 34ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 20ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 26ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 177ms
- GET /api/auth/user 200 in 8ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 18ms
- GET /auth/profile 404 in 19ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /setup. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /setup 200 in 31ms
- ✓ Compiled /api/keys in 403ms (1162 modules)
-Using Google Cloud KMS encryption service
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 746ms
- GET /api/keys 200 in 748ms
- ✓ Compiled /api/keys/migrate in 118ms (1164 modules)
-Using Google Cloud KMS encryption service
-Using Google Cloud KMS encryption service
- GET /api/keys/migrate 200 in 303ms
- GET /api/keys/migrate 200 in 304ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 11ms
-Using Google Cloud KMS encryption service
- GET /api/keys 200 in 12ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 39ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 18ms
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 21ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /apple-touch-icon-precomposed.png 404 in 58ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /apple-touch-icon.png 404 in 75ms
- ✓ Compiled /favicon.ico in 149ms (1166 modules)
- GET /favicon.ico 200 in 223ms
- GET /favicon.ico 200 in 223ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 65ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 157ms
- GET /api/auth/user 401 in 14ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 33ms
- GET /auth/profile 404 in 33ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 19ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 37ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 32ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 16ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 16ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 33ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 21ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 37ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 30ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
  GET /auth/profile 404 in 31ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /setup. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /setup 200 in 30ms
- GET /api/keys 401 in 144ms
- GET /api/keys 401 in 147ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 18ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 18ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 68ms
- GET /auth/profile 404 in 66ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⨯ ./src/app/api/v1/apps/register/route.ts:10:1
+Module not found: Can't resolve 'next-auth'
+   8 | import { NextRequest, NextResponse } from 'next/server';
+   9 | import { PrismaClient, SdkTier } from '@prisma/client';
+> 10 | import { getServerSession } from 'next-auth';
+     | ^
+  11 | import { SdkApiKeyManager, TIER_LIMITS } from '@/lib/sdk/auth';
+  12 | import { z } from 'zod';
+  13 |
+
+https://nextjs.org/docs/messages/module-not-found
+ ○ Compiling /api/v1/apps/[appId] ...
+ ⨯ ./src/app/api/v1/apps/[appId]/route.ts:11:1
+Module not found: Can't resolve 'next-auth'
+   9 | import { NextRequest, NextResponse } from 'next/server';
+  10 | import { PrismaClient, SdkAppStatus } from '@prisma/client';
+> 11 | import { getServerSession } from 'next-auth';
+     | ^
+  12 | import { z } from 'zod';
+  13 |
+  14 | const prisma = new PrismaClient();
+
+https://nextjs.org/docs/messages/module-not-found
+ ⨯ ./src/app/api/v1/apps/[appId]/route.ts:11:1
+Module not found: Can't resolve 'next-auth'
+   9 | import { NextRequest, NextResponse } from 'next/server';
+  10 | import { PrismaClient, SdkAppStatus } from '@prisma/client';
+> 11 | import { getServerSession } from 'next-auth';
+     | ^
+  12 | import { z } from 'zod';
+  13 |
+  14 | const prisma = new PrismaClient();
+
+https://nextjs.org/docs/messages/module-not-found
+ ⨯ ./src/app/api/v1/apps/[appId]/route.ts:11:1
+Module not found: Can't resolve 'next-auth'
+   9 | import { NextRequest, NextResponse } from 'next/server';
+  10 | import { PrismaClient, SdkAppStatus } from '@prisma/client';
+> 11 | import { getServerSession } from 'next-auth';
+     | ^
+  12 | import { z } from 'zod';
+  13 |
+  14 | const prisma = new PrismaClient();
+
+https://nextjs.org/docs/messages/module-not-found
+ POST /api/v1/apps/register 500 in 2923ms
+ GET /marketplace 500 in 840ms
+ GET /marketplace 500 in 8ms
+ GET /marketplace 500 in 8ms
+ ⨯ ./src/app/api/v1/apps/[appId]/route.ts:11:1
+Module not found: Can't resolve 'next-auth'
+   9 | import { NextRequest, NextResponse } from 'next/server';
+  10 | import { PrismaClient, SdkAppStatus } from '@prisma/client';
+> 11 | import { getServerSession } from 'next-auth';
+     | ^
+  12 | import { z } from 'zod';
+  13 |
+  14 | const prisma = new PrismaClient();
+
+https://nextjs.org/docs/messages/module-not-found
+ GET /_next/static/webpack/4395c5dc8d36db19.webpack.hot-update.json 500 in 631ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ ./src/app/api/v1/apps/[appId]/route.ts:11:1
+Module not found: Can't resolve 'next-auth'
+   9 | import { NextRequest, NextResponse } from 'next/server';
+  10 | import { PrismaClient, SdkAppStatus } from '@prisma/client';
+> 11 | import { getServerSession } from 'next-auth';
+     | ^
+  12 | import { z } from 'zod';
+  13 |
+  14 | const prisma = new PrismaClient();
+
+https://nextjs.org/docs/messages/module-not-found
+ HEAD /api/keys/validate 500 in 1774ms
+ GET /marketplace 500 in 1104ms
+ ⨯ ./src/app/api/v1/apps/[appId]/route.ts:11:1
+Module not found: Can't resolve 'next-auth'
+   9 | import { NextRequest, NextResponse } from 'next/server';
+  10 | import { PrismaClient, SdkAppStatus } from '@prisma/client';
+> 11 | import { getServerSession } from 'next-auth';
+     | ^
+  12 | import { z } from 'zod';
+  13 |
+  14 | const prisma = new PrismaClient();
+
+https://nextjs.org/docs/messages/module-not-found
+ GET /_next/static/webpack/4395c5dc8d36db19.webpack.hot-update.json 500 in 408ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /marketplace 500 in 7ms
+ GET /marketplace 500 in 11ms
+ GET /setup 500 in 11ms
+ GET /dashboard 500 in 8ms
+ GET /developers/submit 500 in 7ms
+ ✓ Compiled /favicon.ico in 362ms (580 modules)
+ GET /marketplace 500 in 8ms
+ ✓ Compiled in 169ms (580 modules)
+ GET /marketplace 500 in 7ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 842ms (1373 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /_next/static/webpack/4395c5dc8d36db19.webpack.hot-update.json 404 in 905ms
+useAuth used outside of AuthProvider, using fallback
+useAuth used outside of AuthProvider, using fallback
+ GET /marketplace 200 in 78ms
+ GET /auth/profile 404 in 14ms
+ ○ Compiling /api/v1/apps/register ...
+ ✓ Compiled /api/v1/apps/register in 742ms (1204 modules)
+ GET /api/v1/apps/register 405 in 908ms
+ GET /auth/profile 404 in 95ms
  GET /auth/profile 404 in 36ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 34ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 19ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 13ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 53ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 26ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 29ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 30ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 42ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 28ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 31ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 41ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 44ms
- ✓ Compiled in 946ms (1068 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /setup. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /setup 200 in 147ms
- GET /marketplace 200 in 142ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 93ms
- GET /auth/profile 404 in 89ms
- ✓ Compiled in 308ms (1068 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- ⚠ Unsupported metadata viewport is configured in metadata export in /setup. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 70ms
- GET /setup 200 in 71ms
- ✓ Compiled /api/users/subscriptions in 121ms (636 modules)
- GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 177ms
- ✓ Compiled in 258ms (1089 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- ⚠ Unsupported metadata viewport is configured in metadata export in /setup. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 68ms
- GET /setup 200 in 70ms
- ✓ Compiled in 249ms (1089 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /marketplace. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- ⚠ Unsupported metadata viewport is configured in metadata export in /setup. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /marketplace 200 in 75ms
- GET /setup 200 in 76ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 80ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 27ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
  GET /auth/profile 404 in 32ms
- ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /auth/profile 404 in 37ms
- ○ Compiling /_error ...
- ✓ Compiled /_error in 1800ms (1382 modules)
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/setup/page.js'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/setup/page.js',
-  page: '/setup'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/marketplace/page.js'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/marketplace/page.js',
-  page: '/marketplace'
-}
- GET /auth/profile 404 in 2531ms
- GET /setup 500 in 1178ms
- GET /marketplace 500 in 1174ms
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/setup/page.js'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/setup/page.js',
-  page: '/setup'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/marketplace/page.js'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/marketplace/page.js',
-  page: '/marketplace'
-}
- GET /setup 500 in 227ms
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/setup/page.js'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/setup/page.js',
-  page: '/setup'
-}
- GET /marketplace 500 in 250ms
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/marketplace/page.js'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/marketplace/page.js',
-  page: '/marketplace'
-}
- GET /setup 500 in 229ms
- GET /marketplace 500 in 225ms
-[?25h
+ ✓ Compiled in 235ms (580 modules)
+ GET /marketplace 200 in 47ms
+ ✓ Compiled in 180ms (580 modules)
+ GET /marketplace 200 in 12ms
+ ✓ Compiled in 221ms (580 modules)
+ GET /marketplace 200 in 14ms
+ ✓ Compiled /_not-found in 257ms (1359 modules)
+ GET /auth/profile 404 in 408ms
+ ✓ Compiled /api/v1/apps/register in 116ms (1204 modules)
+ POST /api/v1/apps/register 401 in 252ms
+ ✓ Compiled /api/developers/apps in 477ms (1780 modules)
+Auth0 missing configuration: AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET
+Using demo user for development
+ GET /api/developers/apps 200 in 600ms

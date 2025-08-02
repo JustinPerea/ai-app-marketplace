@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
+import { requireDeveloper, canModifyApp } from '@/lib/auth/developer-auth';
 
 interface RouteParams {
   params: {
@@ -54,6 +55,16 @@ export async function GET(
   try {
     const { appId } = params;
     
+    // Authenticate user
+    const { user, developerId, error } = await requireDeveloper(request);
+    
+    if (error || !developerId) {
+      return NextResponse.json(
+        { error: error || 'Developer authentication required' },
+        { status: 401 }
+      );
+    }
+
     // Find app in database
     const app = await prisma.marketplaceApp.findUnique({
       where: { id: appId },
@@ -77,6 +88,14 @@ export async function GET(
       return NextResponse.json(
         { error: 'App not found' },
         { status: 404 }
+      );
+    }
+
+    // Check if user can access this app
+    if (app.developerId !== developerId) {
+      return NextResponse.json(
+        { error: 'Access denied' },
+        { status: 403 }
       );
     }
 
@@ -126,6 +145,17 @@ export async function PUT(
 ) {
   try {
     const { appId } = params;
+    
+    // Authenticate user
+    const { user, developerId, error } = await requireDeveloper(request);
+    
+    if (error || !developerId) {
+      return NextResponse.json(
+        { error: error || 'Developer authentication required' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     
     // Validate the update data
@@ -141,24 +171,88 @@ export async function PUT(
       );
     }
 
-    // Find app in mock database
-    const appIndex = mockAppDatabase.findIndex(app => app.id === appId);
+    // Find app in database
+    const existingApp = await prisma.marketplaceApp.findUnique({
+      where: { id: appId }
+    });
     
-    if (appIndex === -1) {
+    if (!existingApp) {
       return NextResponse.json(
         { error: 'App not found' },
         { status: 404 }
       );
     }
 
-    // Update app
-    const updatedApp = {
-      ...mockAppDatabase[appIndex],
-      ...validationResult.data,
-      updatedAt: new Date().toISOString()
-    };
+    // Check if user can modify this app
+    if (existingApp.developerId !== developerId) {
+      return NextResponse.json(
+        { error: 'Access denied' },
+        { status: 403 }
+      );
+    }
+
+    // Only allow updates if app is not published
+    if (existingApp.status === 'PUBLISHED') {
+      return NextResponse.json(
+        { error: 'Cannot update published app' },
+        { status: 403 }
+      );
+    }
+
+    const updateData = validationResult.data;
     
-    mockAppDatabase[appIndex] = updatedApp;
+    // Prepare update object
+    const updatedAppData: any = {
+      updatedAt: new Date()
+    };
+
+    // Map validated fields to database schema
+    if (updateData.name) updatedAppData.name = updateData.name;
+    if (updateData.shortDescription) updatedAppData.shortDescription = updateData.shortDescription;
+    if (updateData.description) updatedAppData.description = updateData.description;
+    if (updateData.category) updatedAppData.category = updateData.category;
+    if (updateData.tags) updatedAppData.tags = updateData.tags;
+    if (updateData.pricing) updatedAppData.pricing = updateData.pricing;
+    if (updateData.price !== undefined) updatedAppData.price = updateData.price;
+    if (updateData.iconUrl) updatedAppData.iconUrl = updateData.iconUrl;
+    if (updateData.screenshotUrls) updatedAppData.screenshotUrls = updateData.screenshotUrls;
+    if (updateData.demoUrl !== undefined) updatedAppData.demoUrl = updateData.demoUrl;
+    if (updateData.githubUrl !== undefined) updatedAppData.githubUrl = updateData.githubUrl;
+    
+    // Map required providers
+    if (updateData.requiredProviders) {
+      const providerMap: Record<string, any> = {
+        'OPENAI': 'OPENAI',
+        'ANTHROPIC': 'ANTHROPIC',
+        'GOOGLE': 'GOOGLE',
+        'AZURE_OPENAI': 'AZURE_OPENAI',
+        'COHERE': 'COHERE',
+        'HUGGING_FACE': 'HUGGING_FACE'
+      };
+      updatedAppData.requiredProviders = updateData.requiredProviders.map(p => 
+        providerMap[p.toUpperCase()] || 'OPENAI'
+      );
+    }
+
+    // Update app in database
+    const updatedApp = await prisma.marketplaceApp.update({
+      where: { id: appId },
+      data: updatedAppData,
+      include: {
+        developer: {
+          select: {
+            displayName: true,
+            verified: true
+          }
+        },
+        runtime: {
+          select: {
+            type: true,
+            version: true
+          }
+        }
+      }
+    });
 
     console.log('App updated:', {
       id: updatedApp.id,
@@ -166,9 +260,38 @@ export async function PUT(
       status: updatedApp.status
     });
 
+    // Transform to match expected frontend format
+    const transformedApp = {
+      id: updatedApp.id,
+      name: updatedApp.name,
+      shortDescription: updatedApp.shortDescription,
+      description: updatedApp.description,
+      category: updatedApp.category,
+      tags: updatedApp.tags,
+      pricing: updatedApp.pricing,
+      price: updatedApp.price,
+      requiredProviders: updatedApp.requiredProviders,
+      supportedLocalModels: updatedApp.supportedLocalModels,
+      iconUrl: updatedApp.iconUrl,
+      screenshotUrls: updatedApp.screenshotUrls,
+      demoUrl: updatedApp.demoUrl,
+      githubUrl: updatedApp.githubUrl,
+      runtimeType: updatedApp.runtime.type,
+      status: updatedApp.status,
+      submittedAt: updatedApp.createdAt.toISOString(),
+      submittedBy: updatedApp.developer.displayName,
+      reviewNotes: null,
+      approvedAt: updatedApp.publishedAt?.toISOString() || null,
+      publishedAt: updatedApp.publishedAt?.toISOString() || null,
+      version: updatedApp.version,
+      downloads: updatedApp.downloadCount,
+      rating: updatedApp.averageRating,
+      reviewCount: updatedApp.reviewCount
+    };
+
     return NextResponse.json({
       message: 'App updated successfully',
-      app: updatedApp
+      app: transformedApp
     });
     
   } catch (error) {
@@ -187,22 +310,60 @@ export async function DELETE(
   try {
     const { appId } = params;
     
-    // Find app in mock database
-    const appIndex = mockAppDatabase.findIndex(app => app.id === appId);
+    // Authenticate user
+    const { user, developerId, error } = await requireDeveloper(request);
     
-    if (appIndex === -1) {
+    if (error || !developerId) {
+      return NextResponse.json(
+        { error: error || 'Developer authentication required' },
+        { status: 401 }
+      );
+    }
+    
+    // Find app in database
+    const existingApp = await prisma.marketplaceApp.findUnique({
+      where: { id: appId },
+      include: {
+        developer: {
+          select: {
+            displayName: true
+          }
+        }
+      }
+    });
+    
+    if (!existingApp) {
       return NextResponse.json(
         { error: 'App not found' },
         { status: 404 }
       );
     }
 
-    const deletedApp = mockAppDatabase[appIndex];
-    mockAppDatabase.splice(appIndex, 1);
+    // Check if user can delete this app
+    if (existingApp.developerId !== developerId) {
+      return NextResponse.json(
+        { error: 'Access denied' },
+        { status: 403 }
+      );
+    }
+
+    // Only allow deletion if app is not published
+    if (existingApp.status === 'PUBLISHED') {
+      return NextResponse.json(
+        { error: 'Cannot delete published app' },
+        { status: 403 }
+      );
+    }
+
+    // Delete the app and related data
+    await prisma.marketplaceApp.delete({
+      where: { id: appId }
+    });
 
     console.log('App deleted:', {
-      id: deletedApp.id,
-      name: deletedApp.name
+      id: existingApp.id,
+      name: existingApp.name,
+      developer: existingApp.developer.displayName
     });
 
     return NextResponse.json({

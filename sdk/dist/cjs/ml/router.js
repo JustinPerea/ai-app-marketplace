@@ -2,18 +2,25 @@
 /**
  * ML-Powered Intelligent AI Provider Router
  *
- * Simplified version of the ML router for the standalone SDK
+ * Enhanced ML router with real-time accuracy monitoring for Claude 4 integration
  * Features:
- * - Basic machine learning for optimal provider selection
+ * - Advanced machine learning for optimal provider selection
  * - Context-aware routing based on request patterns
  * - Cost and performance optimization
  * - Learning from usage patterns
+ * - Real-time accuracy monitoring and drift detection
+ * - A/B testing integration
+ * - Performance monitoring with minimal overhead
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MLIntelligentRouter = void 0;
 const types_1 = require("../types");
+const accuracy_monitor_1 = require("./accuracy-monitor");
+const ab_testing_1 = require("./ab-testing");
+const performance_monitor_1 = require("./performance-monitor");
 class MLIntelligentRouter {
-    constructor() {
+    constructor(config) {
+        var _a, _b, _c;
         this.performanceHistory = new Map();
         this.learningData = [];
         this.userPatterns = new Map();
@@ -22,51 +29,110 @@ class MLIntelligentRouter {
         this.MIN_SAMPLES_FOR_PREDICTION = 5;
         this.CONFIDENCE_THRESHOLD = 0.6;
         this.MAX_LEARNING_DATA = 1000;
+        // Monitoring flags
+        this.accuracyMonitoringEnabled = true;
+        this.abTestingEnabled = true;
+        this.performanceMonitoringEnabled = true;
+        this.accuracyMonitoringEnabled = (_a = config === null || config === void 0 ? void 0 : config.enableAccuracyMonitoring) !== null && _a !== void 0 ? _a : true;
+        this.abTestingEnabled = (_b = config === null || config === void 0 ? void 0 : config.enableABTesting) !== null && _b !== void 0 ? _b : true;
+        this.performanceMonitoringEnabled = (_c = config === null || config === void 0 ? void 0 : config.enablePerformanceMonitoring) !== null && _c !== void 0 ? _c : true;
+        // Initialize monitoring systems
+        this.accuracyMonitor = new accuracy_monitor_1.MLAccuracyMonitor();
+        this.abTesting = new ab_testing_1.ABTestingFramework();
+        this.performanceMonitor = new performance_monitor_1.PerformanceMonitor();
         this.initializeMLSystem();
+        this.initializeClaude4Monitoring();
     }
     /**
-     * Main ML-powered routing method
+     * Main ML-powered routing method with enhanced monitoring
      */
     async intelligentRoute(request, userId, availableProviders, options = {}) {
+        const routingStartTime = performance.now();
+        let monitoringOverhead = 0;
         try {
             // Extract features from the request
             const requestFeatures = this.extractRequestFeatures(request, userId);
-            // Get predictions for all available providers
-            const predictions = await this.predictProviderPerformance(requestFeatures, availableProviders);
-            // Filter predictions based on constraints
-            const validPredictions = this.filterPredictions(predictions, options);
-            if (validPredictions.length === 0) {
-                // Fallback to simple routing
-                return this.fallbackRouting(request, availableProviders, options);
+            // Check for A/B testing participation
+            const abTestAssignment = this.checkABTestParticipation(userId, request);
+            let predictions;
+            let selected;
+            if (abTestAssignment) {
+                // Use A/B test assignment
+                const variantConfig = this.abTesting.getVariantConfig(abTestAssignment.testId, abTestAssignment.variant);
+                if (variantConfig) {
+                    selected = await this.predictSingleProviderPerformance(requestFeatures, variantConfig.provider, variantConfig.model) ||
+                        this.getBaselineEstimate(requestFeatures, variantConfig.provider, variantConfig.model);
+                    predictions = [selected];
+                }
+                else {
+                    predictions = await this.predictProviderPerformance(requestFeatures, availableProviders);
+                    selected = this.selectOptimalProvider(predictions, options.optimizeFor || 'balanced');
+                }
             }
-            // Select optimal provider based on optimization strategy
-            const optimizationType = options.optimizeFor || 'balanced';
-            const selected = this.selectOptimalProvider(validPredictions, optimizationType);
+            else {
+                // Normal ML routing
+                predictions = await this.predictProviderPerformance(requestFeatures, availableProviders);
+                // Apply quality score adjustments from monitoring
+                if (this.accuracyMonitoringEnabled) {
+                    const monitoringStart = performance.now();
+                    predictions = this.adjustPredictionsWithMonitoringData(predictions);
+                    monitoringOverhead += performance.now() - monitoringStart;
+                }
+                // Filter predictions based on constraints
+                const validPredictions = this.filterPredictions(predictions, options);
+                if (validPredictions.length === 0) {
+                    // Fallback to simple routing
+                    const fallback = this.fallbackRouting(request, availableProviders, options);
+                    return { ...fallback, routingMetrics: { routingTime: performance.now() - routingStartTime, monitoringOverhead } };
+                }
+                // Select optimal provider based on optimization strategy
+                const optimizationType = options.optimizeFor || 'balanced';
+                selected = this.selectOptimalProvider(validPredictions, optimizationType);
+            }
+            // Record routing performance
+            const routingTime = performance.now() - routingStartTime;
+            if (this.performanceMonitoringEnabled) {
+                this.performanceMonitor.recordRoutingPerformance(routingTime, selected);
+            }
             // Prepare alternatives
-            const alternatives = validPredictions
+            const alternatives = predictions
                 .filter(p => p.provider !== selected.provider || p.model !== selected.model)
                 .slice(0, 3);
-            return {
+            const decision = {
                 selectedProvider: selected.provider,
                 selectedModel: selected.model,
                 predictedCost: selected.predictedCost,
                 predictedResponseTime: selected.predictedResponseTime,
                 predictedQuality: selected.predictedQuality,
                 confidence: selected.confidence,
-                reasoning: this.generateMLReasoning(selected, optimizationType),
+                reasoning: this.generateMLReasoning(selected, options.optimizeFor || 'balanced'),
                 alternatives,
-                optimizationType,
+                optimizationType: options.optimizeFor || 'balanced',
+            };
+            return {
+                ...decision,
+                routingMetrics: {
+                    routingTime,
+                    monitoringOverhead,
+                },
             };
         }
         catch (error) {
             console.error('ML routing failed, falling back to simple routing:', error);
-            return this.fallbackRouting(request, availableProviders, options);
+            const fallback = this.fallbackRouting(request, availableProviders, options);
+            return {
+                ...fallback,
+                routingMetrics: {
+                    routingTime: performance.now() - routingStartTime,
+                    monitoringOverhead
+                }
+            };
         }
     }
     /**
-     * Learn from actual performance to improve predictions
+     * Enhanced learning method with accuracy monitoring integration
      */
-    async learnFromExecution(request, userId, actualProvider, actualModel, actualResponse, actualResponseTime, userSatisfaction) {
+    async learnFromExecution(request, userId, actualProvider, actualModel, actualResponse, actualResponseTime, prediction, userSatisfaction) {
         try {
             const requestFeatures = this.extractRequestFeatures(request, userId);
             const actualQuality = this.calculateActualQuality(actualResponse, userSatisfaction);
@@ -90,13 +156,47 @@ class MLIntelligentRouter {
             this.updatePerformanceHistory(learningData);
             // Update user patterns
             this.updateUserPatterns(userId, requestFeatures);
+            // Enhanced monitoring integration
+            if (prediction && this.accuracyMonitoringEnabled) {
+                await this.accuracyMonitor.trackPredictionAccuracy(prediction, learningData, requestFeatures);
+            }
+            // Record A/B test result if applicable
+            const abTestAssignment = this.getUserABTestAssignment(userId);
+            if (abTestAssignment && this.abTestingEnabled) {
+                const abTestResult = {
+                    testId: abTestAssignment.testId,
+                    variant: abTestAssignment.variant,
+                    userId,
+                    requestId: actualResponse.id,
+                    timestamp: Date.now(),
+                    request,
+                    prediction: prediction,
+                    actualResponse,
+                    actualCost: learningData.actualCost,
+                    actualResponseTime: learningData.actualResponseTime,
+                    actualQuality: learningData.actualQuality,
+                    userSatisfaction,
+                    costAccuracy: this.calculateAccuracy((prediction === null || prediction === void 0 ? void 0 : prediction.predictedCost) || 0, learningData.actualCost),
+                    timeAccuracy: this.calculateAccuracy((prediction === null || prediction === void 0 ? void 0 : prediction.predictedResponseTime) || 0, learningData.actualResponseTime),
+                    qualityAccuracy: this.calculateAccuracy((prediction === null || prediction === void 0 ? void 0 : prediction.predictedQuality) || 0, learningData.actualQuality),
+                };
+                this.abTesting.recordResult(abTestResult);
+            }
+            // Record request performance
+            if (this.performanceMonitoringEnabled) {
+                this.performanceMonitor.recordRequest(request, actualResponse, actualResponseTime, undefined, actualProvider, actualModel);
+            }
         }
         catch (error) {
             console.error('Failed to learn from execution:', error);
+            // Record error for performance monitoring
+            if (this.performanceMonitoringEnabled) {
+                this.performanceMonitor.recordRequest(request, null, actualResponseTime, error, actualProvider, actualModel);
+            }
         }
     }
     /**
-     * Get ML insights and recommendations
+     * Get enhanced ML insights with monitoring data
      */
     async getMLInsights(userId) {
         const insights = {
@@ -105,16 +205,138 @@ class MLIntelligentRouter {
             accuracyMetrics: this.calculateAccuracyMetrics(),
             modelRecommendations: this.generateModelRecommendations(),
         };
+        // Add monitoring data if enabled
+        let monitoringData;
+        if (this.accuracyMonitoringEnabled || this.performanceMonitoringEnabled) {
+            const claude4Drift = await this.accuracyMonitor.detectClaude4Drift();
+            const healthStatus = this.performanceMonitor.getHealthStatus();
+            monitoringData = {
+                driftDetections: this.accuracyMonitor.getAlerts().filter(a => a.type === 'drift_detected').length,
+                activeAlerts: this.accuracyMonitor.getAlerts(true).length + this.performanceMonitor.getAlerts(true).length,
+                systemHealth: healthStatus.status,
+                claude4Performance: claude4Drift,
+            };
+        }
+        // Add A/B testing summary if enabled
+        let abTestingSummary;
+        if (this.abTestingEnabled) {
+            const allTests = this.abTesting.getAllTests();
+            const activeTests = allTests.filter(t => t.status === 'running').length;
+            const completedTests = allTests.filter(t => t.status === 'completed').length;
+            abTestingSummary = {
+                activeTests,
+                completedTests,
+                significantResults: 0, // Would count significant test results
+            };
+        }
         if (userId) {
             const userPatterns = this.analyzeUserPatterns(userId);
-            return { ...insights, userPatterns };
+            return { ...insights, userPatterns, monitoringData, abTestingSummary };
         }
-        return insights;
+        return { ...insights, monitoringData, abTestingSummary };
     }
     // Private Methods
     initializeMLSystem() {
         // Initialize with basic performance assumptions
         this.initializeBaselinePerformance();
+    }
+    /**
+     * Initialize Claude 4 monitoring with baseline A/B test
+     */
+    initializeClaude4Monitoring() {
+        if (!this.abTestingEnabled)
+            return;
+        // Create Claude 4 vs Claude 3.5 Sonnet comparison test
+        const claude4Test = {
+            id: 'claude4-vs-claude35-sonnet',
+            name: 'Claude 4 vs Claude 3.5 Sonnet Performance',
+            description: 'Compare Claude 4 Sonnet performance against Claude 3.5 Sonnet',
+            hypothesis: 'Claude 4 Sonnet provides better quality with comparable cost and speed',
+            variantA: {
+                provider: types_1.APIProvider.ANTHROPIC,
+                model: 'claude-3-5-sonnet-20241022',
+                weight: 0.5,
+            },
+            variantB: {
+                provider: types_1.APIProvider.ANTHROPIC,
+                model: 'claude-sonnet-4-20250514',
+                weight: 0.5,
+            },
+            minSampleSize: 50,
+            maxDuration: 7 * 24 * 60 * 60 * 1000, // 7 days
+            significanceLevel: 0.05,
+            minimumDetectableEffect: 0.05,
+            trafficAllocation: 0.2, // 20% of traffic
+            primaryMetric: 'quality',
+            secondaryMetrics: ['cost', 'responseTime'],
+            status: 'draft',
+            autoStop: {
+                enabled: true,
+                winnerThreshold: 0.95,
+                futilityThreshold: 0.1,
+            },
+        };
+        try {
+            this.abTesting.createTest(claude4Test);
+            // Auto-start the test in production
+            // this.abTesting.startTest(claude4Test.id);
+        }
+        catch (error) {
+            console.warn('Failed to initialize Claude 4 A/B test:', error);
+        }
+    }
+    /**
+     * Check if user should participate in A/B testing
+     */
+    checkABTestParticipation(userId, request) {
+        if (!this.abTestingEnabled)
+            return null;
+        const runningTests = this.abTesting.getRunningTests();
+        for (const test of runningTests) {
+            if (this.abTesting.shouldParticipateInTest(test.id, userId, request)) {
+                const variant = this.abTesting.assignVariant(test.id, userId);
+                if (variant) {
+                    return { testId: test.id, variant };
+                }
+            }
+        }
+        return null;
+    }
+    /**
+     * Get user's current A/B test assignment
+     */
+    getUserABTestAssignment(userId) {
+        // This would be stored in user session or database in production
+        // For now, return null as placeholder
+        return null;
+    }
+    /**
+     * Adjust predictions with real-time monitoring data
+     */
+    adjustPredictionsWithMonitoringData(predictions) {
+        return predictions.map(prediction => {
+            const modelKey = `${prediction.provider}_${prediction.model}`;
+            const currentMetrics = this.accuracyMonitor.getCurrentAccuracyMetrics(modelKey);
+            if (currentMetrics && currentMetrics.sampleSize >= 10) {
+                // Adjust predictions based on actual accuracy
+                const accuracyAdjustment = currentMetrics.overallAccuracy / 0.85; // Baseline accuracy
+                return {
+                    ...prediction,
+                    confidence: Math.min(1.0, prediction.confidence * accuracyAdjustment),
+                    predictedQuality: Math.min(1.0, prediction.predictedQuality * (currentMetrics.qualityAccuracy / 0.85)),
+                    reasoning: `${prediction.reasoning} (adjusted with ${currentMetrics.sampleSize} samples)`,
+                };
+            }
+            return prediction;
+        });
+    }
+    /**
+     * Calculate accuracy between predicted and actual values
+     */
+    calculateAccuracy(predicted, actual) {
+        if (actual === 0)
+            return predicted === 0 ? 1 : 0;
+        return Math.max(0, 1 - Math.abs(predicted - actual) / Math.max(actual, 0.001));
     }
     extractRequestFeatures(request, userId) {
         const promptText = request.messages
