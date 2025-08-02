@@ -814,7 +814,12 @@ model SdkApp {
   requestsPerMinute Int @default(10)
   
   // Feature flags based on tier
-  features SdkFeatures
+  mlRouting       Boolean @default(false)
+  analytics       Boolean @default(false)
+  caching         Boolean @default(false)
+  customModels    Boolean @default(false)
+  batchRouting    Boolean @default(false)
+  prioritySupport Boolean @default(false)
   
   // Usage tracking
   currentPeriodStart DateTime @default(now())
@@ -941,15 +946,7 @@ model SdkAnalytics {
   @@index([successful])
 }
 
-// SDK Feature Configuration (embedded in SdkApp)
-type SdkFeatures {
-  mlRouting     Boolean @default(false)
-  analytics     Boolean @default(false)
-  caching       Boolean @default(false)
-  customModels  Boolean @default(false)
-  batchRouting  Boolean @default(false)
-  prioritySupport Boolean @default(false)
-}
+// SDK Feature Configuration (now inline in SdkApp model)
 
 // SDK Subscription Tiers
 enum SdkTier {
