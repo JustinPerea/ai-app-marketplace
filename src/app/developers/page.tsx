@@ -18,7 +18,8 @@ import {
   Package,
   Rocket,
   Star,
-  TrendingUp
+  TrendingUp,
+  Calculator
 } from 'lucide-react';
 
 const features = [
@@ -90,6 +91,12 @@ const popularApps = [
 
 const quickLinks = [
   {
+    title: 'ROI Calculator',
+    description: 'Calculate your potential revenue from building apps on COSMARA',
+    href: '/developers/roi-calculator',
+    icon: Calculator
+  },
+  {
     title: 'Getting Started Guide',
     description: 'Learn how to build and publish your first AI application',
     href: '/developers/getting-started',
@@ -145,16 +152,35 @@ export default function DevelopersPage() {
               <br />
               <span className="text-glass-gradient">AI Applications</span>
             </h1>
-            <p className="text-body-lg text-text-secondary mb-8 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-body-lg text-text-secondary mb-6 leading-relaxed max-w-3xl mx-auto">
               Join thousands of developers building and monetizing AI applications on our platform. 
               With our BYOK model, comprehensive SDK, and generous revenue sharing, success starts here.
             </p>
+            
+            {/* ROI Calculator Promotion Banner */}
+            <div className="glass-card max-w-2xl mx-auto mb-8 p-6 border border-golden-nebula/30" 
+                 style={{ background: 'rgba(255, 215, 0, 0.05)' }}>
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <Calculator className="h-5 w-5" style={{ color: '#FFD700' }} />
+                <span className="text-lg font-semibold text-golden-nebula">NEW: Revenue Calculator</span>
+              </div>
+              <p className="text-sm text-text-secondary text-center">
+                Calculate your potential earnings with our 0% commission advantage. 
+                See how much you could make in your first year.
+              </p>
+            </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="text-lg px-8 py-6" asChild>
                 <Link href="/developers/getting-started">
                   Get Started
                   <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" className="text-lg px-8 py-6" asChild>
+                <Link href="/developers/roi-calculator">
+                  <Calculator className="mr-2 h-5 w-5" />
+                  Calculate ROI
                 </Link>
               </Button>
               <Button variant="outline" size="lg" className="text-lg px-8 py-6" asChild>
@@ -279,7 +305,7 @@ export default function DevelopersPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
             {quickLinks.map((link, index) => {
               const Icon = link.icon;
               return (

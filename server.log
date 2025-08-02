@@ -356,3 +356,683 @@ useAuth used outside of AuthProvider, using fallback
 Auth0 missing configuration: AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET
 Using demo user for development
  GET /api/developers/apps 200 in 600ms
+ GET /auth/profile 404 in 96ms
+ ✓ Compiled /api/v1/models in 310ms (1373 modules)
+ GET /api/v1/models 200 in 398ms
+ GET /api/v1/models 200 in 8ms
+ ✓ Compiled /api/v1/apps/register in 116ms (1205 modules)
+ POST /api/v1/apps/register 401 in 240ms
+ ○ Compiling /api/v1/ml/route ...
+ ✓ Compiled /api/v1/ml/route in 609ms (2122 modules)
+ POST /api/v1/ml/route 401 in 841ms
+ ✓ Compiled /api/v1/analytics/track in 177ms (2124 modules)
+ POST /api/v1/analytics/track 401 in 332ms
+ ✓ Compiled /api/v1/billing/usage in 249ms (2126 modules)
+ GET /api/v1/billing/usage 401 in 297ms
+ ✓ Compiled /api/developers/apps in 228ms (1565 modules)
+Auth0 missing configuration: AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET
+Using demo user for development
+ GET /api/developers/apps 200 in 295ms
+ ✓ Compiled /api/v1/chat/completions in 191ms (2134 modules)
+OpenAI-compatible API error: Error: OpenAI API key required. Set Authorization header or x-openai-key header.
+    at ProviderRouter.callOpenAI (src/app/api/v1/chat/completions/route.ts:232:12)
+    at ProviderRouter.routeRequest (src/app/api/v1/chat/completions/route.ts:150:32)
+    at POST (src/app/api/v1/chat/completions/route.ts:672:42)
+  230 |     
+  231 |     if (!apiKey) {
+> 232 |       throw new Error('OpenAI API key required. Set Authorization header or x-openai-key header.');
+      |            ^
+  233 |     }
+  234 |
+  235 |     const response = await fetch('https://api.openai.com/v1/chat/completions', {
+ POST /api/v1/chat/completions 500 in 266ms
+ ✓ Compiled /api/v1/teams in 198ms (2136 modules)
+ GET /api/v1/teams 401 in 214ms
+ ✓ Compiled /_not-found in 452ms (2141 modules)
+ GET /api/v1/nonexistent 404 in 532ms
+ ✓ Compiled / in 252ms (1576 modules)
+useAuth used outside of AuthProvider, using fallback
+ GET / 200 in 420ms
+ GET /auth/profile 404 in 26ms
+ GET /api/v1/models 200 in 22ms
+ POST /api/v1/ml/route 401 in 206ms
+Auth0 missing configuration: AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET
+Using demo user for development
+ GET /api/developers/apps 200 in 19ms
+useAuth used outside of AuthProvider, using fallback
+ GET /marketplace 200 in 115ms
+ ○ Compiling /marketplace/apps/simple-ai-chat ...
+ ✓ Compiled /marketplace/apps/simple-ai-chat in 779ms (1854 modules)
+ GET /marketplace/apps/simple-ai-chat 200 in 920ms
+ ✓ Compiled /marketplace/apps/pdf-notes-generator in 461ms (1883 modules)
+useAuth used outside of AuthProvider, using fallback
+ GET /marketplace/apps/pdf-notes-generator 200 in 652ms
+ ✓ Compiled /marketplace/apps/code-review-bot in 262ms (1898 modules)
+useAuth used outside of AuthProvider, using fallback
+ GET /marketplace/apps/code-review-bot 200 in 399ms
+ ✓ Compiled /my-apps in 266ms (1909 modules)
+useAuth used outside of AuthProvider, using fallback
+ GET /my-apps 200 in 360ms
+ ✓ Compiled /developers/dashboard in 254ms (1922 modules)
+useAuth used outside of AuthProvider, using fallback
+ GET /developers/dashboard 200 in 364ms
+ ✓ Compiled /developers/docs in 275ms (1937 modules)
+useAuth used outside of AuthProvider, using fallback
+ GET /developers/docs 200 in 404ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 514ms (1400 modules)
+ GET /auth/profile 404 in 641ms
+ GET /auth/profile 404 in 59ms
+ GET /auth/profile 404 in 31ms
+ GET /auth/profile 404 in 67ms
+ GET /auth/profile 404 in 37ms
+useAuth used outside of AuthProvider, using fallback
+ GET /marketplace 200 in 251ms
+useAuth used outside of AuthProvider, using fallback
+ GET /marketplace 200 in 85ms
+ GET /auth/profile 404 in 66ms
+ ✓ Compiled /api/users/subscriptions in 481ms (1421 modules)
+ GET /api/users/subscriptions?page=1&limit=10&status=ACTIVE 200 in 589ms
+ ✓ Compiled / in 331ms (815 modules)
+ GET / 200 in 448ms
+ GET /auth/profile 404 in 82ms
+ GET /developers 200 in 72ms
+ ✓ Compiled /developers/docs in 196ms (814 modules)
+ GET /developers/docs 200 in 266ms
+ ✓ Compiled /developers/getting-started in 465ms (1435 modules)
+ GET /developers/getting-started 200 in 532ms
+ GET /auth/profile 404 in 70ms
+ GET /developers 200 in 66ms
+ GET /apple-touch-icon-precomposed.png 404 in 35ms
+ GET /apple-touch-icon.png 404 in 55ms
+ ✓ Compiled /favicon.ico in 176ms (825 modules)
+ GET /favicon.ico 200 in 231ms
+ GET /favicon.ico 200 in 234ms
+ GET /auth/profile 404 in 67ms
+ GET /auth/profile 404 in 39ms
+ GET /auth/profile 404 in 33ms
+ GET /auth/profile 404 in 23ms
+ GET /auth/profile 404 in 57ms
+ GET /auth/profile 404 in 36ms
+useAuth used outside of AuthProvider, using fallback
+ GET /developers 200 in 175ms
+ GET /favicon.ico 200 in 9ms
+ GET /auth/profile 404 in 17ms
+ GET /auth/profile 404 in 18ms
+ GET /auth/profile 404 in 16ms
+ GET /auth/profile 404 in 17ms
+ GET /developers/getting-started 200 in 92ms
+useAuth used outside of AuthProvider, using fallback
+ GET /developers 200 in 133ms
+ GET /auth/profile 404 in 15ms
+ GET /auth/profile 404 in 24ms
+ GET /developers/docs 200 in 26ms
+ GET /auth/profile 404 in 24ms
+ GET /developers/docs 200 in 15ms
+ GET /auth/profile 404 in 32ms
+ GET /developers/getting-started 200 in 52ms
+ GET /auth/profile 404 in 22ms
+ GET /auth/profile 404 in 25ms
+ GET /auth/profile 404 in 25ms
+ GET /auth/profile 404 in 31ms
+ GET /auth/profile 404 in 24ms
+ GET /auth/profile 404 in 24ms
+ GET /auth/profile 404 in 33ms
+ GET /auth/profile 404 in 34ms
+ GET /auth/profile 404 in 21ms
+ GET /auth/profile 404 in 79ms
+ GET /auth/profile 404 in 37ms
+ GET /auth/profile 404 in 28ms
+ GET /auth/profile 404 in 33ms
+ GET /auth/profile 404 in 36ms
+ GET /auth/profile 404 in 35ms
+ GET /auth/profile 404 in 24ms
+ GET /auth/profile 404 in 29ms
+ GET /auth/profile 404 in 39ms
+ GET /auth/profile 404 in 49ms
+ GET /auth/profile 404 in 31ms
+ GET /auth/profile 404 in 32ms
+ GET /auth/profile 404 in 29ms
+ GET /auth/profile 404 in 21ms
+ GET /auth/profile 404 in 29ms
+ GET /auth/profile 404 in 33ms
+ GET /auth/profile 404 in 33ms
+ GET /auth/profile 404 in 22ms
+ GET /auth/profile 404 in 38ms
+ ✓ Compiled in 483ms (622 modules)
+ GET /developers/getting-started 200 in 37ms
+ ✓ Compiled in 153ms (622 modules)
+ GET /developers/getting-started 200 in 37ms
+ GET /developers/getting-started 200 in 43ms
+ ✓ Compiled in 524ms (1381 modules)
+ GET /developers/getting-started 200 in 147ms
+ ✓ Compiled in 155ms (622 modules)
+ GET /developers/getting-started 200 in 38ms
+ ✓ Compiled in 351ms (622 modules)
+ GET /developers/getting-started 200 in 106ms
+ ✓ Compiled in 1024ms (1396 modules)
+ GET /developers/getting-started 200 in 94ms
+ ✓ Compiled in 420ms (1396 modules)
+ GET /developers/getting-started 200 in 65ms
+ ✓ Compiled in 438ms (1396 modules)
+ ⨯ Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/developers/getting-started/page.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/developers/getting-started/page.js:23:9614)
+    at Object.<anonymous> (.next/server/app/developers/getting-started/page.js:23:9701) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/developers/getting-started'
+}
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/developers/getting-started/page.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/developers/getting-started/page.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/developers/getting-started/page.js:23:9614)
+    at Object.<anonymous> (.next/server/app/developers/getting-started/page.js:23:9701) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/developers/getting-started'
+}
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/developers/getting-started/page.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'
+}
+ GET /developers/getting-started 500 in 492ms
+ GET /developers/getting-started 500 in 231ms
+ ⨯ Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/developers/getting-started/page.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/developers/getting-started/page.js:23:9614)
+    at Object.<anonymous> (.next/server/app/developers/getting-started/page.js:23:9701) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/developers/getting-started'
+}
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/developers/getting-started/page.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/developers/getting-started/page.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/developers/getting-started/page.js:23:9614)
+    at Object.<anonymous> (.next/server/app/developers/getting-started/page.js:23:9701) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/developers/getting-started'
+}
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/developers/getting-started/page.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'
+}
+ GET /developers/getting-started 500 in 475ms
+ GET /developers/getting-started 500 in 228ms
+ ✓ Compiled in 365ms (622 modules)
+ ⨯ Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/developers/getting-started/page.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/developers/page.js:2:9557)
+    at Object.<anonymous> (.next/server/app/developers/page.js:2:9644) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/developers'
+}
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 789ms (1387 modules)
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /auth/profile 404 in 912ms
+ GET /_next/static/webpack/85f6ec5927bf8796.webpack.hot-update.json 404 in 880ms
+ GET /developers 500 in 914ms
+ ⨯ Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/developers/page.js:2:9557)
+    at Object.<anonymous> (.next/server/app/developers/page.js:2:9644) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/developers'
+}
+ GET /developers 500 in 24ms
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ ⨯ Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/developers/page.js:2:9557)
+    at Object.<anonymous> (.next/server/app/developers/page.js:2:9644) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/developers'
+}
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/app/developers/getting-started/page.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/developers/page.js:2:9557)
+    at Object.<anonymous> (.next/server/app/developers/page.js:2:9644) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/developers'
+}
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ GET /developers 500 in 199ms
+ ⨯ Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/page.js:2:10164)
+    at Object.<anonymous> (.next/server/app/page.js:2:10251) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/developers/page.js:2:9557)
+    at Object.<anonymous> (.next/server/app/developers/page.js:2:9644) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/developers'
+}
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/developers/page.js:2:9557)
+    at Object.<anonymous> (.next/server/app/developers/page.js:2:9644) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/developers'
+}
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'
+}
+Error: Cannot find module './4985.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/app/page.js:2:10164)
+    at Object.<anonymous> (.next/server/app/page.js:2:10251) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+[Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './8548.js'
+Require stack:
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/webpack-runtime.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/server/pages/_document.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/require.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/load-components.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/utils.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/options.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/swc/index.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/router-server.js
+- /Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/node_modules/next/dist/server/lib/start-server.js
+    at <unknown> (.next/server/pages/_document.js:1:327)
+    at Object.<anonymous> (.next/server/pages/_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/justinperea/Documents/Projects/ai-app-marketplace/marketplace-platform/.next/fallback-build-manifest.json'
+}
+ GET / 500 in 571ms
+ GET / 500 in 275ms
+ ✓ Compiled /favicon.ico in 314ms (792 modules)
+ GET /favicon.ico 200 in 383ms
