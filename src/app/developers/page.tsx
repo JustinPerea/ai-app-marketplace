@@ -19,7 +19,8 @@ import {
   Rocket,
   Star,
   TrendingUp,
-  Calculator
+  Calculator,
+  Bot
 } from 'lucide-react';
 
 const features = [
@@ -171,6 +172,12 @@ export default function DevelopersPage() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="text-lg px-8 py-6 glass-button-primary" asChild>
+                <Link href="/developers/claude-code">
+                  <Bot className="mr-2 h-5 w-5" />
+                  Using Claude Code?
+                </Link>
+              </Button>
               <Button size="lg" className="text-lg px-8 py-6" asChild>
                 <Link href="/developers/getting-started">
                   Get Started
