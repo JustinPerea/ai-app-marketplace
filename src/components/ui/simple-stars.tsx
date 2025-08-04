@@ -16,6 +16,7 @@ export function SimpleStars({ starCount = 30, parallaxSpeed = 0.3 }: SimpleStars
     size: number; 
     delay: number;
   }>>([]);
+  const [scrollBlur, setScrollBlur] = useState(0);
 
   useEffect(() => {
     const generateStars = () => {
@@ -37,12 +38,20 @@ export function SimpleStars({ starCount = 30, parallaxSpeed = 0.3 }: SimpleStars
     generateStars();
   }, [starCount]);
 
-  // Parallax scroll effect
+  // Parallax scroll effect with motion blur
   useEffect(() => {
     if (stars.length === 0) return;
 
+    let lastScrollY = window.scrollY;
+    let scrollVelocity = 0;
+
     const handleScroll = () => {
       const scrollY = window.scrollY;
+      
+      // Calculate scroll velocity for blur effect
+      scrollVelocity = Math.abs(scrollY - lastScrollY);
+      const blurAmount = Math.min(scrollVelocity * 0.1, 2); // Cap blur at 2px
+      setScrollBlur(blurAmount);
       
       setStars(prevStars => 
         prevStars.map(star => ({
@@ -50,6 +59,8 @@ export function SimpleStars({ starCount = 30, parallaxSpeed = 0.3 }: SimpleStars
           currentTop: star.initialTop - (scrollY * parallaxSpeed / window.innerHeight) * 100
         }))
       );
+      
+      lastScrollY = scrollY;
     };
 
     // Throttle scroll events for performance
@@ -66,8 +77,14 @@ export function SimpleStars({ starCount = 30, parallaxSpeed = 0.3 }: SimpleStars
 
     window.addEventListener('scroll', throttledScroll, { passive: true });
 
+    // Decay blur effect when scrolling stops
+    const blurDecayInterval = setInterval(() => {
+      setScrollBlur(prev => Math.max(0, prev * 0.9));
+    }, 16); // ~60fps
+
     return () => {
       window.removeEventListener('scroll', throttledScroll);
+      clearInterval(blurDecayInterval);
     };
   }, [stars.length, parallaxSpeed]);
 
@@ -87,6 +104,7 @@ export function SimpleStars({ starCount = 30, parallaxSpeed = 0.3 }: SimpleStars
             opacity: star.currentTop < -10 || star.currentTop > 110 ? 0 : 0.7 + Math.random() * 0.3, // Fade out stars that move too far
             animationDelay: `${star.delay}s`,
             transition: 'opacity 0.3s ease-out', // Smooth fade transition
+            filter: scrollBlur > 0.1 ? `blur(${scrollBlur}px)` : 'none', // Apply motion blur during scroll
           }}
         />
       ))}

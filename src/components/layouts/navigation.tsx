@@ -80,8 +80,8 @@ export function Navigation() {
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-6">
+          {/* Navigation Links - Simplified to 5 core items */}
+          <div className="hidden md:flex items-center space-x-8">
             <Link
               href="/marketplace"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -89,44 +89,21 @@ export function Navigation() {
               Marketplace
             </Link>
             <Link
-              href="/my-apps"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center"
-            >
-              <Zap className="h-4 w-4 mr-1" />
-              My Apps
-            </Link>
-            <Link
-              href="/ai-guide"
+              href="/business"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              AI Guide
-            </Link>
-            <Link
-              href="/business"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center"
-            >
-              <Building2 className="h-4 w-4 mr-1" />
               Business
             </Link>
             <Link
               href="/developers"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Code className="h-4 w-4 mr-1" />
               Developers
             </Link>
             <Link
-              href="/roadmap"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center"
-            >
-              <Map className="h-4 w-4 mr-1" />
-              Roadmap
-            </Link>
-            <Link
               href="/setup"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Settings className="h-4 w-4 mr-1" />
               Setup
             </Link>
             <Link
@@ -197,7 +174,7 @@ export function Navigation() {
                   <DropdownMenuItem>
                     <Link href="/setup" className="flex items-center cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
-                      <span>API Keys</span>
+                      <span>Account Management</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />

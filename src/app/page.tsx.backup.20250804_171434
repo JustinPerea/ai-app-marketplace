@@ -25,7 +25,7 @@ function getDynamicStats() {
     // Row 2: Platform Readiness
     readinessStats: [
       { value: "Ready SDK", label: "Developer Tools", animatedValue: 100 },
-      { value: "Secure Connection", label: "Account Management", animatedValue: 100 },
+      { value: "Secure BYOK", label: "Key Management", animatedValue: 100 },
       { value: "Growing", label: "Ecosystem", animatedValue: 100 }
     ]
   };
@@ -61,18 +61,29 @@ export default function Home() {
             </p>
             
             {/* Cosmic User Paths */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto md:h-96">
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto md:h-96">
               {/* Mission Control Card */}
               <div className="glass-card p-8 group hover:scale-105 transition-transform flex flex-col h-full">
-                {/* Unified responsive layout */}
-                <div className="flex flex-col md:flex-row items-center md:items-center text-center md:text-left md:gap-6 flex-1">
-                  <div className="flex-shrink-0 mb-4 md:mb-0">
+                {/* Mobile: Centered vertical layout */}
+                <div className="flex flex-col items-center text-center md:hidden flex-1">
+                  <div className="mb-4">
+                    <MissionControlLogo size={72} animated={true} />
+                  </div>
+                  <h3 className="text-h2 mb-4 text-text-primary">Launch Your AI Mission</h3>
+                  <p className="text-body-glass mb-6 leading-relaxed flex-1">
+                    Don't worry about getting multiple API keys - we handle the setup so you can focus on using AI apps
+                  </p>
+                </div>
+                
+                {/* Desktop/Tablet: Horizontal layout */}
+                <div className="hidden md:flex md:items-center md:gap-6 flex-1">
+                  <div className="flex-shrink-0">
                     <MissionControlLogo size={72} animated={true} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-h2 mb-3 md:mb-3 text-text-primary">Launch Your AI Mission</h3>
+                    <h3 className="text-h2 mb-3 text-text-primary">Launch Your AI Mission</h3>
                     <p className="text-body-glass leading-relaxed">
-                      Don't worry about connecting your accounts - we handle the setup so you can focus on using AI apps
+                      Don't worry about getting multiple API keys - we handle the setup so you can focus on using AI apps
                     </p>
                   </div>
                 </div>
@@ -92,15 +103,26 @@ export default function Home() {
 
               {/* Navigator Mode Card */}
               <div className="glass-card p-8 group hover:scale-105 transition-transform flex flex-col h-full">
-                {/* Unified responsive layout */}
-                <div className="flex flex-col md:flex-row items-center md:items-center text-center md:text-left md:gap-6 flex-1">
-                  <div className="flex-shrink-0 mb-4 md:mb-0">
+                {/* Mobile: Centered vertical layout */}
+                <div className="flex flex-col items-center text-center md:hidden flex-1">
+                  <div className="mb-4">
+                    <NavigatorLogo size={72} animated={true} />
+                  </div>
+                  <h3 className="text-h2 mb-4 text-text-primary">Navigate with Your Own Fleet</h3>
+                  <p className="text-body-glass mb-6 leading-relaxed flex-1">
+                    Use your own API keys for maximum privacy, cost savings, and direct control over your AI usage
+                  </p>
+                </div>
+                
+                {/* Desktop/Tablet: Horizontal layout */}
+                <div className="hidden md:flex md:items-center md:gap-6 flex-1">
+                  <div className="flex-shrink-0">
                     <NavigatorLogo size={72} animated={true} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-h2 mb-3 md:mb-3 text-text-primary">Navigate with Your Own Fleet</h3>
+                    <h3 className="text-h2 mb-3 text-text-primary">Navigate with Your Own Fleet</h3>
                     <p className="text-body-glass leading-relaxed">
-                      Use your own accounts for maximum privacy, cost savings, and direct control over your AI usage
+                      Use your own API keys for maximum privacy, cost savings, and direct control over your AI usage
                     </p>
                   </div>
                 </div>
@@ -119,24 +141,24 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Two-Row Dynamic Stats Display - Mobile Optimized */}
+            {/* Two-Row Dynamic Stats Display */}
             <div className="mt-16 space-y-8">
               {/* Row 1: Capability Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-2xl mx-auto">
+              <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                 {dynamicStats.capabilityStats.map((stat, index) => (
                   <div key={`capability-${index}`} className="text-center">
-                    <div className="text-xl md:text-2xl font-bold text-text-primary">{stat.value}</div>
-                    <div className="text-xs md:text-sm text-text-secondary">{stat.label}</div>
+                    <div className="text-2xl font-bold text-text-primary">{stat.value}</div>
+                    <div className="text-sm text-text-secondary">{stat.label}</div>
                   </div>
                 ))}
               </div>
               
               {/* Row 2: Platform Readiness */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-2xl mx-auto">
+              <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                 {dynamicStats.readinessStats.map((stat, index) => (
                   <div key={`readiness-${index}`} className="text-center">
-                    <div className="text-base md:text-lg font-semibold text-cosmara-brand">{stat.value}</div>
-                    <div className="text-xs md:text-sm text-text-secondary">{stat.label}</div>
+                    <div className="text-lg font-semibold text-cosmara-brand">{stat.value}</div>
+                    <div className="text-sm text-text-secondary">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -157,7 +179,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             <div className="glass-card p-6 cursor-pointer group">
               <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
                    style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}>
@@ -174,9 +196,9 @@ export default function Home() {
                    style={{ background: 'linear-gradient(135deg, #FFD700, #FF6B35)' }}>
                 <Globe className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-h3 mb-3 text-text-primary">Access All AI Tools</h3>
+              <h3 className="text-h3 mb-3 text-text-primary">Universal AI Access</h3>
               <p className="text-body-glass">
-                Connect to the complete AI ecosystem. ChatGPT, Claude, Gemini, and beyond - all in one platform.
+                Connect to the complete AI ecosystem. OpenAI, Anthropic, Google AI, and beyond - all in one platform.
               </p>
             </div>
             
@@ -196,9 +218,9 @@ export default function Home() {
                    style={{ background: 'linear-gradient(135deg, #FF6B35, #8B5CF6)' }}>
                 <Key className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-h3 mb-3 text-text-primary">Account Management</h3>
+              <h3 className="text-h3 mb-3 text-text-primary">API Key Management</h3>
               <p className="text-body-glass">
-                Securely manage your AI accounts with enterprise-grade security and automated connection management.
+                Securely manage your API keys with envelope encryption and enterprise-grade key rotation.
               </p>
             </div>
 
@@ -220,7 +242,7 @@ export default function Home() {
               </div>
               <h3 className="text-h3 mb-3 text-text-primary">Cost Optimization</h3>
               <p className="text-body-glass">
-                Save up to 80% compared to individual subscriptions with our intelligent routing and usage optimization features.
+                Save up to 40% on AI costs with our intelligent routing and usage optimization features.
               </p>
             </div>
           </div>
@@ -240,7 +262,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             {[
               {
                 name: "Smart Content Generator",
