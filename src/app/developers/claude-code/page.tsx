@@ -36,10 +36,11 @@ export default function ClaudeCodePage() {
 
 ## PLATFORM OVERVIEW
 COSMARA is an AI App Marketplace with BYOK (Bring Your Own Keys) architecture that supports multiple AI providers:
-- OpenAI (GPT-4o, GPT-4o-mini)
-- Anthropic (Claude 3.5 Sonnet, Claude 3 Haiku)
-- Google AI (Gemini 1.5 Pro, Gemini 1.5 Flash)
+- OpenAI (GPT-4o, GPT-4o-mini) - Text generation and chat
+- Anthropic (Claude 3.5 Sonnet, Claude 3 Haiku) - Advanced reasoning and analysis
+- Google AI (Gemini 1.5 Pro, Gemini 1.5 Flash, **Gemini Veo 2**) - Text generation and **video creation**
 - Cohere, Hugging Face, and local Ollama models
+- **🎥 NEW: Video Generation** - Create videos from text descriptions using Gemini Veo AI
 
 ## TECHNICAL ARCHITECTURE
 - **Frontend**: Next.js 14+ with App Router, TypeScript, Tailwind CSS, shadcn/ui
@@ -118,7 +119,7 @@ const apiKeys = getApiKeys();
 
 ## MULTI-PROVIDER AI INTEGRATION
 
-### Making AI Requests:
+### Text Generation Requests:
 \`\`\`typescript
 // Example API call to OpenAI
 const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -149,6 +150,121 @@ const response = await fetch('https://api.anthropic.com/v1/messages', {
     messages: [{ role: 'user', content: userInput }],
   }),
 });
+
+// Example API call to Google Gemini (text)
+const response = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=\${apiKeys.google}\`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    contents: [{ parts: [{ text: userInput }] }],
+    generationConfig: {
+      maxOutputTokens: 500,
+      temperature: 0.7,
+    },
+  }),
+});
+\`\`\`
+
+### 🎥 VIDEO GENERATION WITH GEMINI VEO (NEW!)
+
+\`\`\`typescript
+// Generate video with Gemini Veo 2 Flash
+const generateVideo = async (prompt: string, duration: number = 8) => {
+  const videoRequest = {
+    prompt: prompt,
+    duration: duration, // 1-8 seconds
+    aspectRatio: '16:9', // '16:9', '9:16', '1:1', '4:3'
+    quality: 'standard', // 'standard' or 'high'
+    model: 'gemini-veo-2-flash' // or 'gemini-veo-2'
+  };
+
+  // Cost estimation: $0.35 per second
+  const estimatedCost = duration * 0.35;
+  console.log(\`Estimated cost: \$\${estimatedCost.toFixed(3)}\`);
+
+  // Note: This is a simplified example
+  // Actual Gemini Veo API integration would require:
+  // 1. Authentication with Google AI Studio
+  // 2. Proper video generation endpoint
+  // 3. Polling for completion status
+  // 4. Video URL retrieval
+
+  return {
+    id: 'video-generation-' + Date.now(),
+    status: 'processing',
+    estimatedCost,
+    model: videoRequest.model,
+    prompt: videoRequest.prompt
+  };
+};
+
+// Video generation UI component example
+const VideoGenerator = () => {
+  const [prompt, setPrompt] = useState('');
+  const [duration, setDuration] = useState(8);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerate = async () => {
+    if (!prompt.trim()) return;
+    
+    setIsGenerating(true);
+    try {
+      const result = await generateVideo(prompt, duration);
+      console.log('Video generation started:', result);
+      // Handle result - show progress, poll for completion, etc.
+    } catch (error) {
+      console.error('Video generation failed:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          🎥 AI Video Generator
+          <Badge variant="secondary">Gemini Veo</Badge>
+        </CardTitle>
+        <CardDescription>
+          Generate videos from text descriptions using Gemini Veo AI
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Textarea
+          placeholder="Describe your video: A beautiful sunset over mountains..."
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          rows={3}
+        />
+        <div className="flex items-center gap-4">
+          <label className="text-sm font-medium">Duration: {duration}s</label>
+          <input
+            type="range"
+            min="1"
+            max="8"
+            value={duration}
+            onChange={(e) => setDuration(parseInt(e.target.value))}
+            className="flex-1"
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">
+            Cost: \$\${(duration * 0.35).toFixed(3)}
+          </span>
+          <Button 
+            onClick={handleGenerate}
+            disabled={isGenerating || !prompt.trim()}
+          >
+            {isGenerating ? 'Generating...' : 'Generate Video'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 \`\`\`
 
 ## UI COMPONENTS AVAILABLE
@@ -167,9 +283,10 @@ Use these CSS classes for consistent styling:
 
 ## EXAMPLE APPS FOR REFERENCE
 Study these existing apps:
-1. **Simple AI Chat** (\`/marketplace/simple-ai-chat\`) - Basic chat interface
-2. **PDF Notes Generator** (\`/marketplace/pdf-notes-generator\`) - File processing
-3. **Code Review Bot** (\`/marketplace/code-review-bot\`) - Code analysis
+1. **Simple AI Chat** (\`/marketplace/apps/simple-ai-chat\`) - Basic chat interface
+2. **PDF Notes Generator** (\`/marketplace/apps/pdf-notes-generator\`) - File processing  
+3. **Code Review Bot** (\`/marketplace/apps/code-review-bot\`) - Code analysis
+4. **🎥 AI Video Generator** (\`/marketplace/apps/ai-video-generator\`) - Gemini Veo video generation (NEW!)
 
 ## APP SUBMISSION REQUIREMENTS
 1. **Functionality**: App must work with user's own API keys

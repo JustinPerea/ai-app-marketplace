@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MainLayout } from '@/components/layouts/main-layout';
+import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
+import { CosmicPageHeader } from '@/components/ui/cosmic-page-header';
+import { CosmicCard } from '@/components/ui/cosmic-card';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -193,35 +195,15 @@ export default function SetupPage() {
   );
 
   return (
-    <MainLayout>
-      {/* Simple stars background with parallax scrolling */}
-      <SimpleStars starCount={50} parallaxSpeed={0.3} />
-      
-      {/* Cosmara stellar background with cosmic gradients */}
-      <div className="absolute inset-0 pointer-events-none" 
-           style={{ 
-             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
-           }}>
-      </div>
-      
-      <div className="container mx-auto px-4 py-8 relative z-10">
-        {/* Header - Cosmic styling */}
-        <div className="mb-8 text-center">
-          <div className="glass-base px-4 py-2 rounded-full border inline-flex items-center mb-6"
-               style={{ 
-                 background: 'rgba(255, 215, 0, 0.1)', 
-                 borderColor: 'rgba(255, 215, 0, 0.3)' 
-               }}>
-            <Key className="h-3 w-3 mr-2" style={{ color: '#FFD700' }} />
-            <span className="text-sm font-medium text-text-primary">AI Provider Setup</span>
-          </div>
-          <h1 className="text-hero-glass mb-4">
-            <span className="text-glass-gradient">Connect Your Universe</span>
-          </h1>
-          <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
-            Connect your API keys to unlock AI-powered applications. Your keys are stored securely and never shared.
-          </p>
-        </div>
+    <CosmicPageLayout gradientOverlay="blue" starCount={50} parallaxSpeed={0.3}>
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <CosmicPageHeader 
+          icon={Key}
+          title="Connect Your Universe"
+          subtitle="Connect your API keys to unlock AI-powered applications. Your keys are stored securely and never shared."
+          badge="AI Provider Setup"
+        />
 
         {/* Quick Stats - Cosmic glass design */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -573,6 +555,6 @@ export default function SetupPage() {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    </CosmicPageLayout>
   );
 }

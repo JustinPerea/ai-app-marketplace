@@ -178,20 +178,6 @@ body {
   font-family: var(--font-primary);
   font-feature-settings: "rlig" 1, "calt" 1;
   line-height: 1.6;
-  
-  /* Cosmara Deep Space background with subtle stellar gradients */
-  background-image: 
-    radial-gradient(circle at 20% 20%, 
-      rgba(255, 215, 0, 0.08) 0%,
-      rgba(255, 165, 0, 0.04) 30%,
-      transparent 60%),
-    radial-gradient(circle at 80% 80%, 
-      rgba(59, 130, 246, 0.06) 0%,
-      rgba(139, 92, 246, 0.03) 40%,
-      transparent 70%),
-    radial-gradient(circle at 40% 60%, 
-      rgba(255, 107, 53, 0.04) 0%,
-      transparent 50%);
 }
 
 /* Light mode body background - Dark Aero */
@@ -257,6 +243,7 @@ body {
   line-height: 1.2;
   color: var(--color-text-primary);
   margin-bottom: 1rem;
+  position: relative;
 }
 
 .text-section-header::after {
@@ -265,8 +252,8 @@ body {
   width: 60px;
   height: 3px;
   background: linear-gradient(90deg, 
-    var(--color-innovation-magenta), 
-    var(--color-accent-azure));
+    #8B5CF6, 
+    #3B82F6);
   border-radius: 2px;
   margin-top: 0.5rem;
   box-shadow: 0 2px 8px rgba(189, 0, 255, 0.3);
@@ -317,6 +304,7 @@ body {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  contain: layout style paint;
 }
 
 .glass-card::before {
@@ -332,6 +320,9 @@ body {
     transparent
   );
   transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 .glass-card:hover {
@@ -415,7 +406,7 @@ body {
 }
 
 .light .glass-button-primary {
-  background: linear-gradient(135deg, var(--color-innovation-magenta), var(--color-bridge-violet));
+  background: linear-gradient(135deg, #8B5CF6, #7C3AED);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 
@@ -536,15 +527,9 @@ body {
   color: #94A3B8; /* Stardust muted - subtle but visible */
 }
 
-/* Deep Space Background - Cosmara Foundation */
-body {
-  background: linear-gradient(135deg, #0B1426 0%, #1e293b 100%);
-  min-height: 100vh;
-}
-
-/* Ensure Deep Space background is applied to html and main elements */
+/* Main elements - ensure proper background inheritance */
 html {
-  background: linear-gradient(135deg, #0B1426 0%, #1e293b 100%);
+  background: transparent;
   min-height: 100vh;
 }
 
@@ -578,7 +563,7 @@ main {
 .btn-secondary {
   background: var(--color-glass-blue);
   border: 1px solid rgba(6, 137, 228, 0.3);
-  color: var(--color-accent-azure);
+  color: #3B82F6;
   padding: 0.75rem 1.5rem;
   border-radius: var(--radius);
   font-weight: 500;
