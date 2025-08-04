@@ -117,7 +117,7 @@ export function ROICalculator() {
             Calculate Your AI Cost Savings
           </h2>
           <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
-            See how much your organization can save with Cosmara's intelligent multi-provider orchestration.
+            See how much your organization can save with <span className="text-cosmara-brand">Cosmara</span>'s intelligent multi-provider orchestration.
           </p>
         </div>
 
@@ -268,7 +268,7 @@ export function ROICalculator() {
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
           <p className="text-sm text-text-muted mb-4">
-            Join 10,000+ developers already saving on AI costs with Cosmara
+            Join 10,000+ developers already saving on AI costs with <span className="text-cosmara-brand">Cosmara</span>
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             <Badge variant="outline" className="text-xs">No Lock-in</Badge>

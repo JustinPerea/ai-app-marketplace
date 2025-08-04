@@ -53,7 +53,7 @@ export default function Home() {
               <h1 className="text-hero-glass mb-6">
                 <span className="text-cosmara-brand" style={{fontSize: '1.1em'}}>COSMARA</span>
                 <br />
-                <span className="text-stardust-gradient">All AI Tools, One Simple Platform</span>
+                <span className="text-glass-gradient">All AI Tools, One Simple Platform</span>
               </h1>
             </div>
             <p className="text-body-lg text-text-secondary mb-8 leading-relaxed max-w-2xl mx-auto">

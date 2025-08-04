@@ -91,7 +91,7 @@ export function MobileNavigation() {
         <SheetHeader className="text-left">
           <SheetTitle className="flex items-center gap-2">
             <CosmaraLogo size={24} />
-            <span className="text-glass-gradient font-bold">COSMARA</span>
+            <span className="text-cosmara-brand font-bold">COSMARA</span>
           </SheetTitle>
           <SheetDescription>
             Navigate through your AI universe

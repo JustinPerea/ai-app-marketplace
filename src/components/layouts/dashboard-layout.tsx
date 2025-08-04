@@ -89,7 +89,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </Button>
             <Link href="/" className="flex items-center space-x-3">
               <CosmaraLogo size={32} />
-              <span className="text-xl font-bold text-glass-gradient">COSMARA</span>
+              <span className="text-xl font-bold text-cosmara-brand">COSMARA</span>
             </Link>
             <nav className="hidden lg:flex space-x-8 ml-8">
               <Link href="/marketplace" className="text-sm font-medium text-[#94A3B8] hover:text-[#E2E8F0]">

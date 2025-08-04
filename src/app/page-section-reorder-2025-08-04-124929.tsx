@@ -18,7 +18,7 @@ function getDynamicStats() {
   return {
     // Row 1: Capability Stats
     capabilityStats: [
-      { value: "ChatGPT • Claude • Gemini • and 4 more", label: "AI Providers", animatedValue: totalProviders },
+      { value: `${totalProviders}+`, label: "AI Providers", animatedValue: totalProviders },
       { value: `${totalModels}+`, label: "AI Models", animatedValue: totalModels },
       { value: "Up to 80%", label: "Cost Savings", animatedValue: 80 }
     ],
@@ -51,13 +51,14 @@ export default function Home() {
             </div>
             <div className="relative z-10">
               <h1 className="text-hero-glass mb-6">
-                <span className="text-cosmara-brand" style={{fontSize: '1.1em'}}>COSMARA</span>
+                <span className="text-stardust-muted">Welcome to</span>
                 <br />
-                <span className="text-stardust-gradient">All AI Tools, One Simple Platform</span>
+                <span className="text-cosmara-brand">COSMARA</span>
               </h1>
             </div>
             <p className="text-body-lg text-text-secondary mb-8 leading-relaxed max-w-2xl mx-auto">
-              Use the world's most powerful AI models for any task. One account, unlimited possibilities.
+              Navigate the infinite possibilities of AI with your own keys. 
+              Discover, deploy, and manage applications in your personal AI marketplace.
             </p>
             
             {/* Cosmic User Paths */}
@@ -249,6 +250,120 @@ export default function Home() {
         </div>
       </section>
 
+      {/* User Type Navigation */}
+      <section className="py-20 relative">
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-section-header mb-4">
+              Choose Your Path
+            </h2>
+            <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
+              Whether you're exploring AI possibilities or building the next generation of AI applications, we have the right tools for you.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* General Users */}
+            <Card className="glass-card p-8 text-center group hover:scale-105 transition-transform">
+              <div className="w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-6"
+                   style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}>
+                <Users className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-h2 mb-4 text-text-primary">I'm Exploring AI</h3>
+              <p className="text-body-glass mb-6 leading-relaxed">
+                Discover how AI can transform your work with our curated marketplace of applications. 
+                No technical knowledge required.
+              </p>
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center justify-center space-x-2 text-sm text-text-secondary">
+                  <Shield className="h-4 w-4 text-green-500" />
+                  <span>Your own API keys</span>
+                </div>
+                <div className="flex items-center justify-center space-x-2 text-sm text-text-secondary">
+                  <Zap className="h-4 w-4 text-blue-500" />
+                  <span>Easy setup & management</span>
+                </div>
+                <div className="flex items-center justify-center space-x-2 text-sm text-text-secondary">
+                  <TrendingUp className="h-4 w-4 text-purple-500" />
+                  <span>Cost-effective solutions</span>
+                </div>
+              </div>
+              <button className="w-full mb-4 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2" 
+                      style={{ 
+                        background: 'linear-gradient(135deg, #8B5CF6, #7C3AED)', 
+                        color: 'white',
+                        boxShadow: '0 4px 14px 0 rgba(139, 92, 246, 0.3)'
+                      }}>
+                <Link href="/marketplace" className="flex items-center space-x-2">
+                  <span>Explore AI Apps</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </button>
+              <button className="w-full px-6 py-3 rounded-xl font-medium border-2 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2" 
+                      style={{ 
+                        background: 'rgba(59, 130, 246, 0.1)', 
+                        borderColor: '#3B82F6',
+                        color: '#3B82F6'
+                      }}>
+                <Link href="/business" className="flex items-center space-x-2">
+                  <span>Calculate Business ROI</span>
+                  <BarChart3 className="h-4 w-4" />
+                </Link>
+              </button>
+            </Card>
+
+            {/* Developers */}
+            <Card className="glass-card p-8 text-center group hover:scale-105 transition-transform">
+              <div className="w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-6"
+                   style={{ background: 'linear-gradient(135deg, #FF6B35, #8B5CF6)' }}>
+                <Code2 className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-h2 mb-4 text-text-primary">I'm Building with AI</h3>
+              <p className="text-body-glass mb-6 leading-relaxed">
+                Access our developer platform with multi-provider orchestration, SDKs, and tools to build the next generation of AI applications.
+              </p>
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center justify-center space-x-2 text-sm text-text-secondary">
+                  <Globe className="h-4 w-4 text-orange-500" />
+                  <span>Multi-provider SDK</span>
+                </div>
+                <div className="flex items-center justify-center space-x-2 text-sm text-text-secondary">
+                  <Key className="h-4 w-4 text-green-500" />
+                  <span>Advanced API management</span>
+                </div>
+                <div className="flex items-center justify-center space-x-2 text-sm text-text-secondary">
+                  <BarChart3 className="h-4 w-4 text-blue-500" />
+                  <span>Cost optimization tools</span>
+                </div>
+              </div>
+              <button className="w-full mb-4 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2" 
+                      style={{ 
+                        background: 'linear-gradient(135deg, #8B5CF6, #7C3AED)', 
+                        color: 'white',
+                        boxShadow: '0 4px 14px 0 rgba(139, 92, 246, 0.3)'
+                      }}>
+                <Link href="/developers" className="flex items-center space-x-2">
+                  <span>Developer Portal</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </button>
+              <button className="w-full px-6 py-3 rounded-xl font-medium border-2 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2" 
+                      style={{ 
+                        background: 'rgba(59, 130, 246, 0.1)', 
+                        borderColor: '#3B82F6',
+                        color: '#3B82F6'
+                      }}>
+                <Link href="/ai-guide" className="flex items-center space-x-2">
+                  <span>Technical Guide</span>
+                  <Shield className="h-4 w-4" />
+                </Link>
+              </button>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Featured Apps Section - Glass Design */}
       <section className="py-20 relative">
         
@@ -348,7 +463,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
 
       {/* Developer CTA - Glass Design */}
       <section className="py-20 relative overflow-hidden">

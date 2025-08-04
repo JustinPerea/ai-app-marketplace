@@ -18,7 +18,7 @@ function getDynamicStats() {
   return {
     // Row 1: Capability Stats
     capabilityStats: [
-      { value: "ChatGPT • Claude • Gemini • and 4 more", label: "AI Providers", animatedValue: totalProviders },
+      { value: `${totalProviders}+`, label: "AI Providers", animatedValue: totalProviders },
       { value: `${totalModels}+`, label: "AI Models", animatedValue: totalModels },
       { value: "Up to 80%", label: "Cost Savings", animatedValue: 80 }
     ],
@@ -51,13 +51,14 @@ export default function Home() {
             </div>
             <div className="relative z-10">
               <h1 className="text-hero-glass mb-6">
-                <span className="text-cosmara-brand" style={{fontSize: '1.1em'}}>COSMARA</span>
+                <span className="text-stardust-muted">Welcome to</span>
                 <br />
-                <span className="text-stardust-gradient">All AI Tools, One Simple Platform</span>
+                <span className="text-cosmara-brand">COSMARA</span>
               </h1>
             </div>
             <p className="text-body-lg text-text-secondary mb-8 leading-relaxed max-w-2xl mx-auto">
-              Use the world's most powerful AI models for any task. One account, unlimited possibilities.
+              Navigate the infinite possibilities of AI with your own keys. 
+              Discover, deploy, and manage applications in your personal AI marketplace.
             </p>
             
             {/* Cosmic User Paths */}
