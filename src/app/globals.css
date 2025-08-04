@@ -251,14 +251,18 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: -12px;
-  width: 60px;
-  height: 3px;
+  bottom: -16px;
+  width: 110%;
+  height: 4px;
   background: linear-gradient(90deg, 
-    #8B5CF6, 
-    #3B82F6);
+    transparent 0%,
+    #8B5CF6 40%, 
+    #3B82F6 60%,
+    transparent 100%);
   border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(189, 0, 255, 0.3);
+  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.4);
+  max-width: 400px;
+  min-width: 120px;
 }
 
 .text-body-lg {
