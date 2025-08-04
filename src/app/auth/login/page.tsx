@@ -131,7 +131,7 @@ export default function LoginPage() {
       <div className="flex items-center justify-between p-6">
         <Link href="/" className="flex items-center space-x-3">
           <CosmaraLogo size={32} />
-          <span className="text-xl font-bold text-glass-gradient">COSMARA</span>
+          <span className="text-xl font-bold text-cosmara-brand">COSMARA</span>
         </Link>
         <Link 
           href="/" 

@@ -138,7 +138,7 @@ export default function CommunityPage() {
                   <Star className="h-8 w-8 text-yellow-400 mb-2" />
                   <CardTitle className="text-white">Ambassador Program</CardTitle>
                   <CardDescription className="text-gray-400">
-                    Become a COSMARA ambassador and get exclusive perks
+                    Become a <span className="text-cosmara-brand">COSMARA</span> ambassador and get exclusive perks
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -280,7 +280,7 @@ export default function CommunityPage() {
                 Get Involved
               </CardTitle>
               <CardDescription className="text-gray-400 text-center">
-                Ready to be part of the COSMARA developer community?
+                Ready to be part of the <span className="text-cosmara-brand">COSMARA</span> developer community?
               </CardDescription>
             </CardHeader>
             <CardContent>

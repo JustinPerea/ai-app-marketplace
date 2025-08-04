@@ -363,7 +363,7 @@ export function DeveloperROICalculator() {
             </h1>
             
             <p className="text-body-lg text-text-secondary mb-8 leading-relaxed max-w-3xl mx-auto">
-              See how much you could earn building apps on COSMARA with our 0% commission advantage, 
+              See how much you could earn building apps on <span className="text-cosmara-brand">COSMARA</span> with our 0% commission advantage, 
               growing user base, and BYOK model that increases user conversion rates.
             </p>
 
@@ -581,7 +581,7 @@ export function DeveloperROICalculator() {
                       }`}
                       onClick={() => setInputs(prev => ({ ...prev, platformStrategy: 'cosmara-only' }))}
                     >
-                      <div className="text-sm font-medium">COSMARA Exclusive</div>
+                      <div className="text-sm font-medium"><span className="text-cosmara-brand">COSMARA</span> Exclusive</div>
                       <div className="text-xs text-text-muted">+25% revenue bonus, 70% prefer BYOK</div>
                     </button>
                     <button
@@ -794,7 +794,7 @@ export function DeveloperROICalculator() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Zap className="h-5 w-5" />
-                    COSMARA Platform Advantage
+                    <span className="text-cosmara-brand">COSMARA</span> Platform Advantage
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -807,7 +807,7 @@ export function DeveloperROICalculator() {
                     </div>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-text-secondary">COSMARA: 0% first $100K</span>
+                        <span className="text-text-secondary"><span className="text-cosmara-brand">COSMARA</span>: 0% first $100K</span>
                         <span className="text-green-400 font-semibold">$0 fees</span>
                       </div>
                       <div className="flex justify-between">
@@ -1021,7 +1021,7 @@ export function DeveloperROICalculator() {
                 Ready to Start Building?
               </h2>
               <p className="text-lg text-text-secondary mb-8 max-w-2xl mx-auto">
-                Join thousands of developers already earning on COSMARA. Get started with our comprehensive SDK 
+                Join thousands of developers already earning on <span className="text-cosmara-brand">COSMARA</span>. Get started with our comprehensive SDK 
                 and developer tools to bring your AI app ideas to life.
               </p>
               

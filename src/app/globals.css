@@ -529,6 +529,38 @@ body {
   background-clip: text;
 }
 
+.text-cosmara-brand {
+  background: linear-gradient(135deg, 
+    #FFD700 0%,
+    #FFA500 50%,
+    #FF6B35 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+}
+
+.text-stellar-purple-gradient {
+  background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-cosmic-blue-gradient {
+  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-stardust-gradient {
+  background: linear-gradient(135deg, #E2E8F0, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .text-stardust-muted {
   color: #94A3B8; /* Stardust muted - subtle but visible */
 }

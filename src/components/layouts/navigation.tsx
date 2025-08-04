@@ -63,7 +63,7 @@ export function Navigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
             <CosmaraLogo size={32} />
-            <span className="text-xl font-bold text-glass-gradient">COSMARA</span>
+            <span className="text-xl font-bold text-cosmara-brand">COSMARA</span>
           </Link>
 
           {/* Search Bar - Desktop */}
