@@ -2,7 +2,8 @@
  * AI Provider Integration Types
  * 
  * Core type definitions for multi-provider AI integration layer
- * Supporting OpenAI, Anthropic, and Google AI with unified interface
+ * Supporting OpenAI, Anthropic, Google AI, and Gemini Veo with unified interface
+ * Including video generation capabilities for multi-modal AI applications
  */
 
 import { ApiProvider } from '@prisma/client';
@@ -13,6 +14,41 @@ export interface AIMessage {
   content: string;
   name?: string;
   metadata?: Record<string, any>;
+}
+
+// Video Generation Types
+export interface VideoGenerationRequest {
+  prompt: string;
+  duration?: number; // Duration in seconds (default: 8 for Gemini Veo)
+  aspectRatio?: '16:9' | '9:16' | '1:1' | '4:3'; // Video aspect ratio
+  quality?: 'standard' | 'high'; // Video quality setting
+  model?: string; // Specific video model (e.g., 'gemini-veo-2-flash', 'gemini-veo-2')
+  seed?: number; // For reproducible generation
+  metadata?: Record<string, any>;
+}
+
+export interface VideoGenerationResponse {
+  id: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  videoUrl?: string; // URL to generated video (when completed)
+  thumbnailUrl?: string; // URL to video thumbnail
+  duration?: number; // Actual video duration
+  aspectRatio?: string; // Actual aspect ratio
+  model: string;
+  prompt: string;
+  createdAt: Date;
+  completedAt?: Date;
+  error?: string; // Error message if failed
+  cost?: number; // Generation cost
+  metadata?: Record<string, any>;
+}
+
+export interface VideoGenerationStatus {
+  id: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  progress?: number; // Progress percentage (0-100)
+  estimatedTimeRemaining?: number; // Seconds
+  error?: string;
 }
 
 // AI Model Configuration
@@ -27,8 +63,18 @@ export interface AIModel {
   outputCostPer1K: number;
   supportsStreaming: boolean;
   supportsTools: boolean;
+  supportsVideo?: boolean; // Video generation capability
   contextWindow: number;
   isActive: boolean;
+}
+
+// Video Model Configuration (extends AIModel for video-specific models)
+export interface VideoModel extends Omit<AIModel, 'maxTokens' | 'inputCostPer1K' | 'outputCostPer1K'> {
+  maxDurationSeconds: number; // Maximum video duration
+  costPerSecond: number; // Cost per second of video generated
+  supportedAspectRatios: string[]; // Supported aspect ratios
+  supportedQualities: string[]; // Supported quality levels
+  averageProcessingTime: number; // Average processing time in seconds
 }
 
 // Request Configuration
@@ -223,6 +269,11 @@ export interface AIProvider {
   chat(request: AIRequest, apiKey: string): Promise<AIResponse>;
   chatStream(request: AIRequest, apiKey: string): AsyncIterable<AIStreamChunk>;
   
+  // Video Generation Operations (optional - only for providers that support video)
+  generateVideo?(request: VideoGenerationRequest, apiKey: string): Promise<VideoGenerationResponse>;
+  getVideoStatus?(videoId: string, apiKey: string): Promise<VideoGenerationStatus>;
+  getVideoModels?(): Promise<VideoModel[]>;
+  
   // Model Management
   getModels(): Promise<AIModel[]>;
   getModel(modelId: string): Promise<AIModel | null>;
@@ -230,6 +281,7 @@ export interface AIProvider {
   // Validation
   validateApiKey(apiKey: string): Promise<boolean>;
   estimateCost(request: AIRequest): Promise<number>;
+  estimateVideoCost?(request: VideoGenerationRequest): Promise<number>;
   
   // Health Monitoring
   healthCheck(): Promise<ProviderStatus>;
@@ -263,7 +315,7 @@ export interface CacheConfig {
 }
 
 // Model mapping for cross-provider compatibility
-export const MODEL_EQUIVALENTS: Record<string, Record<ApiProvider, string>> = {
+export const MODEL_EQUIVALENTS: Record<string, Partial<Record<ApiProvider, string>>> = {
   'chat-small': {
     [ApiProvider.OPENAI]: 'gpt-3.5-turbo',
     [ApiProvider.ANTHROPIC]: 'claude-3-haiku-20240307',
@@ -279,7 +331,34 @@ export const MODEL_EQUIVALENTS: Record<string, Record<ApiProvider, string>> = {
     [ApiProvider.ANTHROPIC]: 'claude-3-opus-20240229',
     [ApiProvider.GOOGLE]: 'gemini-1.5-pro',
   },
+  'video-fast': {
+    [ApiProvider.GOOGLE]: 'gemini-veo-2-flash',
+  },
+  'video-quality': {
+    [ApiProvider.GOOGLE]: 'gemini-veo-2',
+  },
 };
+
+// Video Model Constants
+export const VIDEO_GENERATION_DEFAULTS = {
+  DURATION: 8, // seconds
+  ASPECT_RATIO: '16:9' as const,
+  QUALITY: 'standard' as const,
+  MAX_POLLING_ATTEMPTS: 60, // 60 attempts * 5 seconds = 5 minutes max wait
+  POLLING_INTERVAL: 5000, // 5 seconds
+} as const;
+
+// Gemini Veo Specific Constants (based on research)
+export const GEMINI_VEO_CONFIG = {
+  MAX_DURATION: 8, // Maximum 8-second videos
+  SUPPORTED_ASPECT_RATIOS: ['16:9', '9:16', '1:1', '4:3'],
+  SUPPORTED_QUALITIES: ['standard', 'high'],
+  COST_PER_SECOND: {
+    'gemini-veo-2-flash': 0.35, // $0.35 per second
+    'gemini-veo-2': 0.35, // $0.35 per second (corrected from $0.75 - both models same price)
+  },
+  AVERAGE_PROCESSING_TIME: 180, // 3 minutes average
+} as const;
 
 // Default configurations
 export const DEFAULT_ROUTER_CONFIG: RouterConfig = {

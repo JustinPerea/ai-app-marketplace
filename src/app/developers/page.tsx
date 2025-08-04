@@ -1,9 +1,10 @@
 import Link from 'next/link';
+import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
+import { CosmicPageHeader } from '@/components/ui/cosmic-page-header';
+import { CosmicCard } from '@/components/ui/cosmic-card';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { SimpleStars } from '@/components/ui/simple-stars';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { 
   ArrowRight, 
   Code2, 
@@ -125,18 +126,9 @@ const quickLinks = [
 
 export default function DevelopersPage() {
   return (
-    <MainLayout>
-      {/* Simple stars background with parallax scrolling */}
-      <SimpleStars starCount={50} parallaxSpeed={0.3} />
-      
+    <CosmicPageLayout gradientOverlay="default" starCount={50} parallaxSpeed={0.3}>
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 sm:py-32">
-        {/* Cosmara stellar background with cosmic gradients */}
-        <div className="absolute inset-0 pointer-events-none" 
-             style={{ 
-               background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
-             }}>
-        </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
@@ -364,6 +356,6 @@ export default function DevelopersPage() {
           </div>
         </div>
       </section>
-    </MainLayout>
+    </CosmicPageLayout>
   );
 }

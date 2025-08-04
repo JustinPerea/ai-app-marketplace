@@ -3,7 +3,9 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { MainLayout } from '@/components/layouts/main-layout';
+import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
+import { CosmicPageHeader } from '@/components/ui/cosmic-page-header';
+import { CosmicCard } from '@/components/ui/cosmic-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,11 +37,11 @@ import {
 import { ProviderLogo } from '@/components/ui/provider-logo';
 
 const categories = [
-  { id: 'all', name: 'All Apps', icon: Grid3X3, count: 47 },
+  { id: 'all', name: 'All Apps', icon: Grid3X3, count: 48 },
   { id: 'LEGAL_TOOLS', name: 'Legal Tools', icon: FileText, count: 8 },
   { id: 'MEDICAL_TOOLS', name: 'Medical Tools', icon: Database, count: 6 },
   { id: 'DEVELOPER_TOOLS', name: 'Developer Tools', icon: Code2, count: 12 },
-  { id: 'CONTENT_CREATION', name: 'Content Creation', icon: Palette, count: 9 },
+  { id: 'CONTENT_CREATION', name: 'Content Creation', icon: Palette, count: 10 },
   { id: 'DATA_ANALYSIS', name: 'Data Analysis', icon: BarChart3, count: 7 },
   { id: 'RESEARCH_TOOLS', name: 'Research Tools', icon: Search, count: 5 },
   { id: 'MARKETING_TOOLS', name: 'Marketing Tools', icon: TrendingUp, count: 4 },
@@ -47,6 +49,22 @@ const categories = [
 ];
 
 const apps = [
+  {
+    id: 11,
+    name: "AI Video Generator",
+    description: "Create stunning 8-second videos from text descriptions using Gemini Veo. Generate videos in multiple aspect ratios with real-time progress tracking and cost estimation.",
+    category: "CONTENT_CREATION",
+    rating: 4.8,
+    installs: "1.2K",
+    price: "Free + API costs",
+    featured: true,
+    verified: true,
+    tags: ["Gemini Veo", "Video", "AI Generation", "Content Creation", "Text-to-Video"],
+    publisher: "AI Marketplace",
+    lastUpdated: "Just now",
+    providers: ["GOOGLE"],
+    status: "active" // Fully functional app
+  },
   {
     id: 10,
     name: "Simple AI Chat",
@@ -280,16 +298,7 @@ function MarketplaceContent() {
   });
 
   return (
-    <MainLayout>
-      {/* Simple stars background with parallax scrolling */}
-      <SimpleStars starCount={50} parallaxSpeed={0.3} />
-      
-      {/* Cosmara stellar background with cosmic gradients */}
-      <div className="absolute inset-0 pointer-events-none" 
-           style={{ 
-             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
-           }}>
-      </div>
+    <CosmicPageLayout gradientOverlay="default" starCount={50} parallaxSpeed={0.3}>
       
       <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
@@ -500,6 +509,7 @@ function MarketplaceContent() {
                           app.id === 3 ? '/marketplace/apps/code-review-bot' :
                           app.id === 9 ? '/marketplace/apps/pdf-notes-generator' :
                           app.id === 10 ? '/marketplace/apps/simple-ai-chat' :
+                          app.id === 11 ? '/marketplace/apps/ai-video-generator' :
                           '#'
                         }>
                           View Details
@@ -579,7 +589,7 @@ function MarketplaceContent() {
           onSuccess={handleInstallSuccess}
         />
       </div>
-    </MainLayout>
+    </CosmicPageLayout>
   );
 }
 

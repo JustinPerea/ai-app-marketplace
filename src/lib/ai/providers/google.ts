@@ -3,9 +3,11 @@
  * 
  * Implements Google Gemini API integration with support for:
  * - Gemini 1.5 models (Flash, Pro)
+ * - Gemini Veo video generation (Flash, Pro)
  * - Streaming responses
  * - Function calling
  * - Vision and multimodal capabilities
+ * - Video generation with polling mechanism
  */
 
 import { ApiProvider } from '@prisma/client';
@@ -19,6 +21,12 @@ import {
   AIUsage,
   AIChoice,
   AIStreamChoice,
+  VideoGenerationRequest,
+  VideoGenerationResponse,
+  VideoGenerationStatus,
+  VideoModel,
+  VIDEO_GENERATION_DEFAULTS,
+  GEMINI_VEO_CONFIG,
 } from '../types';
 
 interface GooglePart {
@@ -120,9 +128,37 @@ interface GoogleStreamChunk {
   };
 }
 
+// Gemini Veo Video Generation Interfaces
+interface GeminiVeoRequest {
+  prompt: string;
+  config?: {
+    aspectRatio?: string;
+    duration?: number;
+    quality?: string;
+    seed?: number;
+  };
+}
+
+interface GeminiVeoResponse {
+  videoId: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  error?: string;
+  metadata?: {
+    duration?: number;
+    aspectRatio?: string;
+    prompt: string;
+    model: string;
+    createdAt: string;
+    completedAt?: string;
+  };
+}
+
 export class GoogleProvider extends BaseAIProvider {
   readonly provider = ApiProvider.GOOGLE;
   protected readonly baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
+  protected readonly veoBaseUrl = 'https://generativelanguage.googleapis.com/v1beta'; // Gemini Veo endpoint
   protected readonly defaultHeaders = {
     'Content-Type': 'application/json',
     'User-Agent': 'AI-Marketplace/1.0',
@@ -140,6 +176,7 @@ export class GoogleProvider extends BaseAIProvider {
       outputCostPer1K: 0.0003,
       supportsStreaming: true,
       supportsTools: true,
+      supportsVideo: false,
       contextWindow: 1000000,
       isActive: true,
     },
@@ -154,6 +191,7 @@ export class GoogleProvider extends BaseAIProvider {
       outputCostPer1K: 0.00015,
       supportsStreaming: true,
       supportsTools: true,
+      supportsVideo: false,
       contextWindow: 1000000,
       isActive: true,
     },
@@ -168,6 +206,7 @@ export class GoogleProvider extends BaseAIProvider {
       outputCostPer1K: 0.005,
       supportsStreaming: true,
       supportsTools: true,
+      supportsVideo: false,
       contextWindow: 2000000,
       isActive: true,
     },
@@ -182,7 +221,45 @@ export class GoogleProvider extends BaseAIProvider {
       outputCostPer1K: 0.0015,
       supportsStreaming: true,
       supportsTools: true,
+      supportsVideo: false,
       contextWindow: 30720,
+      isActive: true,
+    },
+  ];
+
+  private videoModels: VideoModel[] = [
+    {
+      id: 'gemini-veo-2-flash',
+      provider: ApiProvider.GOOGLE,
+      name: 'gemini-veo-2-flash',
+      displayName: 'Gemini Veo 2 Flash',
+      description: 'Fast video generation model for quick prototyping',
+      maxDurationSeconds: GEMINI_VEO_CONFIG.MAX_DURATION,
+      costPerSecond: GEMINI_VEO_CONFIG.COST_PER_SECOND['gemini-veo-2-flash'],
+      supportedAspectRatios: [...GEMINI_VEO_CONFIG.SUPPORTED_ASPECT_RATIOS],
+      supportedQualities: [...GEMINI_VEO_CONFIG.SUPPORTED_QUALITIES],
+      averageProcessingTime: GEMINI_VEO_CONFIG.AVERAGE_PROCESSING_TIME,
+      supportsStreaming: false,
+      supportsTools: false,
+      supportsVideo: true,
+      contextWindow: 0,
+      isActive: true,
+    },
+    {
+      id: 'gemini-veo-2',
+      provider: ApiProvider.GOOGLE,
+      name: 'gemini-veo-2',
+      displayName: 'Gemini Veo 2',
+      description: 'High-quality video generation model for production use',
+      maxDurationSeconds: GEMINI_VEO_CONFIG.MAX_DURATION,
+      costPerSecond: GEMINI_VEO_CONFIG.COST_PER_SECOND['gemini-veo-2'],
+      supportedAspectRatios: [...GEMINI_VEO_CONFIG.SUPPORTED_ASPECT_RATIOS],
+      supportedQualities: [...GEMINI_VEO_CONFIG.SUPPORTED_QUALITIES],
+      averageProcessingTime: GEMINI_VEO_CONFIG.AVERAGE_PROCESSING_TIME,
+      supportsStreaming: false,
+      supportsTools: false,
+      supportsVideo: true,
+      contextWindow: 0,
       isActive: true,
     },
   ];
@@ -664,5 +741,313 @@ export class GoogleProvider extends BaseAIProvider {
   getContextWindowSize(modelId: string): number {
     const model = this.models.find(m => m.id === modelId || m.name === modelId);
     return model?.contextWindow || 30720;
+  }
+
+  // ========== GEMINI VEO VIDEO GENERATION METHODS ==========
+
+  /**
+   * Generate video using Gemini Veo models
+   * Initiates video generation and returns a response with video ID for polling
+   */
+  async generateVideo(request: VideoGenerationRequest, apiKey: string): Promise<VideoGenerationResponse> {
+    const model = request.model || 'gemini-veo-2-flash';
+    const videoModel = this.videoModels.find(m => m.id === model || m.name === model);
+    
+    if (!videoModel) {
+      throw new AIError({
+        code: 'INVALID_MODEL',
+        message: `Video model '${model}' not found`,
+        type: 'invalid_request',
+        provider: this.provider,
+        retryable: false,
+        details: { availableModels: this.videoModels.map(m => m.id) },
+      });
+    }
+
+    // Validate request parameters
+    this.validateVideoRequest(request, videoModel);
+
+    const veoRequest: GeminiVeoRequest = {
+      prompt: request.prompt,
+      config: {
+        aspectRatio: request.aspectRatio || VIDEO_GENERATION_DEFAULTS.ASPECT_RATIO,
+        duration: Math.min(request.duration || VIDEO_GENERATION_DEFAULTS.DURATION, videoModel.maxDurationSeconds),
+        quality: request.quality || VIDEO_GENERATION_DEFAULTS.QUALITY,
+        seed: request.seed,
+      },
+    };
+
+    try {
+      const response = await this.makeRequest<GeminiVeoResponse>(
+        `${this.veoBaseUrl}/models/${model}:generateVideo`,
+        {
+          method: 'POST',
+          body: JSON.stringify(veoRequest),
+        },
+        apiKey
+      );
+
+      // Transform Google response to our interface
+      return this.transformVeoResponse(response, request, model);
+    } catch (error) {
+      throw this.handleVeoError(error, 'video generation');
+    }
+  }
+
+  /**
+   * Get the status of a video generation operation
+   * Used for polling until video generation is complete
+   */
+  async getVideoStatus(videoId: string, apiKey: string): Promise<VideoGenerationStatus> {
+    try {
+      const response = await this.makeRequest<GeminiVeoResponse>(
+        `${this.veoBaseUrl}/videos/${videoId}`,
+        { method: 'GET' },
+        apiKey
+      );
+
+      return {
+        id: videoId,
+        status: response.status,
+        progress: this.calculateProgress(response.status),
+        estimatedTimeRemaining: this.estimateTimeRemaining(response.status),
+        error: response.error,
+      };
+    } catch (error) {
+      throw this.handleVeoError(error, 'status check');
+    }
+  }
+
+  /**
+   * Get available video generation models
+   */
+  async getVideoModels(): Promise<VideoModel[]> {
+    return this.videoModels.filter(model => model.isActive);
+  }
+
+  /**
+   * Estimate cost for video generation
+   */
+  async estimateVideoCost(request: VideoGenerationRequest): Promise<number> {
+    const model = request.model || 'gemini-veo-2-flash';
+    const videoModel = this.videoModels.find(m => m.id === model || m.name === model);
+    
+    if (!videoModel) {
+      throw new AIError({
+        code: 'INVALID_MODEL',
+        message: `Video model '${model}' not found`,
+        type: 'invalid_request',
+        provider: this.provider,
+        retryable: false,
+      });
+    }
+
+    const duration = Math.min(
+      request.duration || VIDEO_GENERATION_DEFAULTS.DURATION,
+      videoModel.maxDurationSeconds
+    );
+
+    return duration * videoModel.costPerSecond;
+  }
+
+  // ========== PRIVATE VEO HELPER METHODS ==========
+
+  private validateVideoRequest(request: VideoGenerationRequest, model: VideoModel): void {
+    // Validate duration
+    if (request.duration && request.duration > model.maxDurationSeconds) {
+      throw new AIError({
+        code: 'INVALID_DURATION',
+        message: `Duration ${request.duration}s exceeds maximum of ${model.maxDurationSeconds}s for model ${model.id}`,
+        type: 'invalid_request',
+        provider: this.provider,
+        retryable: false,
+      });
+    }
+
+    // Validate aspect ratio
+    if (request.aspectRatio && !model.supportedAspectRatios.includes(request.aspectRatio)) {
+      throw new AIError({
+        code: 'INVALID_ASPECT_RATIO',
+        message: `Aspect ratio '${request.aspectRatio}' not supported. Supported ratios: ${model.supportedAspectRatios.join(', ')}`,
+        type: 'invalid_request',
+        provider: this.provider,
+        retryable: false,
+      });
+    }
+
+    // Validate quality
+    if (request.quality && !model.supportedQualities.includes(request.quality)) {
+      throw new AIError({
+        code: 'INVALID_QUALITY',
+        message: `Quality '${request.quality}' not supported. Supported qualities: ${model.supportedQualities.join(', ')}`,
+        type: 'invalid_request',
+        provider: this.provider,
+        retryable: false,
+      });
+    }
+
+    // Validate prompt length (reasonable limit)
+    if (request.prompt.length > 2000) {
+      throw new AIError({
+        code: 'PROMPT_TOO_LONG',
+        message: 'Video generation prompt must be 2000 characters or less',
+        type: 'invalid_request',
+        provider: this.provider,
+        retryable: false,
+      });
+    }
+  }
+
+  private transformVeoResponse(response: GeminiVeoResponse, originalRequest: VideoGenerationRequest, model: string): VideoGenerationResponse {
+    const cost = this.calculateVideoCost(originalRequest, model);
+
+    return {
+      id: response.videoId,
+      status: response.status,
+      videoUrl: response.videoUrl,
+      thumbnailUrl: response.thumbnailUrl,
+      duration: response.metadata?.duration,
+      aspectRatio: response.metadata?.aspectRatio,
+      model,
+      prompt: originalRequest.prompt,
+      createdAt: new Date(response.metadata?.createdAt || Date.now()),
+      completedAt: response.metadata?.completedAt ? new Date(response.metadata.completedAt) : undefined,
+      error: response.error,
+      cost,
+      metadata: {
+        originalRequest,
+        geminiResponse: response,
+      },
+    };
+  }
+
+  private calculateVideoCost(request: VideoGenerationRequest, model: string): number {
+    const videoModel = this.videoModels.find(m => m.id === model || m.name === model);
+    if (!videoModel) return 0;
+
+    const duration = Math.min(
+      request.duration || VIDEO_GENERATION_DEFAULTS.DURATION,
+      videoModel.maxDurationSeconds
+    );
+
+    return duration * videoModel.costPerSecond;
+  }
+
+  private calculateProgress(status: string): number {
+    switch (status) {
+      case 'pending': return 0;
+      case 'processing': return 50;
+      case 'completed': return 100;
+      case 'failed': return 100;
+      default: return 0;
+    }
+  }
+
+  private estimateTimeRemaining(status: string): number {
+    switch (status) {
+      case 'pending': return GEMINI_VEO_CONFIG.AVERAGE_PROCESSING_TIME;
+      case 'processing': return GEMINI_VEO_CONFIG.AVERAGE_PROCESSING_TIME / 2;
+      case 'completed':
+      case 'failed': return 0;
+      default: return GEMINI_VEO_CONFIG.AVERAGE_PROCESSING_TIME;
+    }
+  }
+
+  private handleVeoError(error: any, operation: string): AIError {
+    if (error instanceof AIError) {
+      return error;
+    }
+
+    // Handle common Gemini Veo errors
+    if (error.response?.status === 429) {
+      return new AIError({
+        code: 'RATE_LIMITED',
+        message: `Gemini Veo ${operation} rate limited. Please try again later.`,
+        type: 'rate_limit',
+        provider: this.provider,
+        retryable: true,
+        details: { operation, originalError: error.message },
+      });
+    }
+
+    if (error.response?.status === 400) {
+      return new AIError({
+        code: 'INVALID_REQUEST',
+        message: `Invalid ${operation} request: ${error.message}`,
+        type: 'invalid_request',
+        provider: this.provider,
+        retryable: false,
+        details: { operation, originalError: error.message },
+      });
+    }
+
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      return new AIError({
+        code: 'AUTHENTICATION_ERROR',
+        message: `Authentication failed for ${operation}. Check your API key.`,
+        type: 'authentication',
+        provider: this.provider,
+        retryable: false,
+        details: { operation, originalError: error.message },
+      });
+    }
+
+    // Generic error handling
+    return new AIError({
+      code: 'VEO_ERROR',
+      message: `Gemini Veo ${operation} failed: ${error.message}`,
+      type: 'api_error',
+      provider: this.provider,
+      retryable: true,
+      details: { operation, originalError: error.message },
+    });
+  }
+
+  /**
+   * Poll video generation status until completion
+   * Helper method for applications that want automatic polling
+   */
+  async pollVideoCompletion(videoId: string, apiKey: string, maxAttempts?: number): Promise<VideoGenerationResponse> {
+    const attempts = maxAttempts || VIDEO_GENERATION_DEFAULTS.MAX_POLLING_ATTEMPTS;
+    
+    for (let i = 0; i < attempts; i++) {
+      const status = await this.getVideoStatus(videoId, apiKey);
+      
+      if (status.status === 'completed') {
+        // Get full video response
+        const response = await this.makeRequest<GeminiVeoResponse>(
+          `${this.veoBaseUrl}/videos/${videoId}`,
+          { method: 'GET' },
+          apiKey
+        );
+        
+        return this.transformVeoResponse(response, { prompt: '' }, ''); // Basic transform for polling result
+      }
+      
+      if (status.status === 'failed') {
+        throw new AIError({
+          code: 'VIDEO_GENERATION_FAILED',
+          message: status.error || 'Video generation failed',
+          type: 'api_error',
+          provider: this.provider,
+          retryable: false,
+          details: { videoId, status },
+        });
+      }
+      
+      // Wait before next poll
+      if (i < attempts - 1) {
+        await new Promise(resolve => setTimeout(resolve, VIDEO_GENERATION_DEFAULTS.POLLING_INTERVAL));
+      }
+    }
+    
+    throw new AIError({
+      code: 'POLLING_TIMEOUT',
+      message: `Video generation polling timed out after ${attempts} attempts`,
+      type: 'api_error',
+      provider: this.provider,
+      retryable: true,
+      details: { videoId, maxAttempts: attempts },
+    });
   }
 }

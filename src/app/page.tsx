@@ -2,10 +2,9 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MainLayout } from '@/components/layouts/main-layout';
+import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
 // Removed ROI Calculator and Provider Flow - moved to dedicated pages
 import { ArrowRight, Shield, Zap, BarChart3, Globe, Key, Code2, Star, Users, TrendingUp } from 'lucide-react';
-import { SimpleStars } from '@/components/ui/simple-stars';
 
 export default function Home() {
   const statsData = [
@@ -15,19 +14,9 @@ export default function Home() {
   ];
 
   return (
-    <MainLayout>
-      {/* Simple stars background with parallax scrolling */}
-      <SimpleStars starCount={50} parallaxSpeed={0.3} />
+    <CosmicPageLayout starCount={50} parallaxSpeed={0.3} gradientOverlay="none">
       {/* Hero Section - Glass Design System */}
       <section className="relative overflow-hidden py-20 sm:py-32">
-        {/* Cosmara stellar background with cosmic gradients */}
-        <div className="absolute inset-0 pointer-events-none" 
-             style={{ 
-               background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
-             }}>
-        </div>
-        
-        {/* Removed individual hero stars - now using full-page cosmic background */}
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
@@ -186,11 +175,6 @@ export default function Home() {
 
       {/* User Type Navigation */}
       <section className="py-20 relative">
-        <div className="absolute inset-0 pointer-events-none"
-             style={{
-               background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.03) 50%, rgba(255, 215, 0, 0.05) 100%)'
-             }}>
-        </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
@@ -305,12 +289,6 @@ export default function Home() {
 
       {/* Featured Apps Section - Glass Design */}
       <section className="py-20 relative">
-        {/* Subtle cosmic background gradient */}
-        <div className="absolute inset-0 pointer-events-none"
-             style={{
-               background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.03) 0%, rgba(59, 130, 246, 0.02) 50%, rgba(255, 215, 0, 0.03) 100%)'
-             }}>
-        </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
@@ -411,21 +389,8 @@ export default function Home() {
 
       {/* Developer CTA - Glass Design */}
       <section className="py-20 relative overflow-hidden">
-        {/* Enhanced cosmic background gradient */}
-        <div className="absolute inset-0 pointer-events-none"
-             style={{
-               background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.10) 0%, rgba(59, 130, 246, 0.08) 50%, rgba(139, 92, 246, 0.10) 100%)'
-             }}>
-        </div>
-        
         <div className="container mx-auto px-4 relative z-10">
           <div className="glass-card p-12 text-center relative overflow-hidden">
-            {/* Additional cosmic background enhancement */}
-            <div className="absolute inset-0 pointer-events-none"
-                 style={{
-                   background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(59, 130, 246, 0.03) 50%, rgba(139, 92, 246, 0.05) 100%)'
-                 }}>
-            </div>
             
             <div className="relative z-10">
               <h2 className="text-hero-glass mb-6">
@@ -464,6 +429,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </MainLayout>
+    </CosmicPageLayout>
   );
 }

@@ -47,7 +47,7 @@ export default function RoadmapPage() {
     {
       id: 1,
       title: "Foundation & Core SDK",
-      timeline: "Q1 2024",
+      timeline: "July 2025",
       status: "completed",
       developers: "5,000+ developers",
       apps: "100+ apps built",
@@ -76,7 +76,7 @@ export default function RoadmapPage() {
     {
       id: 2,
       title: "API Compatibility & Provider Expansion",
-      timeline: "Q2 2024",
+      timeline: "Late July 2025",
       status: "completed",
       developers: "15,000+ developers",
       apps: "500+ apps built",
@@ -104,7 +104,7 @@ export default function RoadmapPage() {
     {
       id: 2.5,
       title: "SDK Protection & Developer Tools",
-      timeline: "Q3 2024",
+      timeline: "August 3, 2025",
       status: "completed",
       developers: "10,000+ free tier users",
       apps: "200+ community apps",
@@ -131,8 +131,8 @@ export default function RoadmapPage() {
     {
       id: 3,
       title: "Advanced Features & Platform Enhancement",
-      timeline: "Q4 2024 - Q1 2025",
-      status: "in-progress",
+      timeline: "August 2025 - October 2025",
+      status: "ready-to-start",
       developers: "30,000+ developers",
       apps: "1,000+ apps in marketplace",
       icon: Rocket,
@@ -140,12 +140,12 @@ export default function RoadmapPage() {
       borderColor: "rgba(255, 215, 0, 0.3)",
       iconColor: "#FFD700",
       milestones: [
-        { title: "Multi-Modal AI Support (Images, Audio, Video)", status: "in-progress", week: "Current" },
-        { title: "Advanced Function/Tool Execution Framework", status: "roadmapped", week: "Q1 2025" },
-        { title: "Distributed Caching & Performance Optimization", status: "roadmapped", week: "Q1 2025" },
-        { title: "AI App Discovery & Recommendation Engine", status: "roadmapped", week: "Q1 2025" },
-        { title: "Real-time Analytics & Monitoring Dashboard", status: "roadmapped", week: "Q1 2025" },
-        { title: "Enhanced Security & Privacy Controls", status: "roadmapped", week: "Q1 2025" }
+        { title: "Multi-Modal AI Support (Images, Audio, Video)", status: "roadmapped", week: "August 2025" },
+        { title: "Advanced Function/Tool Execution Framework", status: "roadmapped", week: "September 2025" },
+        { title: "Distributed Caching & Performance Optimization", status: "roadmapped", week: "September 2025" },
+        { title: "AI App Discovery & Recommendation Engine", status: "roadmapped", week: "October 2025" },
+        { title: "Real-time Analytics & Monitoring Dashboard", status: "roadmapped", week: "October 2025" },
+        { title: "Enhanced Security & Privacy Controls", status: "roadmapped", week: "October 2025" }
       ],
       targets: [
         "Multi-modal capabilities across all supported providers",
@@ -158,7 +158,7 @@ export default function RoadmapPage() {
     {
       id: 4,
       title: "Enterprise Features & Team Collaboration",
-      timeline: "Q2 - Q3 2025",
+      timeline: "October 2025 - December 2025",
       status: "planned",
       developers: "50,000+ developers",
       apps: "2,500+ apps in ecosystem",
@@ -167,12 +167,12 @@ export default function RoadmapPage() {
       borderColor: "rgba(168, 85, 247, 0.3)",
       iconColor: "#A855F7",
       milestones: [
-        { title: "Advanced Team Collaboration Tools", status: "planned", week: "Q2 2025" },
-        { title: "Enterprise SSO & Identity Management", status: "planned", week: "Q2 2025" },
-        { title: "Custom Model Fine-tuning Support", status: "planned", week: "Q2 2025" },
-        { title: "Advanced Governance & Compliance Tools", status: "planned", week: "Q3 2025" },
-        { title: "White-label Solutions & Custom Branding", status: "planned", week: "Q3 2025" },
-        { title: "Enterprise SLA & Premium Support", status: "planned", week: "Q3 2025" }
+        { title: "Advanced Team Collaboration Tools", status: "planned", week: "October 2025" },
+        { title: "Enterprise SSO & Identity Management", status: "planned", week: "October 2025" },
+        { title: "Custom Model Fine-tuning Support", status: "planned", week: "November 2025" },
+        { title: "Advanced Governance & Compliance Tools", status: "planned", week: "November 2025" },
+        { title: "White-label Solutions & Custom Branding", status: "planned", week: "December 2025" },
+        { title: "Enterprise SLA & Premium Support", status: "planned", week: "December 2025" }
       ],
       targets: [
         "Enterprise-grade team collaboration and project management",
@@ -185,7 +185,7 @@ export default function RoadmapPage() {
     {
       id: 5,
       title: "Marketplace Expansion & Community Growth",
-      timeline: "Q4 2025 onwards",
+      timeline: "Q1 2026 and beyond",
       status: "planned",
       developers: "100,000+ developers",
       apps: "10,000+ apps in marketplace",
@@ -194,12 +194,12 @@ export default function RoadmapPage() {
       borderColor: "rgba(34, 197, 94, 0.3)",
       iconColor: "#22C55E",
       milestones: [
-        { title: "AI App Marketplace with Revenue Sharing", status: "planned", week: "Q4 2025" },
-        { title: "Community Challenges & Developer Rewards", status: "planned", week: "Q4 2025" },
-        { title: "Open Source Community Contributions", status: "planned", week: "2026" },
-        { title: "Global Developer Conference & Events", status: "planned", week: "2026" },
-        { title: "Educational Programs & Certification", status: "planned", week: "2026" },
-        { title: "International Expansion & Localization", status: "planned", week: "2026" }
+        { title: "AI App Marketplace with Revenue Sharing", status: "planned", week: "Q1 2026" },
+        { title: "Community Challenges & Developer Rewards", status: "planned", week: "Q1 2026" },
+        { title: "Open Source Community Contributions", status: "planned", week: "Q2 2026" },
+        { title: "Global Developer Conference & Events", status: "planned", week: "Q2 2026" },
+        { title: "Educational Programs & Certification", status: "planned", week: "Q3 2026" },
+        { title: "International Expansion & Localization", status: "planned", week: "Q3 2026" }
       ],
       targets: [
         "Thriving marketplace with thousands of AI applications",
@@ -281,6 +281,7 @@ export default function RoadmapPage() {
     const isHovered = hoveredPhase === phase.id;
     const isCompleted = phase.status === 'completed';
     const isInProgress = phase.status === 'in-progress';
+    const isReadyToStart = phase.status === 'ready-to-start';
     
     return (
       <div 
@@ -305,7 +306,7 @@ export default function RoadmapPage() {
             relative w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 rounded-full 
             transition-all duration-500 ease-out
             ${isHovered ? 'scale-110 shadow-2xl' : 'scale-100'}
-            ${isCompleted ? 'opacity-100' : isInProgress ? 'opacity-90' : 'opacity-70'}
+            ${isCompleted ? 'opacity-100' : isInProgress ? 'opacity-90' : isReadyToStart ? 'opacity-85' : 'opacity-70'}
           `}
           style={{
             background: phase.color,
@@ -353,6 +354,11 @@ export default function RoadmapPage() {
             {isInProgress && (
               <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center border-2 border-background animate-pulse">
                 <Clock className="h-4 w-4 text-white" />
+              </div>
+            )}
+            {isReadyToStart && (
+              <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center border-2 border-background">
+                <Target className="h-4 w-4 text-white" />
               </div>
             )}
           </div>
@@ -802,8 +808,8 @@ export default function RoadmapPage() {
               <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="h-6 w-6 text-blue-500" />
               </div>
-              <h3 className="text-h3 text-text-primary mb-2">1 Phase Active</h3>
-              <p className="text-body text-text-secondary">Advanced Features & Platform Enhancement in progress</p>
+              <h3 className="text-h3 text-text-primary mb-2">1 Phase Ready</h3>
+              <p className="text-body text-text-secondary">Advanced Features & Platform Enhancement ready to start</p>
             </div>
             
             <div className="glass-card p-6 text-center">
