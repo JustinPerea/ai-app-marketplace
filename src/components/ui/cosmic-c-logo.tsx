@@ -859,7 +859,7 @@ export function CosmarcPortalLogo({ size = 200, className = '', showLabel = fals
 // REFINED COSMARA LOGO SYSTEM - Research-Based Improvements
 interface CosmarcLogoProps extends CosmicCLogoProps {
   showGrid?: boolean;
-  variant?: 'primary' | 'minimal' | 'professional' | 'monochrome' | 'reverse';
+  variant?: 'primary' | 'minimal' | 'professional' | 'monochrome' | 'reverse' | 'cosmic' | 'enterprise' | 'stellar' | 'aurora' | 'sunset';
   rings?: 2 | 3;
 }
 
@@ -967,65 +967,162 @@ export function CosmarcPortalRefined2Ring({ size = 200, className = '', showLabe
 
         {/* Simplified Portal C - 2 Rings */}
         <g transform={`translate(${size * 0.08}, ${portalTransformY})`}>
-          {/* Subtle Background (optional) */}
-          {variant === 'primary' && (
-            <circle 
-              cx={radius * 1.15} 
-              cy={radius * 1.4} 
-              r={radius * 0.7} 
-              fill={colors.background}
-              opacity="0.2"
-              filter="url(#portalGlow2Ring)"
-            />
+          {/* Visual Grid for Alignment - Updated for Concentric Fix */}
+          {showGrid && (
+            <g stroke="#00ff00" strokeWidth="1" fill="none" opacity="0.7">
+              {/* Circular grid guides - MATCHING CONCENTRIC CALCULATIONS */}
+              <circle 
+                cx={radius * 1.15} 
+                cy={radius * 1.4} 
+                r={radius * 1.0} 
+                strokeDasharray="5,5"
+              />
+              <circle 
+                cx={radius * 1.15} 
+                cy={radius * 1.4} 
+                r={radius * 0.7} 
+                strokeDasharray="3,3"
+                opacity="0.5"
+              />
+              {/* Crosshairs to show TRUE CONCENTRIC center point */}
+              <line 
+                x1={radius * 1.15 - radius * 0.4} 
+                y1={radius * 1.4} 
+                x2={radius * 1.15 + radius * 0.4} 
+                y2={radius * 1.4}
+                stroke="#ff0000"
+                strokeWidth="2"
+              />
+              <line 
+                x1={radius * 1.15} 
+                y1={radius * 1.4 - radius * 0.4} 
+                x2={radius * 1.15} 
+                y2={radius * 1.4 + radius * 0.4}
+                stroke="#ff0000"
+                strokeWidth="2"
+              />
+              {/* Opening angle guides (45° from center) */}
+              <line 
+                x1={radius * 1.15} 
+                y1={radius * 1.4} 
+                x2={radius * 1.15 + radius * 1.0 * Math.cos(Math.PI * 0.75)} 
+                y2={radius * 1.4 + radius * 1.0 * Math.sin(Math.PI * 0.75)}
+                stroke="#0000ff"
+                strokeDasharray="2,2"
+                opacity="0.6"
+              />
+              <line 
+                x1={radius * 1.15} 
+                y1={radius * 1.4} 
+                x2={radius * 1.15 + radius * 1.0 * Math.cos(Math.PI * 1.25)} 
+                y2={radius * 1.4 + radius * 1.0 * Math.sin(Math.PI * 1.25)}
+                stroke="#0000ff"
+                strokeDasharray="2,2"
+                opacity="0.6"
+              />
+              {/* TRUE CONCENTRIC center point marker */}
+              <circle 
+                cx={radius * 1.15} 
+                cy={radius * 1.4} 
+                r="3" 
+                fill="#ff0000"
+              />
+            </g>
           )}
-
-          {/* 2-Ring System for Maximum Clarity */}
+          
+          {/* 2-Ring System for Maximum Clarity - CONCENTRIC ALIGNMENT FIXED */}
           <g fill="none" strokeLinecap="round">
-            {/* Outer C - Primary Brand Ring */}
-            <path
-              d={`M ${radius * 2.1} ${radius * 0.7} 
-                 A ${radius * 1.1} ${radius * 1.1} 0 1 0 ${radius * 2.1} ${radius * 2.1}`}
-              stroke={colors.outerRing}
-              strokeWidth={strokeWidth * 1.5}
-              opacity="1"
-            />
-            
-            {/* Inner C - Accent Ring */}
-            <path
-              d={`M ${radius * 1.85} ${radius * 0.9} 
-                 A ${radius * 0.8} ${radius * 0.8} 0 1 0 ${radius * 1.85} ${radius * 1.9}`}
-              stroke={colors.innerRing}
-              strokeWidth={strokeWidth * 0.8}
-              opacity="0.7"
-            />
+            {(() => {
+              /* 
+                CONCENTRIC ALIGNMENT FIX
+                ========================
+                Problem: Previous implementation used different arc centers, causing 
+                inconsistent spacing between rings (wider at top/bottom, narrower at sides).
+                
+                Solution: Both rings now share the exact same center point and use 
+                mathematically calculated arc positions for perfect concentricity.
+                
+                Key improvements:
+                - Fixed center point: (radius * 1.15, radius * 1.4)
+                - Consistent 45° opening angle on both sides  
+                - Uniform spacing accounting for stroke widths
+                - Perfect alignment with visual grid system
+              */
+              const centerX = radius * 1.15; // Fixed center X position
+              const centerY = radius * 1.4;  // Fixed center Y position
+              
+              // Define ring radii for perfect concentricity
+              const outerRadius = radius * 1.0;    // Outer ring radius
+              const innerRadius = radius * 0.7;    // Inner ring radius  
+              
+              // Account for stroke width to maintain visual spacing
+              const outerStrokeWidth = strokeWidth * 1.4;
+              const innerStrokeWidth = strokeWidth * 1.0;
+              
+              // Calculate start and end points for C opening (facing right) 
+              const openingAngle = Math.PI * 0.25; // 45 degrees opening on each side
+              
+              // For C opening RIGHT: start at top-right, end at bottom-right
+              // Outer ring points
+              const outerStartX = centerX + outerRadius * Math.cos(-openingAngle);
+              const outerStartY = centerY + outerRadius * Math.sin(-openingAngle);
+              const outerEndX = centerX + outerRadius * Math.cos(openingAngle);
+              const outerEndY = centerY + outerRadius * Math.sin(openingAngle);
+              
+              // Inner ring points
+              const innerStartX = centerX + innerRadius * Math.cos(-openingAngle);
+              const innerStartY = centerY + innerRadius * Math.sin(-openingAngle);
+              const innerEndX = centerX + innerRadius * Math.cos(openingAngle);
+              const innerEndY = centerY + innerRadius * Math.sin(openingAngle);
+              
+              return (
+                <>
+                  {/* Outer Portal Ring - Perfectly concentric, opens RIGHT */}
+                  <path
+                    d={`M ${outerStartX} ${outerStartY} 
+                       A ${outerRadius} ${outerRadius} 0 1 0 ${outerEndX} ${outerEndY}`}
+                    stroke={colors.outerRing}
+                    strokeWidth={outerStrokeWidth}
+                    opacity="1"
+                  />
+                  {/* Inner Portal Ring - Perfectly concentric, opens RIGHT */}
+                  <path
+                    d={`M ${innerStartX} ${innerStartY} 
+                       A ${innerRadius} ${innerRadius} 0 1 0 ${innerEndX} ${innerEndY}`}
+                    stroke={colors.innerRing}
+                    strokeWidth={innerStrokeWidth}
+                    opacity="0.8"
+                  />
+                </>
+              );
+            })()}
           </g>
 
-          {/* Enhanced Central Core - Larger Cosmic O */}
+          {/* Enhanced Central Core - Text-Matched Cosmic O */}
           <circle 
             cx={radius * 1.15} 
             cy={radius * 1.4} 
-            r={radius * 0.25}
-            fill={colors.core}
-            opacity="0.6"
-            filter="url(#portalGlow2Ring)"
+            r={fontSize * 0.55}
+            fill="#8B5CF6"
+            opacity="0.7"
           />
           
           <circle 
             cx={radius * 1.15} 
             cy={radius * 1.4} 
-            r={radius * 0.12}
-            fill={colors.coreAccent}
+            r={fontSize * 0.45}
+            fill="#FFFFFF"
             opacity="0.9"
           />
         </g>
 
         {/* Geometric Sans-Serif Typography */}
-        <g fill={colors.text} filter="url(#textGlow2Ring)" fontFamily="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600" letterSpacing="0.05em">
-          <text x={size * 0.38} y={textBaselineY} fontSize={fontSize} textAnchor="middle">S</text>
-          <text x={size * 0.48} y={textBaselineY} fontSize={fontSize} textAnchor="middle">M</text>
-          <text x={size * 0.58} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
-          <text x={size * 0.68} y={textBaselineY} fontSize={fontSize} textAnchor="middle">R</text>
-          <text x={size * 0.78} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
+        <g fill={colors.text} fontFamily="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600" letterSpacing="0.05em">
+          <text x={size * 0.42} y={textBaselineY} fontSize={fontSize} textAnchor="middle">S</text>
+          <text x={size * 0.52} y={textBaselineY} fontSize={fontSize} textAnchor="middle">M</text>
+          <text x={size * 0.62} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
+          <text x={size * 0.72} y={textBaselineY} fontSize={fontSize} textAnchor="middle">R</text>
+          <text x={size * 0.82} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
         </g>
       </svg>
       {showLabel && (
@@ -1140,26 +1237,23 @@ export function CosmarcPortalRefined3Ring({ size = 200, className = '', showLabe
 
         {/* 3-Ring Portal C */}
         <g transform={`translate(${size * 0.08}, ${portalTransformY})`}>
-          {variant === 'primary' && (
-            <circle cx={radius * 1.15} cy={radius * 1.4} r={radius * 0.7} fill={colors.background} opacity="0.2" filter="url(#portalGlow3Ring)"/>
-          )}
-
+          {/* 3-Ring Portal C */}
           <g fill="none" strokeLinecap="round">
             <path d={`M ${radius * 2.1} ${radius * 0.7} A ${radius * 1.1} ${radius * 1.1} 0 1 0 ${radius * 2.1} ${radius * 2.1}`} stroke={colors.outerRing} strokeWidth={strokeWidth * 1.4} opacity="1"/>
             <path d={`M ${radius * 1.9} ${radius * 0.85} A ${radius * 0.9} ${radius * 0.9} 0 1 0 ${radius * 1.9} ${radius * 1.95}`} stroke={colors.middleRing} strokeWidth={strokeWidth * 1.0} opacity="0.8"/>
             <path d={`M ${radius * 1.7} ${radius * 1.0} A ${radius * 0.7} ${radius * 0.7} 0 1 0 ${radius * 1.7} ${radius * 1.8}`} stroke={colors.innerRing} strokeWidth={strokeWidth * 0.7} opacity="0.6"/>
           </g>
 
-          <circle cx={radius * 1.15} cy={radius * 1.4} r={radius * 0.30} fill={colors.core} opacity="0.6" filter="url(#portalGlow3Ring)"/>
-          <circle cx={radius * 1.15} cy={radius * 1.4} r={radius * 0.18} fill={colors.coreAccent} opacity="0.8"/>
+          <circle cx={radius * 1.15} cy={radius * 1.4} r={fontSize * 0.55} fill="#8B5CF6" opacity="0.7"/>
+          <circle cx={radius * 1.15} cy={radius * 1.4} r={fontSize * 0.45} fill="#FFFFFF" opacity="0.9"/>
         </g>
 
-        <g fill={colors.text} filter="url(#textGlow2Ring)" fontFamily="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600" letterSpacing="0.05em">
-          <text x={size * 0.38} y={textBaselineY} fontSize={fontSize} textAnchor="middle">S</text>
-          <text x={size * 0.48} y={textBaselineY} fontSize={fontSize} textAnchor="middle">M</text>
-          <text x={size * 0.58} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
-          <text x={size * 0.68} y={textBaselineY} fontSize={fontSize} textAnchor="middle">R</text>
-          <text x={size * 0.78} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
+        <g fill={colors.text} fontFamily="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600" letterSpacing="0.05em">
+          <text x={size * 0.42} y={textBaselineY} fontSize={fontSize} textAnchor="middle">S</text>
+          <text x={size * 0.52} y={textBaselineY} fontSize={fontSize} textAnchor="middle">M</text>
+          <text x={size * 0.62} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
+          <text x={size * 0.72} y={textBaselineY} fontSize={fontSize} textAnchor="middle">R</text>
+          <text x={size * 0.82} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
         </g>
       </svg>
       {showLabel && (
