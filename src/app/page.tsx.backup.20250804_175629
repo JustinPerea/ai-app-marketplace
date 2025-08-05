@@ -7,7 +7,6 @@ import { MissionControlLogo } from '@/components/ui/mission-control-logo';
 import { NavigatorLogo } from '@/components/ui/navigator-logo';
 // Removed ROI Calculator and Provider Flow - moved to dedicated pages
 import { ArrowRight, Shield, Zap, BarChart3, Globe, Key, Code2, Star, Users, TrendingUp } from 'lucide-react';
-import { ProviderLogo } from '@/components/ui/provider-logo';
 
 // Dynamic stats calculation based on real platform data
 function getDynamicStats() {
@@ -19,18 +18,7 @@ function getDynamicStats() {
   return {
     // Row 1: Capability Stats
     capabilityStats: [
-      { 
-        value: "AI Providers", 
-        label: "AI Providers", 
-        animatedValue: totalProviders,
-        showLogos: true,
-        logos: [
-          { name: "OpenAI (ChatGPT, GPT-4)", provider: "OPENAI", color: "#10A37F", url: "https://openai.com" },
-          { name: "Anthropic (Claude)", provider: "ANTHROPIC", color: "#D4915D", url: "https://anthropic.com" },
-          { name: "Google (Gemini)", provider: "GOOGLE", color: "#4285F4", url: "https://ai.google.dev" },
-          { name: "4 more providers (Cohere, HuggingFace, Azure, Ollama)", text: "+4", color: "#8B5CF6", url: "/setup" }
-        ]
-      },
+      { value: "ChatGPT • Claude • Gemini • and 4 more", label: "AI Providers", animatedValue: totalProviders },
       { value: `${totalModels}+`, label: "AI Models", animatedValue: totalModels },
       { value: "Up to 80%", label: "Cost Savings", animatedValue: 80 }
     ],
@@ -48,15 +36,6 @@ export default function Home() {
 
   return (
     <CosmicPageLayout starCount={50} parallaxSpeed={0.3} gradientOverlay="none">
-      {/* Subtle Cosmic Background Gradient - Behind Stars */}
-      <div 
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 50%, transparent 100%)',
-          zIndex: 0
-        }}
-      />
-      
       {/* Hero Section - Glass Design System */}
       <section className="relative overflow-hidden py-20 sm:py-32">
         
@@ -67,17 +46,7 @@ export default function Home() {
                    background: 'rgba(255, 215, 0, 0.1)', 
                    borderColor: 'rgba(255, 215, 0, 0.3)' 
                  }}>
-              <div className="relative mr-3">
-                {/* Nebula Swirl Background */}
-                <div className="absolute inset-0 rounded-full" style={{
-                  background: 'radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, rgba(59, 130, 246, 0.4) 40%, rgba(255, 215, 0, 0.3) 70%, transparent 100%)',
-                  width: '24px',
-                  height: '24px',
-                  transform: 'scale(1.2)'
-                }} />
-                {/* Navigator Fleet Icon */}
-                <NavigatorLogo size={20} animated={false} className="relative z-10" />
-              </div>
+              <Zap className="h-3 w-3 mr-2" style={{ color: '#FFD700' }} />
               <span className="text-sm font-medium text-text-primary">Your AI Universe</span>
             </div>
             <div className="relative z-10">
@@ -150,47 +119,14 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Two-Row Dynamic Stats Display - Glass Morphism Panels */}
+            {/* Two-Row Dynamic Stats Display - Mobile Optimized */}
             <div className="mt-16 space-y-8">
               {/* Row 1: Capability Stats */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-2xl mx-auto">
                 {dynamicStats.capabilityStats.map((stat, index) => (
-                  <div key={`capability-${index}`} className="glass-card p-4 text-center hover:scale-105 transition-transform">
-                    {stat.showLogos ? (
-                      <div>
-                        {/* Company Logo Row */}
-                        <div className="flex items-center justify-center space-x-2 mb-2">
-                          {stat.logos.map((logo, logoIndex) => (
-                            <a
-                              key={logoIndex}
-                              href={logo.url}
-                              target={logo.url.startsWith('http') ? '_blank' : '_self'}
-                              rel={logo.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                              className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-200 hover:scale-110 hover:shadow-lg cursor-pointer"
-                              style={{
-                                background: `linear-gradient(135deg, ${logo.color}20, ${logo.color}10)`,
-                                border: `1px solid ${logo.color}30`,
-                                color: logo.color
-                              }}
-                              title={`Visit ${logo.name}`}
-                              aria-label={`Visit ${logo.name}`}
-                            >
-                              {logo.provider ? (
-                                <ProviderLogo provider={logo.provider} size={24} />
-                              ) : (
-                                logo.text
-                              )}
-                            </a>
-                          ))}
-                        </div>
-                        <div className="text-xs md:text-sm text-text-secondary">{stat.label}</div>
-                      </div>
-                    ) : (
-                      <div>
-                        <div className="text-xl md:text-2xl font-bold text-text-primary">{stat.value}</div>
-                        <div className="text-xs md:text-sm text-text-secondary">{stat.label}</div>
-                      </div>
-                    )}
+                  <div key={`capability-${index}`} className="text-center">
+                    <div className="text-xl md:text-2xl font-bold text-text-primary">{stat.value}</div>
+                    <div className="text-xs md:text-sm text-text-secondary">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -198,7 +134,7 @@ export default function Home() {
               {/* Row 2: Platform Readiness */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-2xl mx-auto">
                 {dynamicStats.readinessStats.map((stat, index) => (
-                  <div key={`readiness-${index}`} className="glass-card p-4 text-center hover:scale-105 transition-transform">
+                  <div key={`readiness-${index}`} className="text-center">
                     <div className="text-base md:text-lg font-semibold text-cosmara-brand">{stat.value}</div>
                     <div className="text-xs md:text-sm text-text-secondary">{stat.label}</div>
                   </div>
@@ -312,8 +248,7 @@ export default function Home() {
                 rating: 4.8,
                 installs: "5.2K",
                 category: "Content Creation",
-                featured: true,
-                logo: "📝" // Mock logo placeholder
+                featured: true
               },
               {
                 name: "Code Assistant Pro",
@@ -321,8 +256,7 @@ export default function Home() {
                 rating: 4.9,
                 installs: "12.1K",
                 category: "Development",
-                featured: true,
-                logo: "⚡" // Mock logo placeholder
+                featured: true
               },
               {
                 name: "Data Insights Engine",
@@ -330,29 +264,19 @@ export default function Home() {
                 rating: 4.7,
                 installs: "3.8K",
                 category: "Analytics",
-                featured: false,
-                logo: "📊" // Mock logo placeholder
+                featured: false
               }
             ].map((app, index) => (
               <div key={index} className="glass-card p-6 group">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-start space-x-3 flex-1">
-                    {/* Mock App Logo */}
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style={{
-                      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2))',
-                      border: '1px solid rgba(255, 255, 255, 0.1)'
-                    }}>
-                      {app.logo}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-h3 mb-2 text-text-primary">{app.name}</h3>
-                      <div className="glass-base px-3 py-1 rounded-full border inline-flex items-center mb-3" 
-                           style={{ 
-                             background: 'rgba(59, 130, 246, 0.1)',
-                             borderColor: '#3B82F6'
-                           }}>
-                        <span className="text-sm font-medium text-text-primary">{app.category}</span>
-                      </div>
+                  <div className="flex-1">
+                    <h3 className="text-h3 mb-2 text-text-primary">{app.name}</h3>
+                    <div className="glass-base px-3 py-1 rounded-full border inline-flex items-center mb-3" 
+                         style={{ 
+                           background: app.featured ? 'rgba(255, 215, 0, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+                           borderColor: app.featured ? '#FFD700' : '#3B82F6'
+                         }}>
+                      <span className="text-sm font-medium text-text-primary">{app.category}</span>
                     </div>
                   </div>
                   {app.featured && (
@@ -380,7 +304,7 @@ export default function Home() {
                             borderColor: '#3B82F6',
                             color: '#3B82F6'
                           }}>
-                    Explore
+                    Install
                   </button>
                 </div>
               </div>
