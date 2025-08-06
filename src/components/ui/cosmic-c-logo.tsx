@@ -748,7 +748,7 @@ export function CosmarcPortalLogo({ size = 200, className = '', showLabel = fals
         )}
 
         {/* "C" - Cosmic Portal C - SIMPLIFIED VERSION */}
-        <g transform={`translate(${size * 0.08}, ${size * 0.1})`}>
+        <g transform={`translate(${size * 0.0}, ${size * 0.1})`}>
           {/* Simplified Portal Background - Subtle circular glow */}
           <circle 
             cx={radius * 1.15} 
@@ -865,25 +865,92 @@ interface CosmarcLogoProps extends CosmicCLogoProps {
 
 // Research-Optimized Portal C - 2 Ring Version
 export function CosmarcPortalRefined2Ring({ size = 200, className = '', showLabel = false, showGrid = false, variant = 'primary' }: CosmarcLogoProps) {
-  const strokeWidth = size * 0.04; // Increased for better scalability
-  const radius = size * 0.18; // Reverted back to proper size
+  // Edge-to-edge spacing fix applied - debug grid available
+  const debugGrid = showGrid;
+  const strokeWidth = size * 0.04;
+  const radius = size * 0.18;
   const fontSize = size * 0.12;
   
-  // Calculated positioning for perfect grid alignment
-  const portalTransformY = size * 0.1; // Portal C transform Y position
-  const cosmicOCenterY = portalTransformY + radius * 1.4; // Actual cosmic "O" center position
-  const textBaselineY = cosmicOCenterY + fontSize * 0.35; // Align text baseline with cosmic "O" center
-  const portalCenterX = size * 0.08 + radius * 1.15; // Keep X position
+  // Consistent spacing system - optimized for visual balance
+  const spacingUnit = fontSize * 0.85; // Reference spacing unit for consistent gaps
+  const portalCenterX = radius * 1.15; // Portal C center X within group
+  const portalCenterY = radius * 1.4;  // Portal C center Y within group
+  
+  // MATHEMATICAL BREAKDOWN - Ring-to-Ring Spacing Analysis (200px logo)
+  // Blue Outer Ring: center=36px, stroke=9.6px, inner edge=31.2px, outer edge=40.8px
+  // Orange Inner Ring: center=25.2px, stroke=6.4px, inner edge=22px, outer edge=28.4px
+  // Ring-to-ring gap: 31.2px - 28.4px = 2.8px (measured from blue inner to orange outer)
+  //
+  // CORRECTED CALCULATION: For text "C" positioning INSIDE orange ring with matching 2.8px spacing:
+  
+  // Step 1: Calculate orange ring's actual inner edge position
+  // Orange ring center radius: radius * 0.7 = 25.2px at 200px
+  // Orange stroke extends inward by: (strokeWidth * 0.8) / 2 = 3.2px at 200px  
+  // So inner edge is at: center - radius + stroke_inward = portalCenterX - 25.2 + 3.2
+  const orangeRingCenterRadius = radius * 0.7; // 25.2px at 200px
+  const orangeStrokeHalfWidth = (strokeWidth * 0.8) / 2; // 3.2px at 200px
+  const orangeRingLeftInnerEdge = portalCenterX - orangeRingCenterRadius + orangeStrokeHalfWidth;
+  
+  // Step 2: SIMPLIFIED APPROACH - Position text "C" left edge exactly 2.8px from orange inner edge
+  // Since we know the current center position gives us wrong edge spacing, let's work backwards
+  // Current: Orange inner at X=31, want left edge at X=33.8 (31+2.8)
+  // If character is ~fontSize*0.4 wide, then center should be at leftEdge + width/2
+  // But let's be more direct: position the center to achieve the desired left edge spacing
+  
+  const targetGap = size * 0.02; // Increased for more visible spacing (4px gap base)  
+  
+  // DIRECT CALCULATION: If orange inner is at X=31 and we want 2.8px gap,
+  // then text left edge should be at X=33.8
+  // DIRECT APPROACH: Move text significantly to the right to create obvious spacing
+  // Add a large offset to ensure visible spacing
+  const characterWidth = fontSize * 0.35;
+  const textCLeftEdge = 35.54 + 19.564; // Direct left edge positioning + offset to align with orange ring grid
+  const textCPosition = textCLeftEdge; // Same for textAnchor="start"
+  
+  // Calculate cosmic "O" position with 0.12em gap from right edge of "C"
+  const actualCharWidth = fontSize * 0.8; // Increased to account for actual "C" character width
+  const textCRightEdge = textCLeftEdge + actualCharWidth;
+  const cosmicOLeftEdge = textCRightEdge + (fontSize * 0.12); // 0.12em gap matching SMARA spacing
+  const cosmicORadius = fontSize * 0.55;
+  const cosmicOCenterX = cosmicOLeftEdge + cosmicORadius;
+  
+  // Calculate "S" text position with 0.12em gap from right edge of cosmic "O" (matching SMARA internal spacing)
+  const cosmicORightEdge = cosmicOLeftEdge + (cosmicORadius * 2);
+  const textSLeftEdge = cosmicORightEdge + (fontSize * 0.12); // 0.12em = fontSize * 0.12
+  const textSPosition = textSLeftEdge;
+  
+  // Calculate "M" text position with 4.5px gap from right edge of "S"
+  const textSCharWidth = fontSize * 0.71; // Adjusted based on actual rendering (27.3px for fontSize=38.4)
+  const textSRightEdge = textSLeftEdge + textSCharWidth;
+  const textMLeftEdge = textSRightEdge + 4.5;
+  const textMPosition = textMLeftEdge;
+  const estimatedCharWidth = fontSize * 0.4; // For display calculations
+  
+  // DEBUG: Verify calculations (size=400)
+  console.log('Aurora Logo Debug - size:', size);
+  console.log('targetGap (should be 5.6px for size=400):', targetGap);
+  console.log('orangeRingLeftInnerEdge:', orangeRingLeftInnerEdge);
+  console.log('fontSize * 0.2 offset:', fontSize * 0.2);
+  console.log('textCPosition (final):', textCPosition);
+  console.log('Calculated gap (textCPosition - orangeRingLeftInnerEdge):', textCPosition - orangeRingLeftInnerEdge);
+  
+  // For measurement display
+  const textCLeftEdgePosition = textCPosition - (fontSize * 0.2); // Approximate left edge
+  const textCRightEdgePosition = textCLeftEdgePosition + estimatedCharWidth;
+  const cosmicOLeftEdgePosition = textCRightEdgePosition + targetGap;
+  const cosmicOCenterY = portalCenterY; // Cosmic O center Y (same as portal center)
+  const textBaselineY = cosmicOCenterY + fontSize * 0.35; // Text baseline relative to cosmic O center
   
   // Color variants following brand style guide
   const colorSchemes = {
     primary: {
-      outerRing: '#FFD700',
-      innerRing: '#FF6B35', 
+      outerRing: 'url(#cosmaraOrangeGradient)',
+      innerRing: '#8B5CF6', 
       core: '#FFFACD',
       coreAccent: '#FFE135',
-      text: '#FFD700',
-      background: 'url(#cosmaraPortalGradient)'
+      text: 'url(#cosmaraOrangeGradient)',
+      background: 'url(#cosmaraPortalGradient)',
+      cosmicO: '#000000'
     },
     minimal: {
       outerRing: '#FFD700',
@@ -891,7 +958,8 @@ export function CosmarcPortalRefined2Ring({ size = 200, className = '', showLabe
       core: '#FFF',
       coreAccent: '#FFD700',
       text: '#FFD700',
-      background: 'transparent'
+      background: 'transparent',
+      cosmicO: '#000000'
     },
     professional: {
       outerRing: '#2D3748',
@@ -899,7 +967,8 @@ export function CosmarcPortalRefined2Ring({ size = 200, className = '', showLabe
       core: '#FFD700',
       coreAccent: '#FFF',
       text: '#2D3748',
-      background: 'transparent'
+      background: 'transparent',
+      cosmicO: '#000000'
     },
     monochrome: {
       outerRing: '#000',
@@ -907,7 +976,8 @@ export function CosmarcPortalRefined2Ring({ size = 200, className = '', showLabe
       core: '#000',
       coreAccent: '#FFF',
       text: '#000',
-      background: 'transparent'
+      background: 'transparent',
+      cosmicO: '#000000'
     },
     reverse: {
       outerRing: '#FFF',
@@ -915,7 +985,53 @@ export function CosmarcPortalRefined2Ring({ size = 200, className = '', showLabe
       core: '#FFF',
       coreAccent: '#FFD700',
       text: '#FFF',
-      background: 'transparent'
+      background: 'transparent',
+      cosmicO: '#FFFFFF'
+    },
+    cosmic: {
+      outerRing: 'url(#stellarPurpleGradient)',
+      innerRing: 'url(#cosmaraOrangeGradient)',
+      core: '#FFD700',
+      coreAccent: '#FFFFFF',
+      text: 'url(#stellarPurpleGradient)',
+      background: 'transparent',
+      cosmicO: '#000000'
+    },
+    enterprise: {
+      outerRing: 'url(#goldToWhiteGradient)',
+      innerRing: '#8B5CF6',
+      core: '#FFFFFF',
+      coreAccent: '#FFD700',
+      text: 'url(#goldToWhiteGradient)',
+      background: 'transparent',
+      cosmicO: '#000000'
+    },
+    stellar: {
+      outerRing: '#FFD700',
+      innerRing: 'url(#stellarPurpleGradient)',
+      core: '#FFFFFF',
+      coreAccent: '#8B5CF6',
+      text: '#FFD700',
+      background: 'transparent',
+      cosmicO: '#000000'
+    },
+    aurora: {
+      outerRing: 'url(#cosmicBlueGradient)',
+      innerRing: 'url(#cosmaraOrangeGradient)',
+      core: 'transparent',
+      coreAccent: 'transparent',
+      text: 'url(#cosmaraUnifiedTextGradient)',
+      background: 'transparent',
+      cosmicO: 'url(#cosmaraOrangeGradient)'
+    },
+    sunset: {
+      outerRing: 'url(#cosmaraOrangeGradient)',
+      innerRing: '#FFD700',
+      core: '#FFFFFF',
+      coreAccent: '#FF6B35',
+      text: 'url(#cosmaraOrangeGradient)',
+      background: 'transparent',
+      cosmicO: '#000000'
     }
   };
   
@@ -923,13 +1039,79 @@ export function CosmarcPortalRefined2Ring({ size = 200, className = '', showLabe
   
   return (
     <div className={`inline-flex flex-col items-center ${className}`}>
-      <svg width={size} height={size * 0.8} viewBox={`0 0 ${size} ${size * 0.8}`} className="drop-shadow-lg">
+      <svg 
+        width={(() => {
+          // Calculate actual logo bounds - SMARA text extends to fontSize * 3.8 as used in gradient
+          const minX = portalCenterX - radius * 1.0 - strokeWidth * 1.2 / 2; // Portal C outer ring left edge
+          const maxX = textSPosition + fontSize * 3.8; // SMARA text right edge (matches gradient calculation)
+          const logoWidth = maxX - minX;
+          return logoWidth * 1.24; // 12% padding on each side
+        })()} 
+        height={(() => {
+          // Calculate actual logo bounds with accurate measurements
+          const minY = portalCenterY - radius * 1.0 - strokeWidth * 1.2 / 2; // Portal C outer ring top edge
+          const maxY = portalCenterY + radius * 1.0 + strokeWidth * 1.2 / 2; // Portal C outer ring bottom edge
+          const logoHeight = maxY - minY;
+          return logoHeight * 1.24; // 12% padding on top/bottom
+        })()} 
+        viewBox={`0 0 ${(() => {
+          const minX = portalCenterX - radius * 1.0 - strokeWidth * 1.2 / 2;
+          const maxX = textSPosition + fontSize * 3.8; // SMARA text right edge (matches gradient calculation)
+          const logoWidth = maxX - minX;
+          return logoWidth * 1.24;
+        })()} ${(() => {
+          const minY = portalCenterY - radius * 1.0 - strokeWidth * 1.2 / 2;
+          const maxY = portalCenterY + radius * 1.0 + strokeWidth * 1.2 / 2;
+          const logoHeight = maxY - minY;
+          return logoHeight * 1.24;
+        })()}`}>
         <defs>
           <radialGradient id="cosmaraPortalGradient2Ring" cx="30%" cy="50%" r="70%">
             <stop offset="0%" stopColor="#FFF" stopOpacity="0.9"/>
             <stop offset="40%" stopColor="#FFD700" stopOpacity="0.6"/>
             <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.2"/>
           </radialGradient>
+          
+          <linearGradient id="cosmaraOrangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FFD700"/>
+            <stop offset="50%" stopColor="#FFA500"/>
+            <stop offset="100%" stopColor="#FF6B35"/>
+          </linearGradient>
+          
+          <radialGradient id="cosmaraOrangeRadial" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#FFD700"/>
+            <stop offset="50%" stopColor="#FFA500"/>
+            <stop offset="100%" stopColor="#FF6B35"/>
+          </radialGradient>
+          
+          <linearGradient id="cosmicBlueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#3B82F6"/>
+            <stop offset="50%" stopColor="#1E40AF"/>
+            <stop offset="100%" stopColor="#1E3A8A"/>
+          </linearGradient>
+          
+          <linearGradient id="whiteCoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF"/>
+            <stop offset="50%" stopColor="#F8FAFC"/>
+            <stop offset="100%" stopColor="#E2E8F0"/>
+          </linearGradient>
+          
+          <linearGradient id="stellarPurpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#A855F7"/>
+            <stop offset="50%" stopColor="#8B5CF6"/>
+            <stop offset="100%" stopColor="#7C3AED"/>
+          </linearGradient>
+          
+          <linearGradient id="goldToWhiteGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FFD700"/>
+            <stop offset="100%" stopColor="#FFFFFF"/>
+          </linearGradient>
+          
+          <linearGradient id="cosmaraUnifiedTextGradient" x1={textCPosition} y1={textBaselineY} x2={textSPosition + fontSize * 3.8} y2={textBaselineY} gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#FFD700"/>
+            <stop offset="50%" stopColor="#FFA500"/>
+            <stop offset="100%" stopColor="#FF6B35"/>
+          </linearGradient>
           
           <filter id="portalGlow2Ring" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -948,106 +1130,213 @@ export function CosmarcPortalRefined2Ring({ size = 200, className = '', showLabe
           </filter>
         </defs>
 
-        {/* Grid System */}
-        {showGrid && (
-          <g opacity="0.4">
-            {(() => {
-              return (
-                <>
-                  <line x1={portalCenterX - size * 0.05} y1={cosmicOCenterY} x2={portalCenterX + size * 0.05} y2={cosmicOCenterY} stroke="#00FF00" strokeWidth="1" strokeDasharray="4,4"/>
-                  <line x1={portalCenterX} y1={cosmicOCenterY - size * 0.05} x2={portalCenterX} y2={cosmicOCenterY + size * 0.05} stroke="#00FF00" strokeWidth="1" strokeDasharray="4,4"/>
-                  <circle cx={portalCenterX} cy={cosmicOCenterY} r={radius * 1.5} fill="none" stroke="#FF0000" strokeWidth="1" strokeDasharray="5,5"/>
-                  <circle cx={portalCenterX} cy={cosmicOCenterY} r="2" fill="#FF0000"/>
-                  <rect x={size * 0.28} y={textBaselineY - fontSize * 0.6} width={fontSize * 0.8} height={fontSize * 1.2} fill="none" stroke="#00FFFF" strokeWidth="1" strokeDasharray="3,3"/>
-                </>
-              );
-            })()}
-          </g>
-        )}
 
-        {/* Simplified Portal C - 2 Rings */}
-        <g transform={`translate(${size * 0.08}, ${portalTransformY})`}>
-          {/* Visual Grid for Alignment - Updated for Concentric Fix */}
-          {showGrid && (
-            <g stroke="#00ff00" strokeWidth="1" fill="none" opacity="0.7">
-              {/* Circular grid guides - MATCHING CONCENTRIC CALCULATIONS */}
-              <circle 
-                cx={radius * 1.15} 
-                cy={radius * 1.4} 
-                r={radius * 1.0} 
-                strokeDasharray="5,5"
-              />
-              <circle 
-                cx={radius * 1.15} 
-                cy={radius * 1.4} 
-                r={radius * 0.7} 
-                strokeDasharray="3,3"
-                opacity="0.5"
-              />
-              {/* Crosshairs to show TRUE CONCENTRIC center point */}
-              <line 
-                x1={radius * 1.15 - radius * 0.4} 
-                y1={radius * 1.4} 
-                x2={radius * 1.15 + radius * 0.4} 
-                y2={radius * 1.4}
-                stroke="#ff0000"
-                strokeWidth="2"
-              />
-              <line 
-                x1={radius * 1.15} 
-                y1={radius * 1.4 - radius * 0.4} 
-                x2={radius * 1.15} 
-                y2={radius * 1.4 + radius * 0.4}
-                stroke="#ff0000"
-                strokeWidth="2"
-              />
-              {/* Opening angle guides (45° from center) */}
-              <line 
-                x1={radius * 1.15} 
-                y1={radius * 1.4} 
-                x2={radius * 1.15 + radius * 1.0 * Math.cos(Math.PI * 0.75)} 
-                y2={radius * 1.4 + radius * 1.0 * Math.sin(Math.PI * 0.75)}
-                stroke="#0000ff"
-                strokeDasharray="2,2"
-                opacity="0.6"
-              />
-              <line 
-                x1={radius * 1.15} 
-                y1={radius * 1.4} 
-                x2={radius * 1.15 + radius * 1.0 * Math.cos(Math.PI * 1.25)} 
-                y2={radius * 1.4 + radius * 1.0 * Math.sin(Math.PI * 1.25)}
-                stroke="#0000ff"
-                strokeDasharray="2,2"
-                opacity="0.6"
-              />
-              {/* TRUE CONCENTRIC center point marker */}
-              <circle 
-                cx={radius * 1.15} 
-                cy={radius * 1.4} 
-                r="3" 
-                fill="#ff0000"
-              />
-            </g>
-          )}
+        {/* Unified Aurora Full Logo Group - All elements move together - ACCURATE BOUNDS CENTERED */}
+        <g transform={`translate(${(() => {
+          // Calculate position using accurate bounds with 12% padding
+          const minX = portalCenterX - radius * 1.0 - strokeWidth * 1.2 / 2;
+          const maxX = textSPosition + fontSize * 3.8; // SMARA text right edge (matches gradient calculation)
+          const logoWidth = maxX - minX;
+          const svgWidth = logoWidth * 1.24;
+          const padding = (svgWidth - logoWidth) / 2;
+          return padding - minX;
+        })()}, ${(() => {
+          // Calculate Y position using accurate bounds with 12% padding
+          const minY = portalCenterY - radius * 1.0 - strokeWidth * 1.2 / 2;
+          const maxY = portalCenterY + radius * 1.0 + strokeWidth * 1.2 / 2;
+          const logoHeight = maxY - minY;
+          const svgHeight = logoHeight * 1.24;
+          const padding = (svgHeight - logoHeight) / 2;
+          return padding - minY;
+        })()})`}>
+
+          {/* Portal C - 2-Ring System - CLEAN ELEMENTS ONLY */}
+
+          <g fill="none" strokeLinecap="round">
+            {/* Outer Portal Ring - White stroke for background compatibility */}
+            <path
+              d={`M ${portalCenterX + radius * 1.0 * Math.cos(-Math.PI * 0.25)} ${portalCenterY + radius * 1.0 * Math.sin(-Math.PI * 0.25)} 
+                 A ${radius * 1.0} ${radius * 1.0} 0 1 0 ${portalCenterX + radius * 1.0 * Math.cos(Math.PI * 0.25)} ${portalCenterY + radius * 1.0 * Math.sin(Math.PI * 0.25)}`}
+              stroke="#FFFFFF"
+              strokeWidth={strokeWidth * 1.2 + 2}
+              opacity="0.8"
+            />
+            <path
+              d={`M ${portalCenterX + radius * 1.0 * Math.cos(-Math.PI * 0.25)} ${portalCenterY + radius * 1.0 * Math.sin(-Math.PI * 0.25)} 
+                 A ${radius * 1.0} ${radius * 1.0} 0 1 0 ${portalCenterX + radius * 1.0 * Math.cos(Math.PI * 0.25)} ${portalCenterY + radius * 1.0 * Math.sin(Math.PI * 0.25)}`}
+              stroke={colors.outerRing}
+              strokeWidth={strokeWidth * 1.2}
+              opacity="0.9"
+            />
+            
+            {/* Inner Portal Ring - White stroke for background compatibility */}
+            <path
+              d={`M ${portalCenterX + radius * 0.7 * Math.cos(-Math.PI * 0.25)} ${portalCenterY + radius * 0.7 * Math.sin(-Math.PI * 0.25)} 
+                 A ${radius * 0.7} ${radius * 0.7} 0 1 0 ${portalCenterX + radius * 0.7 * Math.cos(Math.PI * 0.25)} ${portalCenterY + radius * 0.7 * Math.sin(Math.PI * 0.25)}`}
+              stroke="#FFFFFF"
+              strokeWidth={strokeWidth * 0.8 + 2}
+              opacity="0.8"
+            />
+            <path
+              d={`M ${portalCenterX + radius * 0.7 * Math.cos(-Math.PI * 0.25)} ${portalCenterY + radius * 0.7 * Math.sin(-Math.PI * 0.25)} 
+                 A ${radius * 0.7} ${radius * 0.7} 0 1 0 ${portalCenterX + radius * 0.7 * Math.cos(Math.PI * 0.25)} ${portalCenterY + radius * 0.7 * Math.sin(Math.PI * 0.25)}`}
+              stroke={colors.innerRing}
+              strokeWidth={strokeWidth * 0.8}
+              opacity="0.8"
+            />
+          </g>
           
+
+          {/* Cosmic "O" - White stroke for background compatibility */}
+          <circle cx={cosmicOCenterX} cy={cosmicOCenterY} r={fontSize * 0.55} fill="none" stroke="#FFFFFF" strokeWidth={fontSize * 0.08 + 1} opacity="0.8"/>
+          <circle cx={cosmicOCenterX} cy={cosmicOCenterY} r={fontSize * 0.55} fill="none" stroke={colors.cosmicO || '#000000'} strokeWidth={fontSize * 0.08} opacity="0.8"/>
+
+
+          {/* COSMARA Text - White strokes for background compatibility */}
+          <g fontFamily="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600">
+            {/* Text C - White stroke */}
+            <text x={textCPosition} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="start" fill="none" stroke="#FFFFFF" strokeWidth="2" opacity="0.9">C</text>
+            <text x={textCPosition} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="start" fill={colors.text}>C</text>
+            
+            {/* Text SMARA - White stroke */}
+            <text x={textSPosition} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="start" letterSpacing="0.12em" fill="none" stroke="#FFFFFF" strokeWidth="2" opacity="0.9">SMARA</text>
+            <text x={textSPosition} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="start" letterSpacing="0.12em" fill={colors.text}>SMARA</text>
+          </g>
+
+        </g>
+      </svg>
+      {showLabel && (
+        <div className="mt-4 text-sm font-medium text-center text-gray-600">
+          2-Ring Portal (Research Optimized)
+          <div className="text-xs text-gray-500">{variant} variant • Enhanced scalability</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Aurora Icon Version - Portal C + Cosmic O Only (No Text)
+// IDENTICAL to Aurora full logo positioning but without text letters
+export function CosmarcAuroraIcon({ size = 120, className = '', showLabel = false }: CosmarcLogoProps) {
+  const strokeWidth = size * 0.04; // Increased for better scalability
+  const radius = size * 0.18; // Reverted back to proper size
+  const fontSize = size * 0.12;
+  
+  // Calculated positioning for perfect grid alignment - SAME AS FULL AURORA LOGO
+  const portalTransformY = size * 0.1; // Portal C transform Y position
+  const cosmicOCenterY = portalTransformY + radius * 1.4; // Actual cosmic "O" center position
+  const textBaselineY = cosmicOCenterY + fontSize * 0.35; // Align text baseline with cosmic "O" center
+  const portalCenterX = size * 0.0 + radius * 1.15; // Portal C center for text positioning
+  
+  // Aurora color scheme - IDENTICAL to full Aurora logo (using same gradient IDs)
+  const colors = {
+    outerRing: 'url(#cosmicBlueGradient)',
+    innerRing: 'url(#cosmaraOrangeGradient)',
+    core: '#FFFFFF',
+    coreAccent: '#FFD700',
+    text: 'url(#cosmaraOrangeGradient)',
+    background: 'transparent',
+    cosmicO: 'url(#cosmaraOrangeGradient)'
+  };
+  
+  return (
+    <div className={`inline-flex flex-col items-center ${className}`}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="drop-shadow-lg">
+        {/* DEBUG: SVG boundary box with center lines and measurements */}
+        <rect x="0" y="0" width={size} height={size} fill="none" stroke="#0000ff" strokeWidth="2" strokeDasharray="5,5" />
+        
+        {/* Logo Content Center Lines */}
+        {(() => {
+          // Calculate actual center of logo content (Portal C + Cosmic O)
+          const portalCenterX = size * 0.1 - 10 + radius * 1.15; // Portal C center X
+          const cosmicOCenterX = size * 0.1 - 10 + radius * 1.15 + fontSize * 1.0; // Cosmic O center X  
+          const contentCenterX = (portalCenterX + cosmicOCenterX) / 2; // Midpoint between Portal C and Cosmic O
+          
+          const contentTopY = size * 0.1; // Top of Portal C
+          const contentBottomY = size * 0.1 + radius * 1.4 + fontSize * 0.6; // Bottom of cosmic O
+          const contentCenterY = (contentTopY + contentBottomY) / 2; // Vertical center of content
+          
+          return (
+            <g stroke="#ff0000" strokeWidth="2" strokeDasharray="8,4" opacity="0.8">
+              {/* Horizontal centerline through logo content */}
+              <line x1="0" y1={contentCenterY} x2={size} y2={contentCenterY} />
+              {/* Vertical centerline through logo content */}
+              <line x1={contentCenterX} y1="0" x2={contentCenterX} y2={size} />
+              {/* Center point marker */}
+              <circle cx={contentCenterX} cy={contentCenterY} r="3" fill="#ff0000" />
+            </g>
+          );
+        })()}
+        
+        {/* Container center lines (for reference) */}
+        <line x1={size * 0.5} y1="0" x2={size * 0.5} y2={size} stroke="#0000ff" strokeWidth="1" strokeDasharray="2,2" opacity="0.3" />
+        <line x1="0" y1={size * 0.5} x2={size} y2={size * 0.5} stroke="#0000ff" strokeWidth="1" strokeDasharray="2,2" opacity="0.3" />
+        
+        {/* Pixel measurements for icon */}
+        {(() => { 
+          // Content bounds for icon - from Portal C to cosmic O (matching corrected structure)
+          const contentLeft = size * 0.1; // Start of Portal C
+          const contentRight = size * 0.1 - 10 + radius * 1.15 + fontSize * 1.5; // End of cosmic O
+          const contentTop = size * 0.1; // Top of Portal C
+          const contentBottom = size * 0.1 + radius * 1.4 + fontSize * 0.8; // Bottom of cosmic O
+          
+          const leftMargin = contentLeft;
+          const rightMargin = size - contentRight;
+          const topMargin = contentTop;
+          const bottomMargin = size - contentBottom;
+          
+          return (
+            <g fill="#0000ff" fontSize="8" fontFamily="monospace">
+              {/* Left margin */}
+              <text x="3" y={size * 0.5} textAnchor="start">L: {leftMargin.toFixed(0)}</text>
+              {/* Right margin */}
+              <text x={size - 3} y={size * 0.5} textAnchor="end">R: {rightMargin.toFixed(0)}</text>
+              {/* Top margin */}
+              <text x={size * 0.5} y="12" textAnchor="middle">T: {topMargin.toFixed(0)}</text>
+              {/* Bottom margin */}
+              <text x={size * 0.5} y={size - 3} textAnchor="middle">B: {bottomMargin.toFixed(0)}</text>
+            </g>
+          );
+        })()}
+        <defs>
+          <radialGradient id="auroraIconPortalGradient" cx="30%" cy="50%" r="70%">
+            <stop offset="0%" stopColor="#FFF" stopOpacity="0.9"/>
+            <stop offset="40%" stopColor="#FFD700" stopOpacity="0.6"/>
+            <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.2"/>
+          </radialGradient>
+          
+          <linearGradient id="cosmaraOrangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FFD700"/>
+            <stop offset="50%" stopColor="#FFA500"/>
+            <stop offset="100%" stopColor="#FF6B35"/>
+          </linearGradient>
+          
+          <radialGradient id="cosmaraOrangeRadial" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#FFD700"/>
+            <stop offset="50%" stopColor="#FFA500"/>
+            <stop offset="100%" stopColor="#FF6B35"/>
+          </radialGradient>
+          
+          <linearGradient id="cosmicBlueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#3B82F6"/>
+            <stop offset="50%" stopColor="#1E40AF"/>
+            <stop offset="100%" stopColor="#1E3A8A"/>
+          </linearGradient>
+          
+          <filter id="cosmicGlow2Ring" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+            <feMerge> 
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        
+        {/* Portal C - EXACT COPY FROM WORKING AURORA FULL LOGO */}
+        <g transform={`translate(${size * 0.1}, ${portalTransformY})`}>
           {/* 2-Ring System for Maximum Clarity - CONCENTRIC ALIGNMENT FIXED */}
           <g fill="none" strokeLinecap="round">
             {(() => {
-              /* 
-                CONCENTRIC ALIGNMENT FIX
-                ========================
-                Problem: Previous implementation used different arc centers, causing 
-                inconsistent spacing between rings (wider at top/bottom, narrower at sides).
-                
-                Solution: Both rings now share the exact same center point and use 
-                mathematically calculated arc positions for perfect concentricity.
-                
-                Key improvements:
-                - Fixed center point: (radius * 1.15, radius * 1.4)
-                - Consistent 45° opening angle on both sides  
-                - Uniform spacing accounting for stroke widths
-                - Perfect alignment with visual grid system
-              */
               const centerX = radius * 1.15; // Fixed center X position
               const centerY = radius * 1.4;  // Fixed center Y position
               
@@ -1097,38 +1386,28 @@ export function CosmarcPortalRefined2Ring({ size = 200, className = '', showLabe
               );
             })()}
           </g>
-
-          {/* Enhanced Central Core - Text-Matched Cosmic O */}
-          <circle 
-            cx={radius * 1.15} 
-            cy={radius * 1.4} 
-            r={fontSize * 0.55}
-            fill="#8B5CF6"
-            opacity="0.7"
-          />
-          
-          <circle 
-            cx={radius * 1.15} 
-            cy={radius * 1.4} 
-            r={fontSize * 0.45}
-            fill="#FFFFFF"
-            opacity="0.9"
-          />
+        </g>
+        
+        {/* Cosmic "O" - EXACT COPY FROM WORKING AURORA FULL LOGO */}
+        <g>
+          <circle cx={size * 0.1 - 10 + radius * 1.15 + fontSize * 1.0} cy={cosmicOCenterY} r={fontSize * 0.55} fill={colors.cosmicO || '#000000'} opacity="0.8"/>
+          <circle cx={size * 0.1 - 10 + radius * 1.15 + fontSize * 1.0} cy={cosmicOCenterY} r={fontSize * 0.45} fill="#FFFFFF" opacity="0.9"/>
         </g>
 
-        {/* Geometric Sans-Serif Typography */}
+        {/* Text Letters - ALL REMOVED: Aurora Icon is now text-free */}
         <g fill={colors.text} fontFamily="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600" letterSpacing="0.05em">
-          <text x={size * 0.42} y={textBaselineY} fontSize={fontSize} textAnchor="middle">S</text>
-          <text x={size * 0.52} y={textBaselineY} fontSize={fontSize} textAnchor="middle">M</text>
-          <text x={size * 0.62} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
-          <text x={size * 0.72} y={textBaselineY} fontSize={fontSize} textAnchor="middle">R</text>
-          <text x={size * 0.82} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
+          {/* All text letters removed - Aurora Icon complete */}
+          {/* <text x={portalCenterX} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="middle">C</text> */}
+          {/* <text x={portalCenterX + fontSize * 2.0} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="middle">S</text> */}
+          {/* <text x={portalCenterX + fontSize * 3.0} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="middle">M</text> */}
+          {/* <text x={portalCenterX + fontSize * 4.0} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="middle">A</text> */}
+          {/* <text x={portalCenterX + fontSize * 5.0} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="middle">R</text> */}
+          {/* <text x={portalCenterX + fontSize * 6.0} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="middle">A</text> */}
         </g>
       </svg>
       {showLabel && (
-        <div className="mt-4 text-sm font-medium text-center text-gray-600">
-          2-Ring Portal (Research Optimized)
-          <div className="text-xs text-gray-500">{variant} variant • Enhanced scalability</div>
+        <div className="mt-3 text-center">
+          <div className="text-xs font-medium text-gray-600">Aurora Icon</div>
         </div>
       )}
     </div>
@@ -1145,17 +1424,46 @@ export function CosmarcPortalRefined3Ring({ size = 200, className = '', showLabe
   const portalTransformY = size * 0.1; // Portal C transform Y position
   const cosmicOCenterY = portalTransformY + radius * 1.4; // Actual cosmic "O" center position
   const textBaselineY = cosmicOCenterY + fontSize * 0.35; // Align text baseline with cosmic "O" center
-  const portalCenterX = size * 0.08 + radius * 1.15; // Keep X position
+  const portalCenterX = size * 0.0 + radius * 1.15; // Portal C center for text positioning
+  
+  // Spacing calculations for Aurora Full Logo (matching 2-ring version)
+  const portalCenterY = portalTransformY + radius * 0.8; // Portal center Y
+  const targetGap = size * 0.02; // Increased for more visible spacing (4px gap base) matching 2-ring version
+  const estimatedCharWidth = fontSize * 0.4; // Character width estimate
+  const textCLeftEdge = 35.54 + 19.564; // Direct left edge positioning + offset to align with orange ring grid
+  const textCPosition = textCLeftEdge; // Same for textAnchor="start"
+  
+  // Calculate cosmic "O" position with 0.12em gap from right edge of "C"
+  const actualCharWidth = fontSize * 0.8; // Increased to account for actual "C" character width
+  const textCRightEdge = textCLeftEdge + actualCharWidth;
+  const cosmicOLeftEdge = textCRightEdge + (fontSize * 0.12); // 0.12em gap matching SMARA spacing
+  const cosmicORadius = fontSize * 0.55;
+  const cosmicOCenterX = cosmicOLeftEdge + cosmicORadius;
+  
+  // Calculate "S" text position with 0.12em gap from right edge of cosmic "O" (matching SMARA internal spacing)
+  const cosmicORightEdge = cosmicOLeftEdge + (cosmicORadius * 2);
+  const textSLeftEdge = cosmicORightEdge + (fontSize * 0.12); // 0.12em = fontSize * 0.12
+  const textSPosition = textSLeftEdge;
+  
+  // Calculate "M" text position with 4.5px gap from right edge of "S"
+  const textSCharWidth = fontSize * 0.71; // Adjusted based on actual rendering (27.3px for fontSize=38.4)
+  const textSRightEdge = textSLeftEdge + textSCharWidth;
+  const textMLeftEdge = textSRightEdge + 4.5;
+  const textMPosition = textMLeftEdge;
+  const textCLeftEdgePosition = textCPosition - (estimatedCharWidth / 2);
+  const textCRightEdgePosition = textCPosition + (estimatedCharWidth / 2);
+  const cosmicOLeftEdgePosition = textCRightEdgePosition + targetGap;
   
   const colorSchemes = {
     primary: {
-      outerRing: '#FFD700',
-      middleRing: '#FF6B35',
+      outerRing: 'url(#cosmaraOrangeGradient3Ring)',
+      middleRing: '#8B5CF6',
       innerRing: '#8B5CF6', 
       core: '#FFF',
       coreAccent: '#FFD700',
-      text: '#FFD700',
-      background: 'url(#cosmaraPortalGradient3Ring)'
+      text: 'url(#cosmaraOrangeGradient3Ring)',
+      background: 'url(#cosmaraPortalGradient3Ring)',
+      cosmicO: '#000000'
     },
     minimal: {
       outerRing: '#FFD700',
@@ -1164,7 +1472,8 @@ export function CosmarcPortalRefined3Ring({ size = 200, className = '', showLabe
       core: '#FFF',
       coreAccent: '#FFD700',
       text: '#FFD700',
-      background: 'transparent'
+      background: 'transparent',
+      cosmicO: '#000000'
     },
     professional: {
       outerRing: '#2D3748',
@@ -1173,7 +1482,8 @@ export function CosmarcPortalRefined3Ring({ size = 200, className = '', showLabe
       core: '#FFD700',
       coreAccent: '#FFF',
       text: '#2D3748',
-      background: 'transparent'
+      background: 'transparent',
+      cosmicO: '#000000'
     },
     monochrome: {
       outerRing: '#000',
@@ -1182,7 +1492,8 @@ export function CosmarcPortalRefined3Ring({ size = 200, className = '', showLabe
       core: '#000',
       coreAccent: '#FFF',
       text: '#000',
-      background: 'transparent'
+      background: 'transparent',
+      cosmicO: '#000000'
     },
     reverse: {
       outerRing: '#FFF',
@@ -1191,7 +1502,58 @@ export function CosmarcPortalRefined3Ring({ size = 200, className = '', showLabe
       core: '#FFF',
       coreAccent: '#FFD700',
       text: '#FFF',
-      background: 'transparent'
+      background: 'transparent',
+      cosmicO: '#FFFFFF'
+    },
+    cosmic: {
+      outerRing: 'url(#stellarPurpleGradient3Ring)',
+      middleRing: 'url(#cosmaraOrangeGradient3Ring)',
+      innerRing: '#8B5CF6',
+      core: '#FFD700',
+      coreAccent: '#FFFFFF',
+      text: 'url(#stellarPurpleGradient3Ring)',
+      background: 'transparent',
+      cosmicO: '#000000'
+    },
+    enterprise: {
+      outerRing: 'url(#goldToWhiteGradient3Ring)',
+      middleRing: '#8B5CF6',
+      innerRing: '#7C3AED',
+      core: '#FFFFFF',
+      coreAccent: '#FFD700',
+      text: 'url(#goldToWhiteGradient3Ring)',
+      background: 'transparent',
+      cosmicO: '#000000'
+    },
+    stellar: {
+      outerRing: '#FFD700',
+      middleRing: 'url(#stellarPurpleGradient3Ring)',
+      innerRing: '#8B5CF6',
+      core: '#FFFFFF',
+      coreAccent: '#8B5CF6',
+      text: '#FFD700',
+      background: 'transparent',
+      cosmicO: '#000000'
+    },
+    aurora: {
+      outerRing: 'url(#cosmicBlueGradient3Ring)',
+      middleRing: 'url(#cosmaraOrangeGradient3Ring)',
+      innerRing: '#8B5CF6',
+      core: 'transparent',
+      coreAccent: 'transparent',
+      text: 'url(#cosmaraOrangeGradient3Ring)',
+      background: 'transparent',
+      cosmicO: 'url(#cosmaraOrangeGradient3Ring)'
+    },
+    sunset: {
+      outerRing: 'url(#cosmaraOrangeGradient3Ring)',
+      middleRing: '#FFD700',
+      innerRing: '#FF6B35',
+      core: '#FFFFFF',
+      coreAccent: '#FF6B35',
+      text: 'url(#cosmaraOrangeGradient3Ring)',
+      background: 'transparent',
+      cosmicO: '#000000'
     }
   };
   
@@ -1199,7 +1561,7 @@ export function CosmarcPortalRefined3Ring({ size = 200, className = '', showLabe
   
   return (
     <div className={`inline-flex flex-col items-center ${className}`}>
-      <svg width={size} height={size * 0.6} viewBox={`0 0 ${size} ${size * 0.6}`} className="drop-shadow-lg">
+      <svg width={size * 1.8} height={size * 0.6} viewBox={`0 0 ${size * 1.8} ${size * 0.6}`} className="drop-shadow-lg">
         <defs>
           <radialGradient id="cosmaraPortalGradient3Ring" cx="30%" cy="50%" r="70%">
             <stop offset="0%" stopColor="#FFF" stopOpacity="0.9"/>
@@ -1207,6 +1569,35 @@ export function CosmarcPortalRefined3Ring({ size = 200, className = '', showLabe
             <stop offset="70%" stopColor="#8B5CF6" stopOpacity="0.4"/>
             <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.2"/>
           </radialGradient>
+          
+          <linearGradient id="cosmaraOrangeGradient3Ring" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FFD700"/>
+            <stop offset="50%" stopColor="#FFA500"/>
+            <stop offset="100%" stopColor="#FF6B35"/>
+          </linearGradient>
+          
+          <radialGradient id="cosmaraOrangeRadial3Ring" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#FFD700"/>
+            <stop offset="50%" stopColor="#FFA500"/>
+            <stop offset="100%" stopColor="#FF6B35"/>
+          </radialGradient>
+          
+          <linearGradient id="cosmicBlueGradient3Ring" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#3B82F6"/>
+            <stop offset="50%" stopColor="#1E40AF"/>
+            <stop offset="100%" stopColor="#1E3A8A"/>
+          </linearGradient>
+          
+          <linearGradient id="stellarPurpleGradient3Ring" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#A855F7"/>
+            <stop offset="50%" stopColor="#8B5CF6"/>
+            <stop offset="100%" stopColor="#7C3AED"/>
+          </linearGradient>
+          
+          <linearGradient id="goldToWhiteGradient3Ring" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FFD700"/>
+            <stop offset="100%" stopColor="#FFFFFF"/>
+          </linearGradient>
           
           <filter id="portalGlow3Ring" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -1236,7 +1627,7 @@ export function CosmarcPortalRefined3Ring({ size = 200, className = '', showLabe
         )}
 
         {/* 3-Ring Portal C */}
-        <g transform={`translate(${size * 0.08}, ${portalTransformY})`}>
+        <g transform={`translate(${size * 0.0}, ${portalTransformY})`}>
           {/* 3-Ring Portal C */}
           <g fill="none" strokeLinecap="round">
             <path d={`M ${radius * 2.1} ${radius * 0.7} A ${radius * 1.1} ${radius * 1.1} 0 1 0 ${radius * 2.1} ${radius * 2.1}`} stroke={colors.outerRing} strokeWidth={strokeWidth * 1.4} opacity="1"/>
@@ -1244,16 +1635,19 @@ export function CosmarcPortalRefined3Ring({ size = 200, className = '', showLabe
             <path d={`M ${radius * 1.7} ${radius * 1.0} A ${radius * 0.7} ${radius * 0.7} 0 1 0 ${radius * 1.7} ${radius * 1.8}`} stroke={colors.innerRing} strokeWidth={strokeWidth * 0.7} opacity="0.6"/>
           </g>
 
-          <circle cx={radius * 1.15} cy={radius * 1.4} r={fontSize * 0.55} fill="#8B5CF6" opacity="0.7"/>
-          <circle cx={radius * 1.15} cy={radius * 1.4} r={fontSize * 0.45} fill="#FFFFFF" opacity="0.9"/>
+          {/* Central core removed - C text will be positioned here instead */}
         </g>
 
-        <g fill={colors.text} fontFamily="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600" letterSpacing="0.05em">
-          <text x={size * 0.42} y={textBaselineY} fontSize={fontSize} textAnchor="middle">S</text>
-          <text x={size * 0.52} y={textBaselineY} fontSize={fontSize} textAnchor="middle">M</text>
-          <text x={size * 0.62} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
-          <text x={size * 0.72} y={textBaselineY} fontSize={fontSize} textAnchor="middle">R</text>
-          <text x={size * 0.82} y={textBaselineY} fontSize={fontSize} textAnchor="middle">A</text>
+        {/* Separate Cosmic "O" positioned 4.5px from right edge of text C */}
+        <g>
+          <circle cx={cosmicOCenterX} cy={cosmicOCenterY} r={fontSize * 0.55} fill="none" stroke={colors.cosmicO || '#000000'} strokeWidth={fontSize * 0.08} opacity="0.8"/>
+          <circle cx={cosmicOCenterX} cy={cosmicOCenterY} r={fontSize * 0.45} fill="none" stroke={colors.cosmicO || '#000000'} strokeWidth={fontSize * 0.06} opacity="0.6"/>
+        </g>
+
+        {/* Geometric Sans-Serif Typography - "C" separate, "SMARA" as unified element with controlled kerning */}
+        <g fill={colors.text} fontFamily="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600">
+          <text x={textCPosition} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="start">C</text>
+          <text x={textSPosition} y={textBaselineY} fontSize={fontSize * 1.1} textAnchor="start" letterSpacing="0.12em">SMARA</text>
         </g>
       </svg>
       {showLabel && (
