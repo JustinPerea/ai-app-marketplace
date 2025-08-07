@@ -167,6 +167,125 @@ const response = await fetch(\`https://generativelanguage.googleapis.com/v1beta/
 });
 \`\`\`
 
+## ERROR HANDLING BEST PRACTICES
+
+### API Error Handling:
+\`\`\`typescript
+// Enhanced API route with comprehensive error handling
+export async function POST(request: NextRequest) {
+  try {
+    const { input, apiKeys, provider } = await request.json();
+    
+    // Input validation
+    if (!input?.trim()) {
+      return NextResponse.json(
+        { error: 'Input is required' }, 
+        { status: 400 }
+      );
+    }
+    
+    if (!apiKeys || (!apiKeys.openai && !apiKeys.anthropic && !apiKeys.google)) {
+      return NextResponse.json(
+        { error: 'At least one API key is required. Please configure your keys in Settings.' }, 
+        { status: 400 }
+      );
+    }
+    
+    // Provider-specific error handling
+    let response;
+    try {
+      if (provider === 'openai' && apiKeys.openai) {
+        response = await callOpenAI(input, apiKeys.openai);
+      } else if (provider === 'anthropic' && apiKeys.anthropic) {
+        response = await callAnthropic(input, apiKeys.anthropic);
+      } else if (provider === 'google' && apiKeys.google) {
+        response = await callGoogleAI(input, apiKeys.google);
+      } else {
+        throw new Error(\`Provider \${provider} not configured\`);
+      }
+    } catch (providerError: any) {
+      // Handle specific provider errors
+      if (providerError.message?.includes('401') || providerError.message?.includes('unauthorized')) {
+        return NextResponse.json(
+          { error: \`Invalid API key for \${provider}. Please check your key in Settings.\` }, 
+          { status: 401 }
+        );
+      }
+      if (providerError.message?.includes('429') || providerError.message?.includes('rate limit')) {
+        return NextResponse.json(
+          { error: \`Rate limit exceeded for \${provider}. Please wait a moment and try again.\` }, 
+          { status: 429 }
+        );
+      }
+      if (providerError.message?.includes('quota') || providerError.message?.includes('billing')) {
+        return NextResponse.json(
+          { error: \`Quota exceeded for \${provider}. Please check your billing status.\` }, 
+          { status: 402 }
+        );
+      }
+      
+      // Generic provider error
+      console.error(\`\${provider} API error:\`, providerError);
+      return NextResponse.json(
+        { error: \`\${provider} service error. Please try again or use a different provider.\` }, 
+        { status: 503 }
+      );
+    }
+    
+    return NextResponse.json({ result: response });
+    
+  } catch (error: any) {
+    console.error('API route error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error. Please try again.' }, 
+      { status: 500 }
+    );
+  }
+}
+\`\`\`
+
+### Frontend Error Handling:
+\`\`\`typescript
+const [error, setError] = useState<string | null>(null);
+const [isLoading, setIsLoading] = useState(false);
+
+const handleSubmit = async () => {
+  setError(null);
+  setIsLoading(true);
+  
+  try {
+    const response = await fetch('/api/your-app-endpoint', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input, apiKeys, provider })
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Request failed');
+    }
+    
+    // Success handling
+    setResult(data.result);
+    
+  } catch (err: any) {
+    setError(err.message || 'An unexpected error occurred');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// Error display component
+{error && (
+  <Alert variant="destructive" className="mb-4">
+    <AlertCircle className="h-4 w-4" />
+    <AlertTitle>Error</AlertTitle>
+    <AlertDescription>{error}</AlertDescription>
+  </Alert>
+)}
+\`\`\`
+
 ### 🎥 VIDEO GENERATION WITH GEMINI VEO (NEW!)
 
 \`\`\`typescript

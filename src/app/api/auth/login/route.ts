@@ -94,6 +94,55 @@ async function ensureUserInDatabase(user: any) {
   }
 }
 
+// Handle OAuth redirect requests (for Auth0 Google login)
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const connection = searchParams.get('connection');
+  const returnTo = searchParams.get('returnTo');
+
+  // Handle Auth0 Google OAuth connection
+  if (connection === 'google-oauth2') {
+    try {
+      // Construct Auth0 login URL
+      const auth0Domain = process.env.AUTH0_DOMAIN;
+      const clientId = process.env.AUTH0_CLIENT_ID;
+      const baseUrl = process.env.AUTH0_BASE_URL || request.nextUrl.origin;
+      
+      if (!auth0Domain || !clientId) {
+        return NextResponse.json(
+          { error: 'Auth0 not configured' },
+          { status: 500 }
+        );
+      }
+
+      const redirectUri = `${baseUrl}/api/auth/callback`;
+      const state = returnTo ? encodeURIComponent(returnTo) : '';
+      
+      const auth0LoginUrl = `https://${auth0Domain}/authorize?` +
+        `response_type=code&` +
+        `client_id=${clientId}&` +
+        `connection=${connection}&` +
+        `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+        `scope=openid profile email&` +
+        (state ? `state=${state}&` : '') +
+        `prompt=login`;
+
+      // Redirect to Auth0
+      return NextResponse.redirect(auth0LoginUrl);
+
+    } catch (error) {
+      console.error('Auth0 redirect error:', error);
+      return NextResponse.json(
+        { error: 'OAuth redirect failed' },
+        { status: 500 }
+      );
+    }
+  }
+
+  // If no valid OAuth connection, redirect to login page
+  return NextResponse.redirect(new URL('/auth/login', request.url));
+}
+
 // Handle preflight requests
 export async function OPTIONS() {
   return new NextResponse(null, { status: 200 });

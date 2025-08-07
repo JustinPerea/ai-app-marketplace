@@ -10,6 +10,9 @@
    * Premium AI marketplace branding with sophisticated cosmic elements
    */
   
+  /* Font Family */
+  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  
   /* Foundation Colors - Cosmara Deep Space System */
   --color-background: #0B1426;      /* Deep Space - primary background */
   --color-foreground: #ffffff;      /* Pure White - maximum contrast */

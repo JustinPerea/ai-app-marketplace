@@ -1,5 +1,5 @@
 {
-  "name": "@ai-marketplace/sdk",
+  "name": "@cosmara-ai/community-sdk",
   "version": "1.0.0",
   "description": "TypeScript SDK for intelligent AI provider routing with ML-powered optimization. Supports OpenAI, Anthropic, and Google AI with zero external dependencies.",
   "keywords": [
@@ -19,15 +19,15 @@
     "llm",
     "chatgpt"
   ],
-  "author": "AI Marketplace",
+  "author": "COSMARA AI",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JustinPerea/cosmara-ai-sdk.git"
+    "url": "https://github.com/cosmara-ai/community-sdk.git"
   },
-  "homepage": "https://github.com/JustinPerea/cosmara-ai-sdk#readme",
+  "homepage": "https://cosmara.dev",
   "bugs": {
-    "url": "https://github.com/JustinPerea/cosmara-ai-sdk/issues"
+    "url": "https://github.com/cosmara-ai/community-sdk/issues"
   },
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
