@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MainLayout } from '@/components/layouts/main-layout';
+import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
 import { 
   ArrowRight, 
   Check, 
@@ -13,7 +13,9 @@ import {
   FileText,
   Settings,
   Users,
-  DollarSign
+  DollarSign,
+  Star,
+  TrendingUp
 } from 'lucide-react';
 
 const steps = [
@@ -25,13 +27,14 @@ const steps = [
     duration: '5 minutes',
     tasks: [
       'Install Node.js 18+ and npm',
-      'Install the AI Marketplace SDK',
+      'Install the COSMARA Community SDK',
       'Configure your development environment',
       'Authenticate with the platform'
     ],
-    codeExample: `npm install @ai-marketplace/sdk
-npx ai-marketplace init my-app
+    codeExample: `npm install @cosmara-ai/community-sdk
+npm create next-app@latest my-app
 cd my-app
+npm install @cosmara-ai/community-sdk
 npm run dev`
   },
   {
@@ -46,20 +49,21 @@ npm run dev`
       'Add user interface components',
       'Configure application settings'
     ],
-    codeExample: `import { AIApp, OpenAIProvider } from '@ai-marketplace/sdk';
+    codeExample: `import { createClient, APIProvider } from '@cosmara-ai/community-sdk';
 
-const app = new AIApp({
-  name: 'My AI App',
-  version: '1.0.0',
-  description: 'An amazing AI application'
+const client = createClient({
+  apiKey: process.env.COSMARA_API_KEY,
+  baseURL: 'https://api.cosmara.ai/v1'
 });
 
-app.addProvider(new OpenAIProvider({
-  model: 'gpt-4',
-  temperature: 0.7
-}));
+const response = await client.chat.completions.create({
+  model: 'gpt-4o',
+  messages: [
+    { role: 'user', content: 'Hello from my AI app!' }
+  ]
+});
 
-export default app;`
+console.log(response.choices[0].message.content);`
   },
   {
     id: 3,
@@ -133,30 +137,36 @@ const resources = [
 
 export default function GettingStartedPage() {
   return (
-    <MainLayout>
-      <div className="container mx-auto px-4 py-8">
+    <CosmicPageLayout starCount={30} parallaxSpeed={0.2} gradientOverlay="none">
+      <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <div className="mb-12 text-center">
-          <Badge variant="secondary" className="mb-4">
-            <Code2 className="h-3 w-3 mr-1" />
-            Getting Started Guide
-          </Badge>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Build Your First AI Application
+          <div className="glass-base px-4 py-2 rounded-full border inline-flex items-center mb-6" 
+               style={{ 
+                 background: 'rgba(139, 92, 246, 0.1)', 
+                 borderColor: 'rgba(139, 92, 246, 0.3)' 
+               }}>
+            <Code2 className="h-3 w-3 mr-2" style={{ color: '#8B5CF6' }} />
+            <span className="text-sm font-medium text-text-primary">Getting Started Guide</span>
+          </div>
+          <h1 className="text-hero-glass mb-6">
+            <span className="text-glass-gradient">Build Your First</span>
+            <br />
+            <span className="text-stardust-muted">AI Application</span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-body-lg text-text-secondary mb-8 leading-relaxed max-w-3xl mx-auto">
             Follow this step-by-step guide to create, test, and publish your AI application to our marketplace.
           </p>
         </div>
 
         {/* Prerequisites */}
-        <Card className="mb-12">
+        <Card className="glass-card mb-12">
           <CardHeader>
-            <CardTitle className="flex items-center">
+            <CardTitle className="flex items-center text-text-primary">
               <Check className="h-5 w-5 mr-2 text-green-500" />
               Prerequisites
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-text-secondary">
               Make sure you have these requirements before getting started
             </CardDescription>
           </CardHeader>
@@ -193,22 +203,26 @@ export default function GettingStartedPage() {
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
-              <Card key={step.id} className="overflow-hidden">
+              <Card key={step.id} className="glass-card overflow-hidden hover:scale-105 transition-transform duration-300">
                 <CardHeader>
                   <div className="flex items-start gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                      <Icon className="h-6 w-6 text-blue-600" />
+                    <div className="h-12 w-12 rounded-lg flex items-center justify-center flex-shrink-0" 
+                         style={{ 
+                           background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2))',
+                           border: '1px solid rgba(255, 255, 255, 0.1)'
+                         }}>
+                      <Icon className="h-6 w-6 text-blue-400" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <CardTitle className="text-xl">
+                        <CardTitle className="text-xl text-text-primary">
                           {step.id}. {step.title}
                         </CardTitle>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs border-blue-500/30 text-blue-400">
                           {step.duration}
                         </Badge>
                       </div>
-                      <CardDescription className="text-base">
+                      <CardDescription className="text-base text-text-secondary">
                         {step.description}
                       </CardDescription>
                     </div>
@@ -232,7 +246,7 @@ export default function GettingStartedPage() {
                     {/* Code Example */}
                     <div>
                       <h4 className="font-semibold mb-3">Example code:</h4>
-                      <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+                      <div className="bg-dark-graphite text-text-primary p-4 rounded-lg overflow-x-auto border border-dark-ash">
                         <pre className="text-sm">
                           <code>{step.codeExample}</code>
                         </pre>
@@ -273,15 +287,15 @@ export default function GettingStartedPage() {
         </div>
 
         {/* Next Steps */}
-        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+        <Card className="glass-card relative overflow-hidden">
           <CardHeader>
-            <CardTitle className="flex items-center text-blue-900">
-              <Rocket className="h-5 w-5 mr-2" />
+            <CardTitle className="flex items-center text-text-primary">
+              <Rocket className="h-5 w-5 mr-2 text-blue-400" />
               What's Next?
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-blue-800">
+            <p className="text-text-secondary">
               Once you've completed these steps, you'll be ready to start building amazing AI applications!
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -291,12 +305,12 @@ export default function GettingStartedPage() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100" asChild>
+              <Button variant="outline" className="glass-button-secondary" asChild>
                 <Link href="/developers/examples">
                   Browse Examples
                 </Link>
               </Button>
-              <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100" asChild>
+              <Button variant="outline" className="glass-button-secondary" asChild>
                 <Link href="/developers/community">
                   Join Community
                 </Link>
@@ -305,6 +319,6 @@ export default function GettingStartedPage() {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    </CosmicPageLayout>
   );
 }

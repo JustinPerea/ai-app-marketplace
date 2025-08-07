@@ -1,6 +1,6 @@
 # AI Marketplace Platform - Agent Operating Directive
 
-*Last Updated: 2025-07-30*
+*Last Updated: 2025-08-06*
 
 ## CRITICAL: Homepage Protection Protocol ⚠️
 
@@ -87,6 +87,11 @@
    - **Use When**: Verifying implementations, performance testing, QA validation
    - **Status**: ✅ Operational with >95% pass rates, enterprise testing protocols
 
+7. **📚 Documentation Intelligence Agent** (`/.ai-agents/documentation-intelligence/`)
+   - **Specialization**: Internal documentation analysis, content auditing, cross-reference validation
+   - **Use When**: Developer portal reviews, documentation consistency checks, link validation, content freshness audits
+   - **Status**: ✅ Operational - specialized for maintaining documentation accuracy across project ecosystem
+
 ### **Agent Selection Guidelines**
 
 **When to Use Specialized Agents**:
@@ -95,6 +100,7 @@
 - **Quality-critical implementations** needing specialized validation
 - **Research tasks** requiring extensive information gathering
 - **UI/UX work** affecting visual design or user experience
+- **Documentation auditing tasks** requiring comprehensive file analysis and cross-reference validation
 
 **When to Handle Directly (Master Orchestrator)**:
 - **Simple, single-step tasks** not requiring specialized knowledge
@@ -198,6 +204,7 @@ All agents MUST complete the Implementation Quality Checklist located at:
 - **Developer Ecosystem ↔ All Agents**: SDK integration across all systems
 - **Quality Assurance ↔ All Agents**: Verification of all implementations
 - **Research Intelligence → All Agents**: Strategic insights and market data
+- **Documentation Intelligence ↔ All Agents**: Content accuracy validation and cross-reference synchronization
 
 #### **Quality Assurance Integration** ⭐ **MANDATORY**
 **After Every Specialized Agent Implementation**:
@@ -535,6 +542,17 @@ npm run dev:stable && npm run health-check
 - Documentation accuracy: 95%+ coverage maintained
 - **Homepage integrity: 100% preservation rate**
 
+## Brand Asset Management
+
+### **🎨 Logo System Status** ⚠️ **PENDING REDESIGN**
+
+Logo branding direction is currently being revised. All agents should:
+
+- **Avoid implementing new logo systems** until direction is finalized
+- **Use existing placeholder branding** where necessary
+- **Wait for updated brand guidelines** before major logo implementations
+- **Focus on functionality over branding** during this transition period
+
 ## Emergency Contacts and References
 
 ### **Specialized Agent Documentation**
@@ -544,6 +562,7 @@ npm run dev:stable && npm run health-check
 - **[/.ai-agents/developer-ecosystem/CLAUDE.md](/.ai-agents/developer-ecosystem/CLAUDE.md)** - Developer Ecosystem Agent context
 - **[/.ai-agents/research-intelligence/CLAUDE.md](/.ai-agents/research-intelligence/CLAUDE.md)** - Research & Intelligence Agent context
 - **[/.ai-agents/quality-assurance/CLAUDE.md](/.ai-agents/quality-assurance/CLAUDE.md)** - Quality Assurance Agent context
+- **[/.ai-agents/documentation-intelligence/CLAUDE.md](/.ai-agents/documentation-intelligence/CLAUDE.md)** - Documentation Intelligence Agent context
 
 **Critical Documentation:**
 - [SERVER_TROUBLESHOOTING.md](./SERVER_TROUBLESHOOTING.md) - Server issue resolution

@@ -17,6 +17,7 @@ import { Search, ShoppingBag, Code, Settings, LogOut, User, Link as LinkIcon, Bu
 import { Input } from '@/components/ui/input';
 import { MobileNavigation } from './mobile-navigation';
 import { CosmaraLogo } from '@/components/ui/cosmara-logo';
+import { CosmarcPortalRefined2Ring } from '@/components/ui/cosmic-c-logo';
 import { useAuth } from '@/lib/auth/auth-context';
 
 export function Navigation() {
@@ -60,10 +61,8 @@ export function Navigation() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 py-3">
         <nav className="flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
-            <CosmaraLogo size={32} />
-            <span className="text-xl font-bold text-cosmara-brand">COSMARA</span>
+          <Link href="/" className="flex items-center">
+            <CosmaraLogo />
           </Link>
 
           {/* Search Bar - Desktop */}

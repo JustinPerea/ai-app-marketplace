@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Circular C Rings</title>
+    <style>
+        body { 
+            background: #1a1a2e; 
+            color: white; 
+            font-family: Arial, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0;
+        }
+        .logo-container {
+            text-align: center;
+        }
+        .logo-title {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <h1 class="logo-title">Circular C Portal Test</h1>
+        
+        <!-- Test the new circular approach -->
+        <svg width="300" height="300" viewBox="0 0 300 300" style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 20px;">
+            <!-- Original arc-based approach for comparison -->
+            <g transform="translate(50, 50)">
+                <text x="0" y="-10" fill="#FFD700" font-size="14">Arc-based (original)</text>
+                <path
+                    d="M 60 20 A 30 30 0 1 0 60 80"
+                    stroke="#FFD700"
+                    strokeWidth="4"
+                    fill="none"
+                    strokeLinecap="round"
+                />
+                <path
+                    d="M 50 25 A 25 25 0 1 0 50 75"
+                    stroke="#FF6B35"
+                    strokeWidth="3"
+                    fill="none"
+                    strokeLinecap="round"
+                />
+            </g>
+            
+            <!-- New circular approach with gaps -->
+            <g transform="translate(150, 50)">
+                <text x="-50" y="-10" fill="#FFD700" font-size="14">Circular with gaps (new)</text>
+                <!-- Outer ring -->
+                <circle 
+                    cx="50" 
+                    cy="50" 
+                    r="30" 
+                    stroke="#FFD700" 
+                    strokeWidth="4" 
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray="141.37 47.12"
+                    strokeDashoffset="23.56"
+                />
+                <!-- Inner ring -->
+                <circle 
+                    cx="50" 
+                    cy="50" 
+                    r="25" 
+                    stroke="#FF6B35" 
+                    strokeWidth="3" 
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray="117.81 39.27"
+                    strokeDashoffset="19.63"
+                />
+                <!-- Center O -->
+                <circle cx="50" cy="50" r="12" fill="#8B5CF6" opacity="0.7"/>
+                <circle cx="50" cy="50" r="9" fill="#FFFFFF" opacity="0.9"/>
+            </g>
+            
+            <!-- Show complete COSMARA layout -->
+            <g transform="translate(75, 150)">
+                <text x="0" y="-10" fill="#FFD700" font-size="14">Complete COSMARA with new circular C</text>
+                <!-- Portal C rings -->
+                <circle 
+                    cx="50" 
+                    cy="50" 
+                    r="30" 
+                    stroke="#FFD700" 
+                    strokeWidth="4" 
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray="141.37 47.12"
+                    strokeDashoffset="23.56"
+                />
+                <circle 
+                    cx="50" 
+                    cy="50" 
+                    r="25" 
+                    stroke="#FF6B35" 
+                    strokeWidth="3" 
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray="117.81 39.27"
+                    strokeDashoffset="19.63"
+                />
+                <!-- Cosmic O -->
+                <circle cx="50" cy="50" r="12" fill="#8B5CF6" opacity="0.7"/>
+                <circle cx="50" cy="50" r="9" fill="#FFFFFF" opacity="0.9"/>
+                
+                <!-- SMARA text -->
+                <g fill="#FFD700" font-family="ui-sans-serif" font-weight="600" font-size="18">
+                    <text x="80" y="55" text-anchor="middle">S</text>
+                    <text x="95" y="55" text-anchor="middle">M</text>
+                    <text x="110" y="55" text-anchor="middle">A</text>
+                    <text x="125" y="55" text-anchor="middle">R</text>
+                    <text x="140" y="55" text-anchor="middle">A</text>
+                </g>
+            </g>
+        </svg>
+    </div>
+</body>
+</html>

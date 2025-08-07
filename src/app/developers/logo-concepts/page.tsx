@@ -3,7 +3,7 @@ import { CosmicCShowcase, NebulaC, ConstellationC, CosmicPortalC, PortalCVariati
 import { CosmicCVariationsShowcase } from '@/components/ui/cosmic-c-variations';
 import { CosmaraLogo } from '@/components/ui/cosmara-logo';
 
-export default function LogoConceptsPage() {
+export default function DeveloperLogoConceptsPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container mx-auto px-4">
