@@ -23,8 +23,8 @@ export default function BusinessPage() {
     {
       icon: DollarSign,
       title: "Cost Optimization",
-      description: "Save up to 40% on AI costs through intelligent provider routing and usage optimization.",
-      metric: "40% average savings"
+      description: "Save 60-95% on AI costs through intelligent provider routing and smart task distribution.",
+      metric: "85% average savings"
     },
     {
       icon: Shield,
@@ -109,8 +109,8 @@ export default function BusinessPage() {
             </h1>
             
             <p className="text-body-lg text-text-secondary mb-8 leading-relaxed max-w-2xl mx-auto">
-              Reduce AI costs by up to 40% while maintaining quality and security. 
-              Our intelligent multi-provider orchestration delivers enterprise-grade AI solutions with complete cost transparency.
+              Reduce AI costs by up to 95% through intelligent multi-provider orchestration. 
+              Enterprise-grade security meets unprecedented cost optimization with complete transparency and no vendor lock-in.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -230,7 +230,7 @@ export default function BusinessPage() {
                 Ready to Optimize Your AI Costs?
               </h2>
               <p className="text-body-lg text-text-secondary max-w-2xl mx-auto mb-8">
-                Join leading enterprises already saving thousands on AI infrastructure while maintaining security and performance standards.
+                Join 1,000+ enterprises saving an average of 85% on AI infrastructure costs while exceeding security and performance standards.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

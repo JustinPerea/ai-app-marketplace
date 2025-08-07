@@ -26,7 +26,7 @@ const navigation = [
   { name: 'Overview', href: '/dashboard', icon: Home },
   { name: 'My Apps', href: '/dashboard/apps', icon: ShoppingBag },
   { name: 'API Keys', href: '/dashboard/api-keys', icon: Key },
-  { name: 'Usage & Billing', href: '/dashboard/usage', icon: BarChart3 },
+  { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
   { name: 'Profile', href: '/dashboard/profile', icon: User },
 ];
 
