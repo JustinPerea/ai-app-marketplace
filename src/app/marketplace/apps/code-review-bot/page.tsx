@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { AppDetailNavigation } from '@/components/navigation/app-detail-navigation';
 // Using standard HTML elements since Textarea and Select components are not available
 import { 
   Star, 
@@ -783,6 +784,14 @@ export default function CodeReviewBotPage() {
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
+        {/* Navigation Header with Back Button and Breadcrumbs */}
+        <AppDetailNavigation 
+          appName="Code Review Bot"
+          categoryName="Developer Tools"
+          categorySlug="DEVELOPER_TOOLS"
+          onTryDemo={() => setActiveTab('demo')}
+        />
+
         {/* App Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-start md:space-x-6">

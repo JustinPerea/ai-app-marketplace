@@ -82,12 +82,13 @@ export function MobileNavigation() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="sm" className="md:hidden">
-          <Menu className="h-4 w-4" />
+        {/* Enhanced touch target for mobile hamburger menu */}
+        <Button variant="ghost" className="md:hidden p-3 min-w-12 min-h-12 touch-manipulation">
+          <Menu className="h-5 w-5" />
           <span className="sr-only">Open navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-80">
+      <SheetContent side="left" className="w-80 sm:w-96">
         <SheetHeader className="text-left">
           <SheetTitle className="flex items-center gap-2">
             <CosmaraLogo size={24} />
@@ -99,26 +100,26 @@ export function MobileNavigation() {
         </SheetHeader>
 
         <div className="mt-6 space-y-6">
-          {/* User Section */}
+          {/* Enhanced User Section */}
           {mounted && effectiveUser && (
-            <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
-              <Avatar className="h-10 w-10">
+            <div className="flex items-center space-x-3 p-4 bg-muted rounded-xl touch-manipulation">
+              <Avatar className="h-12 w-12">
                 <AvatarImage src={effectiveUser.picture || ''} alt={effectiveUser.name || ''} />
-                <AvatarFallback>
+                <AvatarFallback className="text-base font-semibold">
                   {effectiveUser.name?.charAt(0) || effectiveUser.email?.charAt(0) || 'U'}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{effectiveUser.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{effectiveUser.email}</p>
-                {!user && <Badge variant="secondary" className="text-xs">Dev Mode</Badge>}
+                <p className="text-base font-medium truncate">{effectiveUser.name}</p>
+                <p className="text-sm text-muted-foreground truncate">{effectiveUser.email}</p>
+                {!user && <Badge variant="secondary" className="text-xs mt-1">Dev Mode</Badge>}
               </div>
             </div>
           )}
 
-          {/* Main Navigation */}
-          <nav className="space-y-2">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          {/* Enhanced Main Navigation */}
+          <nav className="space-y-1">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider px-3 py-2">
               Navigate
             </h3>
             {navigationItems.map((item) => {
@@ -128,19 +129,19 @@ export function MobileNavigation() {
                   key={item.href}
                   href={item.href}
                   onClick={closeSheet}
-                  className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                  className="flex items-center space-x-4 px-4 py-3 rounded-xl text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors touch-manipulation min-h-12"
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-5 w-5 flex-shrink-0" />
                   <span>{item.label}</span>
                 </Link>
               );
             })}
           </nav>
 
-          {/* Dashboard Navigation - Only show if user is logged in */}
+          {/* Enhanced Dashboard Navigation - Only show if user is logged in */}
           {mounted && effectiveUser && (
-            <nav className="space-y-2">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            <nav className="space-y-1">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider px-3 py-2">
                 Dashboard
               </h3>
               {dashboardItems.map((item) => {
@@ -150,9 +151,9 @@ export function MobileNavigation() {
                     key={item.href}
                     href={item.href}
                     onClick={closeSheet}
-                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                    className="flex items-center space-x-4 px-4 py-3 rounded-xl text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors touch-manipulation min-h-12"
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-5 w-5 flex-shrink-0" />
                     <span>{item.label}</span>
                   </Link>
                 );
@@ -160,29 +161,29 @@ export function MobileNavigation() {
             </nav>
           )}
 
-          {/* Search Section */}
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          {/* Enhanced Quick Actions Section */}
+          <div className="space-y-1">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider px-3 py-2">
               Quick Actions
             </h3>
             <Link
               href="/marketplace"
               onClick={closeSheet}
-              className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              className="flex items-center space-x-4 px-4 py-3 rounded-xl text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors touch-manipulation min-h-12"
             >
-              <Search className="h-4 w-4" />
+              <Search className="h-5 w-5 flex-shrink-0" />
               <span>Search Apps</span>
             </Link>
           </div>
 
-          {/* Authentication Section */}
-          <div className="border-t pt-6 space-y-2">
+          {/* Enhanced Authentication Section */}
+          <div className="border-t pt-6 space-y-3">
             {mounted && !effectiveUser && !isLoading && (
-              <div className="space-y-2">
-                <Button className="w-full" onClick={closeSheet}>
+              <div className="space-y-3">
+                <Button className="w-full h-12 text-base touch-manipulation" onClick={closeSheet}>
                   <Link href="/api/auth/login">Sign In</Link>
                 </Button>
-                <Button variant="outline" className="w-full" onClick={closeSheet}>
+                <Button variant="outline" className="w-full h-12 text-base touch-manipulation" onClick={closeSheet}>
                   <Link href="/api/auth/login">Get Started</Link>
                 </Button>
               </div>
@@ -192,35 +193,35 @@ export function MobileNavigation() {
               <Link
                 href="/api/auth/logout"
                 onClick={closeSheet}
-                className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                className="flex items-center space-x-4 px-4 py-3 rounded-xl text-base font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors touch-manipulation min-h-12"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-5 w-5 flex-shrink-0" />
                 <span>Sign Out</span>
               </Link>
             )}
 
             {mounted && effectiveUser && !user && (
-              <div className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground">
-                <User className="h-4 w-4" />
+              <div className="flex items-center space-x-4 px-4 py-3 rounded-xl text-base font-medium text-muted-foreground min-h-12">
+                <User className="h-5 w-5 flex-shrink-0" />
                 <span>Development Mode</span>
               </div>
             )}
           </div>
 
-          {/* Footer */}
+          {/* Enhanced Footer */}
           <div className="border-t pt-6">
-            <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground">
-              <Link href="/privacy" onClick={closeSheet} className="hover:text-foreground">
+            <div className="flex items-center justify-center space-x-6 text-sm text-muted-foreground">
+              <Link href="/privacy" onClick={closeSheet} className="hover:text-foreground py-2 px-1 touch-manipulation">
                 Privacy
               </Link>
-              <Link href="/terms" onClick={closeSheet} className="hover:text-foreground">
+              <Link href="/terms" onClick={closeSheet} className="hover:text-foreground py-2 px-1 touch-manipulation">
                 Terms
               </Link>
-              <Link href="/help" onClick={closeSheet} className="hover:text-foreground">
+              <Link href="/help" onClick={closeSheet} className="hover:text-foreground py-2 px-1 touch-manipulation">
                 Help
               </Link>
             </div>
-            <p className="text-center text-xs text-muted-foreground mt-2">
+            <p className="text-center text-xs text-muted-foreground mt-4">
               &copy; 2025 COSMARA
             </p>
           </div>

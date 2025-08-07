@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { BackToMarketplace } from '@/components/ui/back-to-marketplace';
 // Using native select element since Select component doesn't exist
 import { 
   Send, 
@@ -242,9 +243,11 @@ export default function SimpleAIChatApp() {
               </div>
               <h1 className="text-xl font-bold text-gray-900">Simple AI Chat</h1>
             </div>
-            <a href="/marketplace" className="text-blue-600 hover:text-blue-800 font-medium">
-              ← Back to Marketplace
-            </a>
+            <BackToMarketplace 
+              appName="Simple AI Chat"
+              categoryName="Developer Tools"
+              categorySlug="DEVELOPER_TOOLS"
+            />
           </div>
         </div>
       </header>

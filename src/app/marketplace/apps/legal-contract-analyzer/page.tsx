@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { MainLayout } from '@/components/layouts/main-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { AppDetailNavigation } from '@/components/navigation/app-detail-navigation';
 import { 
   Star, 
   Download, 
@@ -497,6 +499,14 @@ export default function LegalContractAnalyzerPage() {
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
+        {/* Navigation Header with Back Button and Breadcrumbs */}
+        <AppDetailNavigation 
+          appName="Legal Contract Analyzer"
+          categoryName="Legal Tools"
+          categorySlug="LEGAL_TOOLS"
+          onTryDemo={() => setActiveTab('demo')}
+        />
+
         {/* App Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-start md:space-x-6">
