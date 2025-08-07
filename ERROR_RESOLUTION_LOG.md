@@ -1,6 +1,80 @@
 # Error Resolution Log
 
+*Last Updated: August 7, 2025*
+
 This document tracks common issues, their root causes, and solutions to help prevent recurring problems and accelerate future debugging.
+
+## Platform Stability Issues (August 7, 2025)
+
+### Authentication Endpoint HTTP 405 Error
+
+**Date**: August 7, 2025  
+**Severity**: High  
+**Status**: Resolved  
+
+#### Problem Description
+Login page making GET requests to `/api/auth/login?connection=google-oauth2&returnTo=/dashboard` was receiving HTTP 405 "Method Not Allowed" errors, preventing OAuth authentication flows.
+
+#### Root Cause
+The authentication API route only implemented POST and OPTIONS methods but not GET method handler for OAuth redirect flows required by Auth0 Google login.
+
+#### Solution
+- Added GET method handler to `/src/app/api/auth/login/route.ts`
+- Implemented proper Auth0 OAuth redirect logic with parameter parsing
+- Added comprehensive error handling for missing Auth0 configuration
+- Maintained backward compatibility with existing POST login flow
+
+#### Files Modified
+- `/src/app/api/auth/login/route.ts` - Added GET method handler with OAuth flow support
+
+---
+
+### React Hydration Errors Across Platform
+
+**Date**: August 7, 2025  
+**Severity**: High  
+**Status**: Resolved  
+
+#### Problem Description
+Multiple React hydration errors showing "server rendered HTML didn't match client properties" affecting login page and other components, caused by dynamic font className generation.
+
+#### Root Cause
+Next.js `Inter` font loading with `.className` was generating different hash values on server vs client side, causing SSR/client mismatch during hydration.
+
+#### Solution
+- Removed dynamic Next.js font loading completely
+- Switched to stable Google Fonts CSS import approach
+- Updated CSS theme to use direct 'Inter' font reference
+- Used static `font-sans antialiased` classes instead of dynamic font variables
+
+#### Files Modified
+- `/src/app/layout.tsx` - Removed font import and dynamic className
+- `/src/app/globals.css` - Updated font family configuration to use CSS import
+
+---
+
+### Nested HTML Layout Conflicts
+
+**Date**: August 7, 2025  
+**Severity**: Critical  
+**Status**: Resolved  
+
+#### Problem Description
+Multiple console errors about nested `<html>` and `<body>` elements: "In HTML, <html> cannot be a child of <body>" and "You are mounting a new html component when a previous one has not first unmounted."
+
+#### Root Cause
+The auth layout file (`/src/app/auth/layout.tsx`) was incorrectly implementing its own `<html>` and `<body>` elements, which conflicted with the root layout. In Next.js app directory, only the root layout should contain these elements.
+
+#### Solution
+- Converted auth layout from root-level layout to nested layout
+- Removed `<html>` and `<body>` elements from auth layout
+- Replaced with simple `<div>` container approach
+- Updated metadata and function naming for clarity
+
+#### Files Modified
+- `/src/app/auth/layout.tsx` - Removed HTML/body elements, converted to nested layout
+
+---
 
 ## Navigation Issues
 
