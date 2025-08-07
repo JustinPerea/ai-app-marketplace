@@ -186,10 +186,17 @@ export default function GettingStartedPage() {
               <div>
                 <h3 className="font-semibold mb-3">Account Setup</h3>
                 <div className="space-y-3">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/api/auth/login">Create Developer Account</Link>
-                  </Button>
-                  <p className="text-sm text-gray-600">
+                  <button className="px-6 py-3 text-sm rounded-lg font-medium border-2 transition-all duration-300 hover:scale-105" 
+                          style={{ 
+                            background: 'rgba(59, 130, 246, 0.1)', 
+                            borderColor: '#3B82F6',
+                            color: '#3B82F6'
+                          }}>
+                    <Link href="/api/auth/login" className="flex items-center justify-center">
+                      Create Developer Account
+                    </Link>
+                  </button>
+                  <p className="text-sm text-text-secondary">
                     Sign up for a free developer account to access the SDK and publish applications.
                   </p>
                 </div>
@@ -261,26 +268,30 @@ export default function GettingStartedPage() {
 
         {/* Resources */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Additional Resources</h2>
+          <h2 className="text-section-header mb-6">Additional Resources</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {resources.map((resource, index) => {
               const Icon = resource.icon;
               return (
-                <Card key={index} className="group hover:shadow-lg transition-all duration-300 cursor-pointer" asChild>
-                  <Link href={resource.href}>
-                    <CardHeader className="text-center pb-4">
-                      <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition-colors">
-                        <Icon className="h-6 w-6 text-purple-600" />
-                      </div>
-                      <CardTitle className="text-lg group-hover:text-purple-600 transition-colors">
-                        {resource.title}
-                      </CardTitle>
-                      <CardDescription className="text-center">
-                        {resource.description}
-                      </CardDescription>
-                    </CardHeader>
-                  </Link>
-                </Card>
+                <Link key={index} href={resource.href} className="glass-card p-6 cursor-pointer group hover:scale-105 transition-all duration-300 block">
+                  <div className="text-center">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform group-hover:shadow-lg"
+                         style={{ 
+                           background: 'linear-gradient(135deg, #8B5CF6, #A855F7)',
+                           boxShadow: '0 0 0 rgba(139, 92, 246, 0.3)',
+                           transition: 'box-shadow 0.3s ease'
+                         }}
+                         className="group-hover:shadow-purple-500/50">
+                      <Icon className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="text-h3 mb-3 text-text-primary group-hover:text-purple-300 transition-colors">
+                      {resource.title}
+                    </h3>
+                    <p className="text-body-glass group-hover:text-gray-200 transition-colors">
+                      {resource.description}
+                    </p>
+                  </div>
+                </Link>
               );
             })}
           </div>
@@ -299,22 +310,37 @@ export default function GettingStartedPage() {
               Once you've completed these steps, you'll be ready to start building amazing AI applications!
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild>
-                <Link href="/developers/docs">
-                  Explore SDK Documentation
-                  <ArrowRight className="ml-2 h-4 w-4" />
+              <button className="px-8 py-4 flex items-center justify-center space-x-2 rounded-xl font-medium transition-all duration-300 hover:scale-105" 
+                      style={{ 
+                        background: 'linear-gradient(135deg, #8B5CF6, #7C3AED)', 
+                        color: 'white',
+                        boxShadow: '0 4px 14px 0 rgba(139, 92, 246, 0.3)'
+                      }}>
+                <Link href="/developers/docs" className="flex items-center space-x-2">
+                  <span>Explore SDK Documentation</span>
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
-              </Button>
-              <Button variant="outline" className="glass-button-secondary" asChild>
-                <Link href="/developers/examples">
-                  Browse Examples
+              </button>
+              <button className="px-8 py-4 flex items-center justify-center space-x-2 rounded-xl font-medium border-2 transition-all duration-300 hover:scale-105" 
+                      style={{ 
+                        background: 'rgba(59, 130, 246, 0.1)', 
+                        borderColor: '#3B82F6',
+                        color: '#3B82F6'
+                      }}>
+                <Link href="/developers/examples" className="flex items-center space-x-2">
+                  <span>Browse Examples</span>
                 </Link>
-              </Button>
-              <Button variant="outline" className="glass-button-secondary" asChild>
-                <Link href="/developers/community">
-                  Join Community
+              </button>
+              <button className="px-8 py-4 flex items-center justify-center space-x-2 rounded-xl font-medium border-2 transition-all duration-300 hover:scale-105" 
+                      style={{ 
+                        background: 'rgba(59, 130, 246, 0.1)', 
+                        borderColor: '#3B82F6',
+                        color: '#3B82F6'
+                      }}>
+                <Link href="/developers/community" className="flex items-center space-x-2">
+                  <span>Join Community</span>
                 </Link>
-              </Button>
+              </button>
             </div>
           </CardContent>
         </Card>
