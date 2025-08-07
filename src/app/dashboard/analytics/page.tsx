@@ -1,36 +1,31 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MainLayout } from '@/components/layouts/main-layout';
+import Link from 'next/link';
+import { DashboardLayout } from '@/components/layouts/dashboard-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SimpleStars } from '@/components/ui/simple-stars';
 import { 
   TrendingUp, 
   DollarSign, 
-  Users, 
   Activity,
   Download,
   BarChart3,
-  PieChart,
-  LineChart,
   RefreshCw,
-  Star,
   Zap,
   Target,
   Brain,
-  AlertTriangle,
   TrendingDown,
   Calculator,
   Eye,
-  Clock,
-  Shield,
-  Award,
   Settings,
-  Search,
-  Filter
+  ChevronRight,
+  CheckCircle2,
+  Lightbulb,
+  Users
 } from 'lucide-react';
 import {
   XAxis,
@@ -42,154 +37,91 @@ import {
   Cell,
   Pie,
   Area,
-  AreaChart,
-  ComposedChart,
-  Line,
-  Bar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  ScatterChart,
-  Scatter,
-  Legend
+  AreaChart
 } from 'recharts';
 
 interface AnalyticsData {
   overview: {
-    totalRevenue: number;
-    monthlyRevenue: number;
-    totalUsers: number;
-    activeSubscriptions: number;
-    averageRevenuePerUser: number;
-    growthRate: number;
+    totalQueries: number;
+    totalCost: number;
+    monthlyCost: number;
+    predictedCost: number;
     costSavings: number;
     costSavingsPercent: number;
-    totalApiCalls: number;
+    optimizationScore: number;
     avgResponseTime: number;
+    successRate: number;
   };
-  revenueChart: Array<{
-    date: string;
-    revenue: number;
-    subscriptions: number;
-    users: number;
-    costSavings: number;
-    predictions?: number;
-  }>;
-  topApps: Array<{
-    id: string;
+  providers: Array<{
     name: string;
-    developer: string;
-    revenue: number;
-    users: number;
-    rating: number;
-    growth: number;
-    costEfficiency: number;
-    performance: number;
-  }>;
-  userEngagement: Array<{
-    metric: string;
-    value: number;
-    change: number;
-    trend: 'up' | 'down' | 'stable';
-  }>;
-  categoryBreakdown: Array<{
-    category: string;
-    apps: number;
-    revenue: number;
-    users: number;
-    color: string;
-    efficiency: number;
-  }>;
-  aiUsage: Array<{
-    provider: string;
-    requests: number;
+    displayName: string;
+    usage: number;
+    usagePercent: number;
     cost: number;
-    apps: number;
-    avgLatency: number;
-    reliability: number;
-    costPerRequest: number;
+    costPercent: number;
+    avgResponseTime: number;
+    successRate: number;
+    requests: number;
+    savings: number;
+    color: string;
   }>;
-  // NEW: Phase 3 Advanced Analytics
-  usagePatterns: {
-    peakHours: Array<{ hour: number; usage: number }>;
-    dailyTrends: Array<{ day: string; usage: number; cost: number }>;
-    seasonality: Array<{ month: string; usage: number; forecast: number }>;
+  usageTrends: Array<{
+    date: string;
+    queries: number;
+    cost: number;
+    predicted: number;
+    savings: number;
+  }>;
+  costAnalysis: {
+    currentMonth: number;
+    previousMonth: number;
+    roiPrediction: number;
+    actualSavings: number;
+    trend: 'up' | 'down' | 'stable';
+    projectedAnnual: number;
   };
-  costOptimization: {
-    currentSavings: number;
-    potentialSavings: number;
-    recommendations: Array<{
-      title: string;
-      impact: string;
-      effort: 'low' | 'medium' | 'high';
-      priority: 'low' | 'medium' | 'high';
-      description: string;
-      expectedSavings: number;
-    }>;
-    efficiency: {
-      current: number;
-      target: number;
-      improvement: number;
-    };
+  optimizations: Array<{
+    id: string;
+    title: string;
+    description: string;
+    impact: 'high' | 'medium' | 'low';
+    effort: 'high' | 'medium' | 'low';
+    expectedSavings: number;
+    category: 'routing' | 'caching' | 'model' | 'usage';
+    status: 'available' | 'active' | 'completed';
+  }>;
+  performanceMetrics: {
+    averageLatency: number;
+    p95Latency: number;
+    errorRate: number;
+    uptime: number;
+    throughput: number;
   };
-  performanceBenchmarks: {
-    responseTime: { current: number; target: number; percentile95: number };
-    availability: { current: number; target: number; sla: number };
-    errorRate: { current: number; target: number; threshold: number };
-    throughput: { current: number; target: number; peak: number };
-  };
-  predictiveInsights: {
-    costForecast: Array<{ month: string; predicted: number; confidence: number }>;
-    usageForecast: Array<{ month: string; predicted: number; confidence: number }>;
-    anomalies: Array<{
-      type: 'cost' | 'usage' | 'performance';
-      severity: 'low' | 'medium' | 'high';
-      description: string;
-      timestamp: string;
-      impact: string;
-    }>;
-    trends: Array<{
-      metric: string;
-      trend: 'increasing' | 'decreasing' | 'stable';
-      velocity: number;
-      projection: string;
-    }>;
-  };
-  roiAnalysis: {
-    totalInvestment: number;
-    totalSavings: number;
-    netReturn: number;
-    roiPercentage: number;
-    paybackPeriod: number;
-    breakdown: Array<{
-      category: string;
-      investment: number;
-      savings: number;
-      roi: number;
-    }>;
-  };
+  insights: Array<{
+    type: 'cost' | 'performance' | 'optimization' | 'usage';
+    title: string;
+    description: string;
+    action?: string;
+    priority: 'high' | 'medium' | 'low';
+    link?: string;
+  }>;
 }
 
-const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
+const CHART_COLORS = ['#FFD700', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('30d');
-  const [viewType, setViewType] = useState<'platform' | 'developer'>('platform');
-  const [activeTab, setActiveTab] = useState('overview');
-  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();
-  }, [timeRange, viewType]);
+  }, [timeRange]);
 
   const fetchAnalytics = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/analytics?range=${timeRange}&type=${viewType}`);
+      const response = await fetch(`/api/analytics?range=${timeRange}`);
       if (response.ok) {
         const analyticsData = await response.json();
         setData(analyticsData);
@@ -212,369 +144,222 @@ export default function AnalyticsPage() {
     return new Intl.NumberFormat('en-US').format(num);
   };
 
+  const formatPercent = (num: number) => {
+    return `${num.toFixed(1)}%`;
+  };
+
   if (isLoading) {
     return (
-      <MainLayout>
-        <div className="container mx-auto px-4 py-8">
+      <DashboardLayout>
+        <SimpleStars starCount={40} parallaxSpeed={0.15} />
+        <div className="absolute inset-0 pointer-events-none" 
+             style={{ 
+               background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
+             }}>
+        </div>
+        <div className="min-h-screen relative z-10">
           <div className="flex items-center justify-center h-64">
-            <RefreshCw className="h-8 w-8 animate-spin text-gray-400" />
+            <RefreshCw className="h-8 w-8 animate-spin text-[#3B82F6]" />
           </div>
         </div>
-      </MainLayout>
+      </DashboardLayout>
     );
   }
 
-  if (!data) {
-    // Show mock data for demo purposes
-    const mockData: AnalyticsData = {
-      overview: {
-        totalRevenue: 24567.89,
-        monthlyRevenue: 8952.34,
-        totalUsers: 1234,
-        activeSubscriptions: 892,
-        averageRevenuePerUser: 19.92,
-        growthRate: 15.2,
-      },
-      revenueChart: [
-        { date: '2025-07-18', revenue: 1200, subscriptions: 45, users: 38 },
-        { date: '2025-07-19', revenue: 1450, subscriptions: 52, users: 41 },
-        { date: '2025-07-20', revenue: 1680, subscriptions: 48, users: 45 },
-        { date: '2025-07-21', revenue: 1320, subscriptions: 39, users: 35 },
-        { date: '2025-07-22', revenue: 1890, subscriptions: 67, users: 58 },
-        { date: '2025-07-23', revenue: 2100, subscriptions: 71, users: 62 },
-        { date: '2025-07-24', revenue: 1950, subscriptions: 63, users: 55 },
-      ],
-      topApps: [
-        { id: '1', name: 'Legal Contract Analyzer', developer: 'LegalTech Pro', revenue: 8943.21, users: 156, rating: 4.8, growth: 23.4 },
-        { id: '2', name: 'HIPAA Medical Scribe', developer: 'HealthAI Solutions', revenue: 7234.56, users: 134, rating: 4.6, growth: 18.9 },
-        { id: '3', name: 'Code Review Bot', developer: 'DevTools Inc', revenue: 5678.90, users: 98, rating: 4.7, growth: 15.2 },
-        { id: '4', name: 'Financial Report Generator', developer: 'FinanceAI', revenue: 4321.45, users: 87, rating: 4.5, growth: 12.8 },
-      ],
-      userEngagement: [
-        { metric: 'Daily Active Users', value: 456, change: 12.5 },
-        { metric: 'Session Duration (min)', value: 24, change: -3.2 },
-        { metric: 'Apps per User', value: 2.3, change: 8.7 },
-      ],
-      categoryBreakdown: [
-        { category: 'Legal Tools', apps: 12, revenue: 12450.32, users: 234, color: '#3B82F6' },
-        { category: 'Medical Tools', apps: 8, revenue: 9876.54, users: 187, color: '#10B981' },
-        { category: 'Developer Tools', apps: 15, revenue: 8765.43, users: 156, color: '#F59E0B' },
-        { category: 'Financial Tools', apps: 6, revenue: 6543.21, users: 98, color: '#EF4444' },
-      ],
-      aiUsage: [
-        { provider: 'OPENAI', requests: 45231, cost: 1234.56, apps: 23 },
-        { provider: 'ANTHROPIC', requests: 32145, cost: 987.65, apps: 18 },
-        { provider: 'GOOGLE', requests: 28934, cost: 765.43, apps: 15 },
-        { provider: 'AZURE_OPENAI', requests: 19876, cost: 543.21, apps: 12 },
-      ],
-    };
-    
-    return (
-      <MainLayout>
-        <div className="container mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-                <p className="text-gray-600 mt-2">
-                  Track marketplace performance, revenue, and user engagement (Demo Data)
-                </p>
-              </div>
-            </div>
-          </div>
+  // Mock data for demo
+  const mockData: AnalyticsData = {
+    overview: {
+      totalQueries: 125340,
+      totalCost: 1234.56,
+      monthlyCost: 456.78,
+      predictedCost: 1800.00,
+      costSavings: 565.44,
+      costSavingsPercent: 73.2,
+      optimizationScore: 8.4,
+      avgResponseTime: 1.2,
+      successRate: 99.8,
+    },
+    providers: [
+      { name: 'gemini-flash', displayName: 'Gemini 1.5 Flash', usage: 45231, usagePercent: 42.1, cost: 234.56, costPercent: 35.2, avgResponseTime: 0.8, successRate: 99.9, requests: 45231, savings: 123.45, color: '#4285F4' },
+      { name: 'claude-haiku', displayName: 'Claude 3 Haiku', usage: 32145, usagePercent: 29.8, cost: 345.67, costPercent: 42.1, avgResponseTime: 1.1, successRate: 99.7, requests: 32145, savings: 98.76, color: '#FF6B35' },
+      { name: 'gpt-4o-mini', displayName: 'GPT-4o Mini', usage: 28934, usagePercent: 26.8, cost: 187.23, costPercent: 22.7, avgResponseTime: 1.4, successRate: 99.5, requests: 28934, savings: 67.89, color: '#10A37F' },
+    ],
+    usageTrends: [
+      { date: '2025-07-18', queries: 1200, cost: 45.32, predicted: 78.50, savings: 33.18 },
+      { date: '2025-07-19', queries: 1450, cost: 52.14, predicted: 89.75, savings: 37.61 },
+      { date: '2025-07-20', queries: 1680, cost: 61.23, predicted: 98.40, savings: 37.17 },
+      { date: '2025-07-21', queries: 1320, cost: 48.76, predicted: 82.15, savings: 33.39 },
+      { date: '2025-07-22', queries: 1890, cost: 67.45, predicted: 105.20, savings: 37.75 },
+      { date: '2025-07-23', queries: 2100, cost: 75.30, predicted: 118.50, savings: 43.20 },
+      { date: '2025-07-24', queries: 1950, cost: 71.22, predicted: 112.30, savings: 41.08 },
+    ],
+    costAnalysis: {
+      currentMonth: 456.78,
+      previousMonth: 523.45,
+      roiPrediction: 1200.00,
+      actualSavings: 565.44,
+      trend: 'down',
+      projectedAnnual: 5481.36,
+    },
+    optimizations: [
+      { id: '1', title: 'Switch to Faster Models', description: 'Use Gemini Flash for simple queries to reduce costs by 40%', impact: 'high', effort: 'low', expectedSavings: 89.50, category: 'routing', status: 'available' },
+      { id: '2', title: 'Enable Smart Caching', description: 'Cache common responses to reduce API calls by 25%', impact: 'medium', effort: 'medium', expectedSavings: 67.25, category: 'caching', status: 'active' },
+      { id: '3', title: 'Optimize Query Length', description: 'Reduce average tokens per query through better prompting', impact: 'medium', effort: 'low', expectedSavings: 45.75, category: 'usage', status: 'available' },
+    ],
+    performanceMetrics: {
+      averageLatency: 1.2,
+      p95Latency: 2.8,
+      errorRate: 0.2,
+      uptime: 99.8,
+      throughput: 1250,
+    },
+    insights: [
+      { type: 'cost', title: 'Significant Cost Savings Achieved', description: 'You\'re saving 73% compared to single-provider usage', action: 'View detailed breakdown', priority: 'high' },
+      { type: 'performance', title: 'Excellent Response Times', description: 'Average response time of 1.2s is 40% faster than baseline', action: 'See performance trends', priority: 'medium' },
+      { type: 'optimization', title: 'Smart Routing Active', description: 'Intelligent provider selection is optimizing your costs automatically', action: 'Configure routing rules', priority: 'low' },
+      { type: 'usage', title: 'Peak Usage Detected', description: 'Consider enabling auto-scaling for better performance during peak times', action: 'Enable auto-scaling', priority: 'medium' },
+    ],
+  };
 
-          {/* Overview Metrics */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center">
-                  <DollarSign className="h-8 w-8 text-green-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                    <p className="text-2xl font-bold">{formatCurrency(mockData.overview.totalRevenue)}</p>
-                    <div className="flex items-center mt-1">
-                      <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
-                      <span className="text-xs text-green-600">+{mockData.overview.growthRate}%</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center">
-                  <Users className="h-8 w-8 text-blue-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total Users</p>
-                    <p className="text-2xl font-bold">{formatNumber(mockData.overview.totalUsers)}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {formatNumber(mockData.overview.activeSubscriptions)} active subscriptions
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center">
-                  <Target className="h-8 w-8 text-purple-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">ARPU</p>
-                    <p className="text-2xl font-bold">{formatCurrency(mockData.overview.averageRevenuePerUser)}</p>
-                    <p className="text-xs text-gray-500 mt-1">Average Revenue Per User</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center">
-                  <Activity className="h-8 w-8 text-orange-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-                    <p className="text-2xl font-bold">{formatCurrency(mockData.overview.monthlyRevenue)}</p>
-                    <p className="text-xs text-gray-500 mt-1">Recurring monthly revenue</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Charts Section */}
-          <div className="grid lg:grid-cols-2 gap-8 mb-8">
-            {/* Revenue Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <LineChart className="h-5 w-5 mr-2" />
-                  Revenue Trends (Demo)
-                </CardTitle>
-                <CardDescription>
-                  Revenue, subscriptions, and user growth over time
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={mockData.revenueChart}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip formatter={(value: any, name: any) => {
-                        if (name === 'revenue') return [formatCurrency(value as number), 'Revenue'];
-                        return [formatNumber(value as number), name];
-                      }} />
-                      <Area
-                        type="monotone"
-                        dataKey="revenue"
-                        stackId="1"
-                        stroke="#3B82F6"
-                        fill="#3B82F6"
-                        fillOpacity={0.6}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="subscriptions"
-                        stackId="2"
-                        stroke="#10B981"
-                        fill="#10B981"
-                        fillOpacity={0.6}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Category Breakdown */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <PieChart className="h-5 w-5 mr-2" />
-                  Category Performance (Demo)
-                </CardTitle>
-                <CardDescription>
-                  Revenue distribution by app category
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
-                      <Pie
-                        data={mockData.categoryBreakdown}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ category, revenue }: any) => `${category}: ${formatCurrency(revenue)}`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="revenue"
-                      >
-                        {mockData.categoryBreakdown.map((_entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value: any) => formatCurrency(value as number)} />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </MainLayout>
-    );
-  }
+  const analyticsData = data || mockData;
 
   return (
-    <MainLayout>
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+    <DashboardLayout>
+      <SimpleStars starCount={40} parallaxSpeed={0.15} />
+      <div className="absolute inset-0 pointer-events-none" 
+           style={{ 
+             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, rgba(139, 92, 246, 0.06) 100%)' 
+           }}>
+      </div>
+      
+      <div className="min-h-screen relative z-10">
+        {/* Page Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-              <p className="text-gray-600 mt-2">
-                Track marketplace performance, revenue, and user engagement
+              <h1 className="text-hero-glass mb-4">
+                <span className="text-glass-gradient">Intelligent Analytics</span>
+              </h1>
+              <p className="text-body-lg text-text-secondary">
+                Track AI usage, optimize costs, and discover efficiency opportunities
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              {/* View Type Toggle */}
-              <div className="flex bg-gray-100 rounded-lg p-1">
-                <button
-                  onClick={() => setViewType('platform')}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                    viewType === 'platform' 
-                      ? 'bg-white text-gray-900 shadow-sm' 
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Platform View
-                </button>
-                <button
-                  onClick={() => setViewType('developer')}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                    viewType === 'developer' 
-                      ? 'bg-white text-gray-900 shadow-sm' 
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Developer View
-                </button>
-              </div>
-
-              {/* Time Range Selector */}
               <select
                 value={timeRange}
                 onChange={(e) => setTimeRange(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="glass-card px-3 py-2 border border-[rgba(255,255,255,0.1)] rounded-md text-sm bg-[rgba(255,255,255,0.05)] text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
               >
                 <option value="7d">Last 7 days</option>
                 <option value="30d">Last 30 days</option>
                 <option value="90d">Last 90 days</option>
                 <option value="1y">Last year</option>
               </select>
-
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Export
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={fetchAnalytics}
+                className="border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-[#0B1426]"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Overview Metrics */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center">
-                <DollarSign className="h-8 w-8 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                  <p className="text-2xl font-bold">{formatCurrency(data.overview.totalRevenue)}</p>
-                  <div className="flex items-center mt-1">
-                    <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
-                    <span className="text-xs text-green-600">+{data.overview.growthRate}%</span>
-                  </div>
-                </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="glass-card border-0 bg-[rgba(255,255,255,0.05)]">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-[#E2E8F0]">Total Cost</CardTitle>
+              <DollarSign className="h-4 w-4 text-[#94A3B8]" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-[#E2E8F0]">{formatCurrency(analyticsData.overview.totalCost)}</div>
+              <div className="flex items-center text-xs text-[#94A3B8]">
+                <TrendingDown className="h-3 w-3 mr-1" style={{color: '#10B981'}} />
+                {formatCurrency(analyticsData.overview.costSavings)} saved vs predicted
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center">
-                <Users className="h-8 w-8 text-blue-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-2xl font-bold">{formatNumber(data.overview.totalUsers)}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {formatNumber(data.overview.activeSubscriptions)} active subscriptions
-                  </p>
-                </div>
+          <Card className="glass-card border-0 bg-[rgba(255,255,255,0.05)]">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-[#E2E8F0]">Total Queries</CardTitle>
+              <Activity className="h-4 w-4 text-[#94A3B8]" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-[#E2E8F0]">{formatNumber(analyticsData.overview.totalQueries)}</div>
+              <div className="flex items-center text-xs text-[#94A3B8]">
+                <TrendingUp className="h-3 w-3 mr-1" style={{color: '#10B981'}} />
+                {formatPercent(analyticsData.overview.successRate)} success rate
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center">
-                <Target className="h-8 w-8 text-purple-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">ARPU</p>
-                  <p className="text-2xl font-bold">{formatCurrency(data.overview.averageRevenuePerUser)}</p>
-                  <p className="text-xs text-gray-500 mt-1">Average Revenue Per User</p>
-                </div>
-              </div>
+          <Card className="glass-card border-0 bg-[rgba(255,255,255,0.05)]">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-[#E2E8F0]">Cost Savings</CardTitle>
+              <Target className="h-4 w-4 text-[#94A3B8]" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-[#10B981]">{formatPercent(analyticsData.overview.costSavingsPercent)}</div>
+              <p className="text-xs text-[#94A3B8]">
+                {formatCurrency(analyticsData.overview.costSavings)} monthly savings
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center">
-                <Activity className="h-8 w-8 text-orange-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-                  <p className="text-2xl font-bold">{formatCurrency(data.overview.monthlyRevenue)}</p>
-                  <p className="text-xs text-gray-500 mt-1">Recurring monthly revenue</p>
-                </div>
-              </div>
+          <Card className="glass-card border-0 bg-[rgba(255,255,255,0.05)]">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-[#E2E8F0]">Avg Response</CardTitle>
+              <Zap className="h-4 w-4 text-[#94A3B8]" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-[#E2E8F0]">{analyticsData.overview.avgResponseTime}s</div>
+              <p className="text-xs text-[#94A3B8]">
+                Score: {analyticsData.overview.optimizationScore}/10
+              </p>
             </CardContent>
           </Card>
         </div>
 
         {/* Charts Section */}
         <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {/* Revenue Chart */}
-          <Card>
+          {/* Usage Trends Chart */}
+          <Card className="glass-card border-0 bg-[rgba(255,255,255,0.05)]">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <LineChart className="h-5 w-5 mr-2" />
-                Revenue Trends
+              <CardTitle className="flex items-center text-[#E2E8F0]">
+                <BarChart3 className="h-5 w-5 mr-2" />
+                Usage & Cost Trends
               </CardTitle>
-              <CardDescription>
-                Revenue, subscriptions, and user growth over time
+              <CardDescription className="text-[#94A3B8]">
+                Query volume, costs, and savings over time
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={data.revenueChart}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip formatter={(value: any, name: any) => {
-                      if (name === 'revenue') return [formatCurrency(value as number), 'Revenue'];
-                      return [formatNumber(value as number), name];
-                    }} />
+                  <AreaChart data={analyticsData.usageTrends}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="date" stroke="#94A3B8" />
+                    <YAxis stroke="#94A3B8" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(0,0,0,0.8)', 
+                        border: '1px solid rgba(255,255,255,0.1)', 
+                        borderRadius: '8px' 
+                      }}
+                      formatter={(value: any, name: any) => {
+                        if (name === 'cost' || name === 'predicted' || name === 'savings') 
+                          return [formatCurrency(value as number), name];
+                        return [formatNumber(value as number), name];
+                      }} 
+                    />
                     <Area
                       type="monotone"
-                      dataKey="revenue"
+                      dataKey="cost"
                       stackId="1"
                       stroke="#3B82F6"
                       fill="#3B82F6"
@@ -582,7 +367,7 @@ export default function AnalyticsPage() {
                     />
                     <Area
                       type="monotone"
-                      dataKey="subscriptions"
+                      dataKey="savings"
                       stackId="2"
                       stroke="#10B981"
                       fill="#10B981"
@@ -594,120 +379,43 @@ export default function AnalyticsPage() {
             </CardContent>
           </Card>
 
-          {/* Category Breakdown */}
-          <Card>
+          {/* Provider Distribution */}
+          <Card className="glass-card border-0 bg-[rgba(255,255,255,0.05)]">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <PieChart className="h-5 w-5 mr-2" />
-                Category Performance
+              <CardTitle className="flex items-center text-[#E2E8F0]">
+                <Zap className="h-5 w-5 mr-2" style={{color: '#FFD700'}} />
+                Provider Performance
               </CardTitle>
-              <CardDescription>
-                Revenue distribution by app category
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RechartsPieChart>
-                    <Pie
-                      data={data.categoryBreakdown}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ category, revenue }: any) => `${category}: ${formatCurrency(revenue)}`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="revenue"
-                    >
-                      {data.categoryBreakdown.map((_entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value: any) => formatCurrency(value as number)} />
-                  </RechartsPieChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Top Apps and AI Usage */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {/* Top Performing Apps */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Star className="h-5 w-5 mr-2" />
-                Top Performing Apps
-              </CardTitle>
-              <CardDescription>
-                Highest revenue generating applications
+              <CardDescription className="text-[#94A3B8]">
+                Usage distribution and cost efficiency
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {data.topApps.map((app, _index) => (
-                  <div key={app.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                {analyticsData.providers.map((provider, index) => (
+                  <div key={provider.name} className="flex items-center justify-between p-4 border border-[rgba(255,255,255,0.1)] rounded-lg bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(255,255,255,0.05)] transition-all">
                     <div className="flex items-center">
-                      <div className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full mr-3">
-                        #{_index + 1}
-                      </div>
+                      <div 
+                        className="w-4 h-4 rounded-full mr-3" 
+                        style={{ backgroundColor: provider.color }}
+                      />
                       <div>
-                        <h4 className="font-semibold">{app.name}</h4>
-                        <p className="text-sm text-gray-600">by {app.developer}</p>
-                        <div className="flex items-center mt-1">
-                          <Star className="h-3 w-3 text-yellow-500 mr-1" />
-                          <span className="text-xs text-gray-600">{app.rating.toFixed(1)}</span>
-                          <span className="text-xs text-gray-400 mx-2">•</span>
-                          <span className="text-xs text-gray-600">{formatNumber(app.users)} users</span>
+                        <h4 className="font-semibold text-[#E2E8F0]">{provider.displayName}</h4>
+                        <div className="flex items-center gap-4 text-sm text-[#94A3B8]">
+                          <span>{formatNumber(provider.requests)} requests</span>
+                          <span>•</span>
+                          <span>{provider.avgResponseTime}s avg</span>
+                          <span>•</span>
+                          <span>{formatPercent(provider.successRate)} uptime</span>
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">{formatCurrency(app.revenue)}</p>
+                      <p className="font-semibold text-[#E2E8F0]">{formatCurrency(provider.cost)}</p>
                       <div className="flex items-center">
-                        <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
-                        <span className="text-xs text-green-600">+{app.growth}%</span>
+                        <TrendingDown className="h-3 w-3 text-[#10B981] mr-1" />
+                        <span className="text-xs text-[#10B981]">-{formatCurrency(provider.savings)} saved</span>
                       </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* AI Provider Usage */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Zap className="h-5 w-5 mr-2" />
-                AI Provider Usage
-              </CardTitle>
-              <CardDescription>
-                API usage and costs by provider
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {data.aiUsage.map((provider, _index) => (
-                  <div key={provider.provider} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center">
-                      <div className="text-lg mr-3">
-                        {provider.provider === 'OPENAI' && '🤖'}
-                        {provider.provider === 'ANTHROPIC' && '🔮'}
-                        {provider.provider === 'GOOGLE' && '🟡'}
-                        {provider.provider === 'AZURE_OPENAI' && '🔷'}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold">{provider.provider}</h4>
-                        <p className="text-sm text-gray-600">
-                          {formatNumber(provider.requests)} requests • {provider.apps} apps
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold">{formatCurrency(provider.cost)}</p>
-                      <p className="text-xs text-gray-500">Total cost</p>
                     </div>
                   </div>
                 ))}
@@ -716,39 +424,49 @@ export default function AnalyticsPage() {
           </Card>
         </div>
 
-        {/* User Engagement Metrics */}
-        <Card>
+        {/* Quick Actions */}
+        <Card className="glass-card border-0 bg-[rgba(255,255,255,0.05)]">
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <BarChart3 className="h-5 w-5 mr-2" />
-              User Engagement Metrics
+            <CardTitle className="flex items-center text-[#E2E8F0]">
+              <Settings className="h-5 w-5 mr-2" style={{color: '#FFD700'}} />
+              Quick Actions
             </CardTitle>
-            <CardDescription>
-              Key performance indicators for user behavior
+            <CardDescription className="text-[#94A3B8]">
+              Optimize your AI usage and costs
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-3 gap-6">
-              {data.userEngagement.map((metric, index) => (
-                <div key={metric.metric} className="text-center">
-                  <h3 className="text-2xl font-bold">{formatNumber(metric.value)}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{metric.metric}</p>
-                  <div className="flex items-center justify-center">
-                    {metric.change > 0 ? (
-                      <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    ) : (
-                      <TrendingUp className="h-4 w-4 text-red-500 mr-1 rotate-180" />
-                    )}
-                    <span className={`text-sm ${metric.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {Math.abs(metric.change)}%
-                    </span>
-                  </div>
-                </div>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Button 
+                asChild
+                className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0B1426] hover:opacity-90"
+              >
+                <Link href="/business">
+                  <Calculator className="h-4 w-4 mr-2" />
+                  Update ROI Calculator
+                </Link>
+              </Button>
+              <Button 
+                asChild
+                variant="outline" 
+                className="w-full border-[#3B82F6] text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white"
+              >
+                <Link href="/setup">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Manage Providers
+                </Link>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full border-[#8B5CF6] text-[#8B5CF6] hover:bg-[#8B5CF6] hover:text-white"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Export Report
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    </DashboardLayout>
   );
 }

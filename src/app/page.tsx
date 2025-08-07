@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -222,71 +224,101 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            <div className="glass-card p-6 cursor-pointer group">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
-                   style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}>
+            <Link href="/setup" className="glass-card p-6 cursor-pointer group hover:scale-105 transition-all duration-300 block">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform group-hover:shadow-lg"
+                   style={{ 
+                     background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)',
+                     boxShadow: '0 0 0 rgba(59, 130, 246, 0.3)',
+                     transition: 'box-shadow 0.3s ease'
+                   }}
+                   className="group-hover:shadow-blue-500/50">
                 <Shield className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-h3 mb-3 text-text-primary">Your Keys, Your Control</h3>
-              <p className="text-body-glass">
+              <h3 className="text-h3 mb-3 text-text-primary group-hover:text-blue-300 transition-colors">Your Keys, Your Control</h3>
+              <p className="text-body-glass group-hover:text-gray-200 transition-colors">
                 Your own keys, your own control. Navigate AI providers with complete security and data ownership.
               </p>
-            </div>
+            </Link>
             
-            <div className="glass-card p-6 cursor-pointer group">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
-                   style={{ background: 'linear-gradient(135deg, #FFD700, #FF6B35)' }}>
+            <Link href="/marketplace" className="glass-card p-6 cursor-pointer group hover:scale-105 transition-all duration-300 block">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform group-hover:shadow-lg"
+                   style={{ 
+                     background: 'linear-gradient(135deg, #FFD700, #FF6B35)',
+                     boxShadow: '0 0 0 rgba(255, 215, 0, 0.3)',
+                     transition: 'box-shadow 0.3s ease'
+                   }}
+                   className="group-hover:shadow-yellow-500/50">
                 <Globe className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-h3 mb-3 text-text-primary">Access All AI Tools</h3>
-              <p className="text-body-glass">
+              <h3 className="text-h3 mb-3 text-text-primary group-hover:text-yellow-300 transition-colors">Access All AI Tools</h3>
+              <p className="text-body-glass group-hover:text-gray-200 transition-colors">
                 Connect to the complete AI ecosystem. ChatGPT, Claude, Gemini, and beyond - all in one platform.
               </p>
-            </div>
+            </Link>
             
-            <div className="glass-card p-6 cursor-pointer group">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
-                   style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}>
+            <Link href="/dashboard/analytics" className="glass-card p-6 cursor-pointer group hover:scale-105 transition-all duration-300 block">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform group-hover:shadow-lg"
+                   style={{ 
+                     background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)',
+                     boxShadow: '0 0 0 rgba(139, 92, 246, 0.3)',
+                     transition: 'box-shadow 0.3s ease'
+                   }}
+                   className="group-hover:shadow-[0_0_20px_rgba(139,92,246,0.4)]">
                 <BarChart3 className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-h3 mb-3 text-text-primary">Intelligent Analytics</h3>
               <p className="text-body-glass">
                 Map your AI usage journey. Track patterns, optimize costs, and discover new efficiency opportunities.
               </p>
-            </div>
+            </Link>
 
-            <div className="glass-card p-6 cursor-pointer group">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
-                   style={{ background: 'linear-gradient(135deg, #FF6B35, #8B5CF6)' }}>
+            <Link href="/setup" className="glass-card p-6 cursor-pointer group hover:scale-105 transition-all duration-300 block">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform group-hover:shadow-lg"
+                   style={{ 
+                     background: 'linear-gradient(135deg, #FF6B35, #8B5CF6)',
+                     boxShadow: '0 0 0 rgba(255, 107, 53, 0.3)',
+                     transition: 'box-shadow 0.3s ease'
+                   }}
+                   className="group-hover:shadow-orange-500/50">
                 <Key className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-h3 mb-3 text-text-primary">Account Management</h3>
-              <p className="text-body-glass">
+              <h3 className="text-h3 mb-3 text-text-primary group-hover:text-orange-300 transition-colors">Account Management</h3>
+              <p className="text-body-glass group-hover:text-gray-200 transition-colors">
                 Securely manage your AI accounts with enterprise-grade security and automated connection management.
               </p>
-            </div>
+            </Link>
 
-            <div className="glass-card p-6 cursor-pointer group">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
-                   style={{ background: 'linear-gradient(135deg, #8B5CF6, #A855F7)' }}>
+            <Link href="/developers/getting-started" className="glass-card p-6 cursor-pointer group hover:scale-105 transition-all duration-300 block">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform group-hover:shadow-lg"
+                   style={{ 
+                     background: 'linear-gradient(135deg, #8B5CF6, #A855F7)',
+                     boxShadow: '0 0 0 rgba(139, 92, 246, 0.3)',
+                     transition: 'box-shadow 0.3s ease'
+                   }}
+                   className="group-hover:shadow-purple-500/50">
                 <Users className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-h3 mb-3 text-text-primary">Developer Ecosystem</h3>
-              <p className="text-body-glass">
+              <h3 className="text-h3 mb-3 text-text-primary group-hover:text-purple-300 transition-colors">Developer Ecosystem</h3>
+              <p className="text-body-glass group-hover:text-gray-200 transition-colors">
                 Join thousands of developers building and monetizing AI applications in our thriving ecosystem.
               </p>
-            </div>
+            </Link>
 
-            <div className="glass-card p-6 cursor-pointer group">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
-                   style={{ background: 'linear-gradient(135deg, #3B82F6, #06B6D4)' }}>
+            <Link href="/business" className="glass-card p-6 cursor-pointer group hover:scale-105 transition-all duration-300 block">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform group-hover:shadow-lg"
+                   style={{ 
+                     background: 'linear-gradient(135deg, #3B82F6, #06B6D4)',
+                     boxShadow: '0 0 0 rgba(59, 130, 246, 0.3)',
+                     transition: 'box-shadow 0.3s ease'
+                   }}
+                   className="group-hover:shadow-cyan-500/50">
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-h3 mb-3 text-text-primary">Cost Optimization</h3>
-              <p className="text-body-glass">
+              <h3 className="text-h3 mb-3 text-text-primary group-hover:text-cyan-300 transition-colors">Cost Optimization</h3>
+              <p className="text-body-glass group-hover:text-gray-200 transition-colors">
                 Save up to 80% compared to individual subscriptions with our intelligent routing and usage optimization features.
               </p>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
