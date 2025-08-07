@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { BackToMarketplace } from '@/components/ui/back-to-marketplace';
 import { 
   Upload, 
   FileText, 
@@ -26,7 +27,7 @@ import {
   BookOpen,
   Target,
   Lightbulb,
-  Key
+  Key,
 } from 'lucide-react';
 import { QuotaDisplay } from '@/components/ui/quota-display';
 
@@ -101,6 +102,7 @@ export default function PDFNotesGeneratorPage() {
       setConnectedProviders(providers);
     }
   }, [mounted]);
+
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -604,6 +606,14 @@ This sample showcases our competitive advantage: **intelligent multi-provider or
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
+        {/* Back Navigation with Breadcrumbs */}
+        <BackToMarketplace 
+          appName="PDF Notes Generator"
+          categoryName="Content Creation"
+          categorySlug="CONTENT_CREATION"
+          showBreadcrumbs={true}
+        />
+        
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">

@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { APIKeyManager } from '@/lib/api-keys-hybrid';
 import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
 import { CosmicPageHeader } from '@/components/ui/cosmic-page-header';
 import { CosmicCard } from '@/components/ui/cosmic-card';
@@ -32,7 +33,11 @@ import {
   Video,
   Database,
   CheckCircle,
-  Loader2
+  Loader2,
+  Key,
+  AlertCircle,
+  ArrowRight,
+  Zap
 } from 'lucide-react';
 import { ProviderLogo } from '@/components/ui/provider-logo';
 
@@ -236,6 +241,8 @@ function MarketplaceContent() {
   const [sortBy, setSortBy] = useState('popular');
   const [selectedApp, setSelectedApp] = useState<any>(null);
   const [showInstallModal, setShowInstallModal] = useState(false);
+  const [hasApiKeys, setHasApiKeys] = useState(true); // Default to true to avoid flash
+  const [showApiKeyBanner, setShowApiKeyBanner] = useState(false);
 
   // Subscription hooks
   const { subscriptions, loading: subscriptionsLoading, refetch } = useSubscriptions('ACTIVE');
@@ -248,6 +255,30 @@ function MarketplaceContent() {
       setSearchQuery(searchParam);
     }
   }, [searchParams]);
+
+  // Check for API keys to show setup banner
+  useEffect(() => {
+    const checkApiKeys = async () => {
+      try {
+        const keys = await APIKeyManager.getAll();
+        const activeKeys = keys.filter(key => key.isActive);
+        const hasAnyKeys = activeKeys.length > 0;
+        setHasApiKeys(hasAnyKeys);
+        setShowApiKeyBanner(!hasAnyKeys);
+      } catch (error) {
+        // Fallback if API key manager fails
+        setHasApiKeys(false);
+        setShowApiKeyBanner(true);
+      }
+    };
+
+    // Small delay to avoid flash and hydration issues
+    const timer = setTimeout(() => {
+      checkApiKeys();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Check if app is installed
   const isAppInstalled = (appId: string | number) => {
@@ -325,6 +356,100 @@ function MarketplaceContent() {
             </Badge>
           </div>
         </div>
+
+        {/* Enhanced API Key Setup Banner - Glass Design */}
+        {showApiKeyBanner && (
+          <div className="mb-8">
+            <div className="glass-card p-6 border-2 hover:scale-[1.02] transition-all duration-300"
+                 style={{
+                   background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 107, 53, 0.08))',
+                   borderColor: 'rgba(255, 215, 0, 0.3)',
+                   boxShadow: '0 8px 32px rgba(255, 215, 0, 0.1)'
+                 }}>
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center"
+                       style={{
+                         background: 'linear-gradient(135deg, #FFD700, #FF6B35)',
+                         boxShadow: '0 4px 14px 0 rgba(255, 215, 0, 0.3)'
+                       }}>
+                    <Key className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-text-primary mb-2">
+                    🚀 Connect Your AI Fleet to Launch Apps
+                  </h3>
+                  <p className="text-text-secondary mb-4">
+                    Your AI journey starts with connecting providers. Use your own API keys for maximum cost control, 
+                    privacy, and direct access to the latest AI models. No markup, no middleman.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <button className="px-6 py-3 flex items-center space-x-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                            style={{
+                              background: 'linear-gradient(135deg, #FFD700, #FF6B35)',
+                              color: 'white',
+                              boxShadow: '0 4px 14px 0 rgba(255, 215, 0, 0.3)'
+                            }}>
+                      <Link href="/setup" className="flex items-center space-x-2">
+                        <Zap className="h-4 w-4" />
+                        <span>Setup API Keys</span>
+                      </Link>
+                    </button>
+                    <button className="px-6 py-3 flex items-center space-x-2 rounded-xl font-medium border-2 transition-all duration-300 hover:scale-105"
+                            style={{
+                              background: 'rgba(59, 130, 246, 0.1)',
+                              borderColor: 'rgba(59, 130, 246, 0.3)',
+                              color: '#3B82F6'
+                            }}
+                            onClick={() => setShowApiKeyBanner(false)}>
+                      <span>Browse Without Setup</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowApiKeyBanner(false)}
+                  className="text-text-muted hover:text-text-secondary transition-colors p-1 hover:scale-110"
+                  aria-label="Dismiss banner"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              {/* Enhanced Provider Preview */}
+              <div className="mt-6 pt-4 border-t border-yellow-200">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-medium text-text-secondary">Popular AI providers:</p>
+                  <Badge variant="outline" className="text-xs border-yellow-300 text-yellow-600 bg-yellow-50">
+                    50-90% Cost Savings vs Subscriptions
+                  </Badge>
+                </div>
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-1 text-sm text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                       onClick={() => window.open('https://openai.com', '_blank')}>
+                    <ProviderLogo provider="OPENAI" size={20} />
+                    <span>OpenAI GPT-4</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-sm text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                       onClick={() => window.open('https://anthropic.com', '_blank')}>
+                    <ProviderLogo provider="ANTHROPIC" size={20} />
+                    <span>Claude 3.5</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-sm text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                       onClick={() => window.open('https://ai.google.dev', '_blank')}>
+                    <ProviderLogo provider="GOOGLE" size={20} />
+                    <span>Gemini</span>
+                  </div>
+                  <Link href="/setup" className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600 transition-colors">
+                    <span>+4 more providers</span>
+                    <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Search and Filters */}
         <div className="mb-8 space-y-4">
@@ -504,13 +629,17 @@ function MarketplaceContent() {
                         asChild
                       >
                         <Link href={
-                          app.id === 1 ? '/marketplace/apps/legal-contract-analyzer' :
+                          (app.id === 1 ? '/marketplace/apps/legal-contract-analyzer' :
                           app.id === 2 ? '/marketplace/apps/hipaa-medical-scribe' :
                           app.id === 3 ? '/marketplace/apps/code-review-bot' :
                           app.id === 9 ? '/marketplace/apps/pdf-notes-generator' :
                           app.id === 10 ? '/marketplace/apps/simple-ai-chat' :
                           app.id === 11 ? '/marketplace/apps/ai-video-generator' :
-                          '#'
+                          '#') + 
+                          `?${new URLSearchParams({
+                            ...(searchQuery && { search: searchQuery }),
+                            ...(selectedCategory !== 'all' && { category: selectedCategory })
+                          }).toString()}`
                         }>
                           View Details
                         </Link>

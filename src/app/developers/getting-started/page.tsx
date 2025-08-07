@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { 
   ArrowRight, 
   Check, 
@@ -139,6 +140,16 @@ export default function GettingStartedPage() {
   return (
     <CosmicPageLayout starCount={30} parallaxSpeed={0.2} gradientOverlay="none">
       <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* Breadcrumb Navigation */}
+        <div className="mb-8">
+          <Breadcrumb 
+            items={[
+              { label: 'Developers', href: '/developers' },
+              { label: 'Getting Started' }
+            ]} 
+          />
+        </div>
+        
         {/* Header */}
         <div className="mb-12 text-center">
           <div className="glass-base px-4 py-2 rounded-full border inline-flex items-center mb-6" 

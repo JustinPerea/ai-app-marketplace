@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { MainLayout } from '@/components/layouts/main-layout';
 import { SimpleStars } from '@/components/ui/simple-stars';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { 
   ArrowRight, 
   Copy,
@@ -647,6 +648,16 @@ export default function APIReferencePage() {
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
+          {/* Breadcrumb Navigation */}
+          <div className="mb-8">
+            <Breadcrumb 
+              items={[
+                { label: 'Developers', href: '/developers' },
+                { label: 'API Reference' }
+              ]} 
+            />
+          </div>
+          
           <div className="text-center max-w-4xl mx-auto">
             <div className="glass-base px-4 py-2 rounded-full border inline-flex items-center mb-6"
                  style={{ 

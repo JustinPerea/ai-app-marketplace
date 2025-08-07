@@ -5,6 +5,7 @@ import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
 import { CosmicPageHeader } from '@/components/ui/cosmic-page-header';
 import { CosmicCard } from '@/components/ui/cosmic-card';
 import { Button } from '@/components/ui/button';
+import { BackToMarketplace } from '@/components/ui/back-to-marketplace';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -216,6 +217,14 @@ export default function AIVideoGeneratorApp() {
   return (
     <CosmicPageLayout gradientOverlay="purple">
       <div className="container mx-auto px-4 py-8">
+        {/* Back Navigation with Breadcrumbs */}
+        <BackToMarketplace 
+          appName="AI Video Generator"
+          categoryName="Content Creation"
+          categorySlug="CONTENT_CREATION"
+          showBreadcrumbs={true}
+        />
+        
         {/* Header */}
         <CosmicPageHeader 
           icon={Video}

@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
 import { CosmicPageHeader } from '@/components/ui/cosmic-page-header';
 import { CosmicCard } from '@/components/ui/cosmic-card';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { 
   ArrowRight, 
   Code2, 
@@ -186,6 +187,15 @@ export default function DeveloperDocsPage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 sm:py-32">
         <div className="container mx-auto px-4 relative z-10">
+          {/* Breadcrumb Navigation */}
+          <div className="mb-8">
+            <Breadcrumb 
+              items={[
+                { label: 'Developers', href: '/developers' },
+                { label: 'Documentation' }
+              ]} 
+            />
+          </div>
           <CosmicPageHeader
             icon={BookOpen}
             title="Build AI Apps with Multi-Provider Intelligence"
