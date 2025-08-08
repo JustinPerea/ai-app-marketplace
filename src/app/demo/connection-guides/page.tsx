@@ -72,6 +72,7 @@ export default function ConnectionGuidesDemo() {
 
   if (currentView === 'success') {
     return (
+      <>
         <SimpleStars starCount={50} parallaxSpeed={0.3} />
         <div className="relative py-8">
           {/* Cosmic background */}
@@ -237,12 +238,13 @@ export default function ConnectionGuidesDemo() {
             </div>
           </div>
         </div>
-      
+      </>
     );
   }
 
   if (currentView === 'connecting') {
     return (
+      <>
         <SimpleStars starCount={50} parallaxSpeed={0.3} />
         <div className="relative py-8">
           {/* Cosmic background */}
@@ -283,11 +285,12 @@ export default function ConnectionGuidesDemo() {
             />
           </div>
         </div>
-      
+      </>
     );
   }
 
   return (
+    <>
       <SimpleStars starCount={50} parallaxSpeed={0.3} />
       <div className="relative py-8">
         {/* Cosmic background */}
@@ -321,6 +324,6 @@ export default function ConnectionGuidesDemo() {
           />
         </div>
       </div>
-    
+    </>
   );
 }

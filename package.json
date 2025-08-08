@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.8.0",
+    "@cosmara-ai/community-sdk": "^1.0.1",
     "@google-cloud/kms": "^5.1.0",
     "@google-cloud/secret-manager": "^6.1.0",
     "@hookform/resolvers": "^5.1.1",

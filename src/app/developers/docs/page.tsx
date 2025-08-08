@@ -369,7 +369,7 @@ export default function MyAppPage() {
               </div>
               <div className="glass-card bg-deep-space/80 p-4 rounded-lg font-mono text-sm overflow-x-auto border border-glass-border">
                 <pre className="text-stardust">{`import { NextRequest, NextResponse } from 'next/server';
-import { createChat } from '@byok-marketplace/sdk';
+import { createChat } from '@cosmara-ai/community-sdk';
 
 export async function POST(req: NextRequest) {
   const chat = createChat({

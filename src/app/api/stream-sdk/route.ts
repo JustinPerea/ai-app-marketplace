@@ -1,28 +1,26 @@
 import { NextRequest } from 'next/server';
-import { createChat } from '@byok-marketplace/sdk';
+import { createClient, APIProvider } from '@cosmara-ai/community-sdk';
 
 export async function GET(req: NextRequest) {
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const chat = createChat({
-        resolveApiKey: async (provider) => {
-          const r = await fetch(req.nextUrl.origin + '/api/keys/active?provider=' + provider, {
-            headers: { cookie: req.headers.get('cookie') || '' },
-            cache: 'no-store'
-          });
-          if (!r.ok) return undefined;
-          const { apiKey } = await r.json();
-          return apiKey as string;
-        }
+      const [openaiKey, anthropicKey, googleKey] = await Promise.all([
+        fetch(req.nextUrl.origin + '/api/keys/active?provider=openai', { headers: { cookie: req.headers.get('cookie') || '' }, cache: 'no-store' })
+          .then(r => r.ok ? r.json() : { apiKey: undefined }).then(j => j.apiKey),
+        fetch(req.nextUrl.origin + '/api/keys/active?provider=anthropic', { headers: { cookie: req.headers.get('cookie') || '' }, cache: 'no-store' })
+          .then(r => r.ok ? r.json() : { apiKey: undefined }).then(j => j.apiKey),
+        fetch(req.nextUrl.origin + '/api/keys/active?provider=google', { headers: { cookie: req.headers.get('cookie') || '' }, cache: 'no-store' })
+          .then(r => r.ok ? r.json() : { apiKey: undefined }).then(j => j.apiKey),
+      ]);
+
+      const client = createClient({
+        apiKeys: { openai: openaiKey, anthropic: anthropicKey, google: googleKey }
       });
 
       try {
-        for await (const chunk of chat.stream({
-          messages: [{ role: 'user', content: 'Stream via SDK' }],
-          stream: true
-        })) {
+        for await (const chunk of client.chatStream({ model: 'gpt-4o', messages: [{ role: 'user', content: 'Stream via SDK' }] }, { provider: APIProvider.OPENAI })) {
           const delta = chunk?.choices?.[0]?.delta?.content || '';
           if (delta) controller.enqueue(encoder.encode(`data: ${delta}\n\n`));
         }

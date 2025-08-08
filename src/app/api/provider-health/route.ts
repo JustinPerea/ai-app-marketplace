@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient, APIProvider } from '@cosmara-ai/community-sdk';
 
 // Personalized provider health using the signed-in user's BYOK keys
 export async function GET(req: NextRequest) {
   try {
-    const { providerRegistry } = await import('@byok-marketplace/sdk');
-
-    // Fetch user's keys
     const isCliToken = req.nextUrl.searchParams.get('token') && process.env.CLI_HEALTH_TOKEN && req.nextUrl.searchParams.get('token') === process.env.CLI_HEALTH_TOKEN;
     const headers: Record<string, string> = {};
     if (!isCliToken) {
@@ -13,57 +11,30 @@ export async function GET(req: NextRequest) {
       if (cookie) headers['cookie'] = cookie;
     }
 
-    const listRes = await fetch(`${req.nextUrl.origin}/api/keys`, {
-      headers,
-      cache: 'no-store',
+    async function getActiveKey(provider: 'openai' | 'anthropic' | 'google'): Promise<string | undefined> {
+      const r = await fetch(`${req.nextUrl.origin}/api/keys/active?provider=${provider}${isCliToken ? `&token=${req.nextUrl.searchParams.get('token')}` : ''}`, { headers, cache: 'no-store' });
+      if (!r.ok) return undefined;
+      const j = await r.json();
+      return j?.apiKey as string | undefined;
+    }
+
+    const [openaiKey, anthropicKey, googleKey] = await Promise.all([
+      getActiveKey('openai'), getActiveKey('anthropic'), getActiveKey('google')
+    ]);
+
+    const client = createClient({
+      apiKeys: { openai: openaiKey, anthropic: anthropicKey, google: googleKey }
     });
 
-    const keysJson = listRes.ok ? await listRes.json() : { keys: [] };
-    const keys: Array<{ id: string; provider: string; isActive: boolean }> = keysJson.keys || [];
-
-    async function getDecryptedKeyByProvider(provider: string): Promise<string | undefined> {
-      const match = keys.find(k => k.provider === provider && k.isActive);
-      if (!match) return undefined;
-      const decRes = await fetch(`${req.nextUrl.origin}/api/keys/${match.id}/decrypt`, {
-        headers,
-        cache: 'no-store',
-      });
-      if (!decRes.ok) return undefined;
-      const dec = await decRes.json();
-      return dec?.key?.decryptedKey as string | undefined;
-    }
-
-    // Map our dashboard providers to SDK providers
-    const targets: Array<{ id: string; sdkProvider: 'openai' | 'claude' | 'google'; model: string; keyProviderName: string }>
-      = [
-        { id: 'openai', sdkProvider: 'openai', model: 'gpt-4o', keyProviderName: 'OPENAI' },
-        { id: 'anthropic', sdkProvider: 'claude', model: 'claude-3-5-sonnet-20241022', keyProviderName: 'ANTHROPIC' },
-        { id: 'google', sdkProvider: 'google', model: 'gemini-1.5-pro', keyProviderName: 'GOOGLE' },
-      ];
-
-    const results: Record<string, any> = {};
-
-    for (const t of targets) {
-      try {
-        const key = await getDecryptedKeyByProvider(t.keyProviderName);
-        if (!key) {
-          results[t.id] = { provider: t.sdkProvider, healthy: false, error: 'No key connected' };
-          continue;
-        }
-        const instance = providerRegistry.getProvider({ provider: t.sdkProvider as any, model: t.model, apiKey: key, timeout: 4000 });
-        results[t.id] = await instance.healthCheck();
-      } catch (e: any) {
-        results[t.id] = { provider: t.sdkProvider, healthy: false, error: String(e?.message || e) };
-      }
-    }
-
+    const validation = await client.validateApiKeys();
+    const results = {
+      openai: { provider: 'openai', healthy: !!validation[APIProvider.OPENAI] },
+      anthropic: { provider: 'anthropic', healthy: !!validation[APIProvider.ANTHROPIC] },
+      google: { provider: 'google', healthy: !!validation[APIProvider.GOOGLE] },
+    };
     return NextResponse.json({ ok: true, results });
   } catch (error: any) {
-    return NextResponse.json({
-      ok: false,
-      error: 'Provider health check unavailable',
-      details: String(error?.message || error)
-    }, { status: 200 });
+    return NextResponse.json({ ok: false, error: 'Provider health check unavailable', details: String(error?.message || error) }, { status: 200 });
   }
 }
 
@@ -80,7 +51,7 @@ export async function POST(req: NextRequest) {
     const anthropicKey: string | undefined = body?.anthropic;
     const googleKey: string | undefined = body?.google;
 
-    const { providerRegistry } = await import('@byok-marketplace/sdk');
+    const { providerRegistry } = await import('@cosmara-ai/community-sdk');
     const targets: Array<{ id: string; sdkProvider: 'openai' | 'claude' | 'google'; model: string; key?: string }>
       = [
         { id: 'openai', sdkProvider: 'openai', model: 'gpt-4o', key: openaiKey },

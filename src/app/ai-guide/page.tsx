@@ -255,6 +255,7 @@ export default function AIGuidePage() {
   const selectedUseCaseData = useCases.find(uc => uc.id === selectedUseCase);
 
   return (
+    <>
       {/* Simple stars background with parallax scrolling */}
       <SimpleStars starCount={50} parallaxSpeed={0.3} />
       
@@ -575,6 +576,6 @@ export default function AIGuidePage() {
           </CardContent>
         </Card>
       </div>
-    
+    </>
   );
 }

@@ -153,6 +153,7 @@ export default function MyAppsPage() {
   }
 
   return (
+    <>
       {/* Simple stars background with parallax scrolling */}
       <SimpleStars starCount={50} parallaxSpeed={0.3} />
       
@@ -378,6 +379,6 @@ export default function MyAppsPage() {
           )}
         </div>
       </div>
-    
+    </>
   );
 }
