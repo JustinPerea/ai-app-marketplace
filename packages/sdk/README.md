@@ -90,6 +90,50 @@ for await (const chunk of chat.stream({
 }
 ```
 
+Server streaming with chat.stream()
+
+```ts
+// app/api/stream/route.ts
+import { NextRequest } from 'next/server';
+import { createChat } from '@byok-marketplace/sdk';
+
+export async function GET(req: NextRequest) {
+  const enc = new TextEncoder();
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const chat = createChat({
+        resolveApiKey: async (provider) => {
+          const r = await fetch(req.nextUrl.origin + '/api/keys/active?provider=' + provider, {
+            headers: { cookie: req.headers.get('cookie') || '' }
+          });
+          if (!r.ok) return undefined;
+          const { apiKey } = await r.json();
+          return apiKey;
+        }
+      });
+
+      for await (const chunk of chat.stream({
+        messages: [{ role: 'user', content: 'Stream via SDK' }],
+        stream: true
+      })) {
+        const delta = chunk.choices?.[0]?.delta?.content || '';
+        if (delta) controller.enqueue(enc.encode(`data: ${delta}\n\n`));
+      }
+      controller.enqueue(enc.encode('data: done\n\n'));
+      controller.close();
+    }
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive'
+    }
+  });
+}
+```
+
 Minimal SSE example (Next.js)
 
 ```ts

@@ -59,7 +59,10 @@ export default function SDKTestPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">SDK Test</h1>
+      <h1 className="text-2xl font-bold mb-2">SDK Test</h1>
+      <p className="text-sm text-gray-500 mb-4">
+        See the streaming example in <a href="/developers/docs#examples" className="underline">Developers → Docs → Code Examples</a>.
+      </p>
       <div className="flex gap-2 mb-4">
         <button className="px-4 py-2 rounded border" onClick={callMock}>Mock</button>
         <button className="px-4 py-2 rounded border" onClick={callServer}>Server (BYOK)</button>
