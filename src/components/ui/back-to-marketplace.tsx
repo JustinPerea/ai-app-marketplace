@@ -28,10 +28,10 @@ export function BackToMarketplace({
   const searchParams = useSearchParams();
 
   const handleBackToMarketplace = () => {
-    const search = searchParams.get('search');
-    const category = searchParams.get('category');
-    const sortBy = searchParams.get('sortBy');
-    const viewMode = searchParams.get('viewMode');
+    const search = searchParams?.get('search') || undefined;
+    const category = searchParams?.get('category') || undefined;
+    const sortBy = searchParams?.get('sortBy') || undefined;
+    const viewMode = searchParams?.get('viewMode') || undefined;
     
     let marketplaceUrl = '/marketplace';
     const params = new URLSearchParams();
@@ -49,10 +49,10 @@ export function BackToMarketplace({
   };
 
   const getMarketplaceUrl = () => {
-    const search = searchParams.get('search');
-    const category = searchParams.get('category');
-    const sortBy = searchParams.get('sortBy');
-    const viewMode = searchParams.get('viewMode');
+    const search = searchParams?.get('search') || undefined;
+    const category = searchParams?.get('category') || undefined;
+    const sortBy = searchParams?.get('sortBy') || undefined;
+    const viewMode = searchParams?.get('viewMode') || undefined;
     
     let marketplaceUrl = '/marketplace';
     const params = new URLSearchParams();
