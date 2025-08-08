@@ -254,13 +254,15 @@ export default function DeveloperDocsPage() {
             />
           </div>
           {/* Compact TOC */}
-          <nav aria-label="Table of contents" className="text-center mb-4">
+              <nav aria-label="Table of contents" className="text-center mb-4">
             <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full glass-card">
               <a href="#quick-start" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Quick Start</a>
               <span className="text-text-secondary/40">•</span>
               <a href="#features" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Features</a>
               <span className="text-text-secondary/40">•</span>
-              <a href="#examples" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Examples</a>
+                  <a href="#examples" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Examples</a>
+                  <span className="text-text-secondary/40">•</span>
+                  <a href="#examples" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Streaming (SSE)</a>
               <span className="text-text-secondary/40">•</span>
               <a href="#api" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">API</a>
               <span className="text-text-secondary/40">•</span>
