@@ -32,11 +32,24 @@ export default function SDKTestPage() {
   const callStream = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/sdk-test', { method: 'POST', body: JSON.stringify({ request: { messages: [{ role: 'user', content: 'Stream?' }] } }), headers: { 'Content-Type': 'application/json' } });
-      const data = await res.json();
-      setOutput(JSON.stringify(data, null, 2));
+      setOutput('');
+      const es = new EventSource('/api/sdk-stream');
+      es.onmessage = (ev) => {
+        const data = ev.data ?? '';
+        setOutput((prev) => (prev ? prev + '\n' + data : data));
+        if (data === 'done') {
+          es.close();
+          setLoading(false);
+        }
+      };
+      es.onerror = () => {
+        es.close();
+        setLoading(false);
+      };
+      // Return early; state updates happen via events
+      return;
     } finally {
-      setLoading(false);
+      // loading state cleared in handlers
     }
   };
 
@@ -50,7 +63,7 @@ export default function SDKTestPage() {
       <div className="flex gap-2 mb-4">
         <button className="px-4 py-2 rounded border" onClick={callMock}>Mock</button>
         <button className="px-4 py-2 rounded border" onClick={callServer}>Server (BYOK)</button>
-        <button className="px-4 py-2 rounded border" onClick={callStream}>POST</button>
+        <button className="px-4 py-2 rounded border" onClick={callStream}>Stream SSE</button>
       </div>
       <pre className="glass-card p-4 rounded border text-sm whitespace-pre-wrap">{output}</pre>
     </div>
