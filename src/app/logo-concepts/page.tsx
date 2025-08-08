@@ -1,5 +1,5 @@
 import { LogoConceptShowcase, StellarNavigationCore, CosmicCircuitCompass, QuantumNetworkNode } from '@/components/ui/logo-concepts';
-import { CosmicCShowcase, NebulaC, ConstellationC, CosmicPortalC, PortalCVariationsShowcase, CosmarcRefinedShowcase, CosmarcPortalRefined2Ring, CosmarcPortalRefined3Ring, CosmarcAuroraIcon } from '@/components/ui/cosmic-c-logo';
+import { CosmicCShowcase, NebulaC, ConstellationC, CosmicPortalC, PortalCVariationsShowcase, CosmarcRefinedShowcase, CosmarcPortalRefined2Ring, CosmarcAuroraIcon } from '@/components/ui/cosmic-c-logo';
 import { CosmicCVariationsShowcase } from '@/components/ui/cosmic-c-variations';
 import { CosmaraLogo } from '@/components/ui/cosmara-logo';
 
@@ -176,25 +176,19 @@ export default function LogoConceptsPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="text-center p-6 bg-gray-50 rounded-lg">
-                <div className="mb-4">
-                  <CosmarcPortalRefined3Ring size={120} variant="cosmic" />
-                </div>
+              <div className="mb-4 text-gray-400 text-sm">(3-Ring variant placeholder)</div>
                 <h4 className="font-medium text-gray-700">Cosmic 3-Ring</h4>
                 <div className="text-xs text-gray-600">Purple-Orange-Purple layers</div>
               </div>
 
               <div className="text-center p-6 bg-gray-50 rounded-lg">
-                <div className="mb-4">
-                  <CosmarcPortalRefined3Ring size={120} variant="aurora" />
-                </div>
+              <div className="mb-4 text-gray-400 text-sm">(3-Ring variant placeholder)</div>
                 <h4 className="font-medium text-gray-700">Aurora 3-Ring</h4>
                 <div className="text-xs text-gray-600">Orange-Blue-Purple layers</div>
               </div>
 
               <div className="text-center p-6 bg-gray-50 rounded-lg">
-                <div className="mb-4">
-                  <CosmarcPortalRefined3Ring size={120} variant="enterprise" />
-                </div>
+              <div className="mb-4 text-gray-400 text-sm">(3-Ring variant placeholder)</div>
                 <h4 className="font-medium text-gray-700">Enterprise 3-Ring</h4>
                 <div className="text-xs text-gray-600">Gold-Purple gradient layers</div>
               </div>

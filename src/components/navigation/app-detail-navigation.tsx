@@ -25,8 +25,8 @@ export function AppDetailNavigation({
 
   // Get preserved search and category params from marketplace
   const getBackToMarketplaceUrl = () => {
-    const search = searchParams.get('search');
-    const category = searchParams.get('category');
+    const search = searchParams?.get('search') || undefined;
+    const category = searchParams?.get('category') || undefined;
     let url = '/marketplace';
     
     const params = new URLSearchParams();
