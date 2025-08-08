@@ -90,6 +90,38 @@ for await (const chunk of chat.stream({
 }
 ```
 
+Minimal SSE example (Next.js)
+
+```ts
+// app/api/sdk-stream/route.ts
+export async function GET() {
+  const enc = new TextEncoder();
+  const stream = new ReadableStream({
+    start(controller) {
+      const send = (d: string) => controller.enqueue(enc.encode(`data: ${d}\n\n`));
+      send('hello');
+      setTimeout(() => send('this is'), 150);
+      setTimeout(() => send('a streamed'), 300);
+      setTimeout(() => { send('done'); controller.close(); }, 450);
+    }
+  });
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive'
+    }
+  });
+}
+
+// Client usage
+const es = new EventSource('/api/sdk-stream');
+es.onmessage = (ev) => {
+  if (ev.data === 'done') es.close();
+  else console.log('chunk:', ev.data);
+};
+```
+
 Convenience helpers
 
 ```ts

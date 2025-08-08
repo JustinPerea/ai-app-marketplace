@@ -182,6 +182,41 @@ const video = await client.video.generations.retrieve(
 
 console.log('Video URL:', video.url);`
   }
+  ,
+  {
+    title: 'Streaming (SSE) with EventSource',
+    description: 'Consume Server-Sent Events from a simple streaming endpoint',
+    code: `// Client-side SSE consumption
+const es = new EventSource('/api/sdk-stream');
+es.onmessage = (ev) => {
+  const text = ev.data;
+  if (text === 'done') {
+    es.close();
+    return;
+  }
+  console.log('chunk:', text);
+};
+
+// Example Next.js API route returning SSE
+export async function GET() {
+  const enc = new TextEncoder();
+  const stream = new ReadableStream({
+    start(controller) {
+      const send = (d) => controller.enqueue(enc.encode('data: ' + d + '\\n\\n'));
+      send('hello');
+      setTimeout(() => send('world'), 150);
+      setTimeout(() => { send('done'); controller.close(); }, 300);
+    }
+  });
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive'
+    }
+  });
+}`
+  }
 ];
 
 export default function DeveloperDocsPage() {
