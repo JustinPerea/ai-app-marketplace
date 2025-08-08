@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -59,6 +58,7 @@ export default function AIProvidersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [testingProvider, setTestingProvider] = useState<string | null>(null);
+  const [health, setHealth] = useState<Record<string, any> | null>(null);
 
   // Add form state
   const [addForm, setAddForm] = useState({
@@ -71,6 +71,10 @@ export default function AIProvidersPage() {
 
   useEffect(() => {
     fetchProviders();
+    fetch('/api/provider-health')
+      .then(r => r.json())
+      .then(data => setHealth(data.results || null))
+      .catch(() => setHealth(null));
   }, []);
 
   const fetchProviders = async () => {
@@ -332,18 +336,15 @@ export default function AIProvidersPage() {
 
   if (isLoading) {
     return (
-      <MainLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center h-64">
             <RefreshCw className="h-8 w-8 animate-spin text-gray-400" />
           </div>
         </div>
-      </MainLayout>
     );
   }
 
   return (
-    <MainLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -415,6 +416,33 @@ export default function AIProvidersPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Provider Health Snapshot */}
+        {health && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Provider Health</CardTitle>
+              <CardDescription>Live health snapshot from the SDK</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {Object.entries(health).map(([id, info]: any) => (
+                  <div key={id} className="glass-card p-4 rounded-lg border">
+                    <div className="flex items-center justify-between">
+                      <div className="font-semibold">{id.toUpperCase()}</div>
+                      {info.healthy ? (
+                        <span className="text-green-600 text-sm">Healthy</span>
+                      ) : (
+                        <span className="text-amber-600 text-sm">Unhealthy</span>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">{info.latency ? `${info.latency} ms` : '—'}</div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Add Provider Form */}
         {showAddForm && (
@@ -673,6 +701,6 @@ export default function AIProvidersPage() {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    
   );
 }

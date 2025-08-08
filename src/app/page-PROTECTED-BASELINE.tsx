@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MainLayout } from '@/components/layouts/main-layout';
 // Removed ROI Calculator and Provider Flow - moved to dedicated pages
 import { ArrowRight, Shield, Zap, BarChart3, Globe, Key, Code2, Star, Users, TrendingUp } from 'lucide-react';
 import { SimpleStars } from '@/components/ui/simple-stars';

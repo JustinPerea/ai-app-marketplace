@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from 'path';
 
 const nextConfig: NextConfig = {
   // Disable TypeScript checking during development for testing
@@ -41,6 +42,15 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       }
     ],
+  },
+  // Resolve local SDK package in monorepo
+  webpack: (config) => {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      '@byok-marketplace/sdk': path.resolve(__dirname, 'packages/sdk/dist')
+    };
+    return config;
   },
   
   // Compression

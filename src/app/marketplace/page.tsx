@@ -242,6 +242,7 @@ function MarketplaceContent() {
   const [selectedApp, setSelectedApp] = useState<any>(null);
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [hasApiKeys, setHasApiKeys] = useState(true); // Default to true to avoid flash
+  const [connectedProviders, setConnectedProviders] = useState<Set<string>>(new Set());
   const [showApiKeyBanner, setShowApiKeyBanner] = useState(false);
 
   // Subscription hooks
@@ -265,10 +266,12 @@ function MarketplaceContent() {
         const hasAnyKeys = activeKeys.length > 0;
         setHasApiKeys(hasAnyKeys);
         setShowApiKeyBanner(!hasAnyKeys);
+        setConnectedProviders(new Set(activeKeys.map(k => k.provider)));
       } catch (error) {
         // Fallback if API key manager fails
         setHasApiKeys(false);
         setShowApiKeyBanner(true);
+        setConnectedProviders(new Set());
       }
     };
 
@@ -385,17 +388,19 @@ function MarketplaceContent() {
                     privacy, and direct access to the latest AI models. No markup, no middleman.
                   </p>
                   <div className="flex flex-wrap gap-3">
-                    <button className="px-6 py-3 flex items-center space-x-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
-                            style={{
-                              background: 'linear-gradient(135deg, #FFD700, #FF6B35)',
-                              color: 'white',
-                              boxShadow: '0 4px 14px 0 rgba(255, 215, 0, 0.3)'
-                            }}>
-                      <Link href="/setup" className="flex items-center space-x-2">
-                        <Zap className="h-4 w-4" />
-                        <span>Setup API Keys</span>
-                      </Link>
-                    </button>
+                    <Link
+                      href="/setup"
+                      aria-label="Setup API Keys"
+                      className="px-6 py-3 flex items-center space-x-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                      style={{
+                        background: 'linear-gradient(135deg, #FFD700, #FF6B35)',
+                        color: 'white',
+                        boxShadow: '0 4px 14px 0 rgba(255, 215, 0, 0.3)'
+                      }}
+                    >
+                      <Zap className="h-4 w-4" />
+                      <span>Setup API Keys</span>
+                    </Link>
                     <button className="px-6 py-3 flex items-center space-x-2 rounded-xl font-medium border-2 transition-all duration-300 hover:scale-105"
                             style={{
                               background: 'rgba(59, 130, 246, 0.1)',
@@ -609,6 +614,30 @@ function MarketplaceContent() {
                     )}
                   </div>
 
+                  {/* Providers required hint */}
+                  {(() => {
+                    const required = (app.providers || []).filter((p: string) => p !== 'LOCAL');
+                    const missing = required.filter((p: string) => !connectedProviders.has(p));
+                    if (missing.length === 0) return null;
+                    return (
+                      <div className="flex items-center justify-between rounded-md border border-amber-200 bg-amber-50 px-3 py-2">
+                        <div className="flex items-center gap-2 text-xs text-amber-800">
+                          <AlertCircle className="h-3.5 w-3.5" />
+                          <span>Requires setup:</span>
+                          <div className="flex items-center gap-1">
+                            {missing.map((p: string) => (
+                              <Badge key={p} variant="secondary" className="text-[10px] flex items-center gap-1">
+                                <ProviderLogo provider={p} size={12} />
+                                {p === 'OPENAI' ? 'OpenAI' : p === 'ANTHROPIC' ? 'Claude' : p === 'GOOGLE' ? 'Gemini' : p === 'COHERE' ? 'Cohere' : p === 'HUGGING_FACE' ? 'Hugging Face' : p}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <Link href="/setup" className="text-xs text-blue-600 hover:underline">Setup</Link>
+                      </div>
+                    );
+                  })()}
+
                   {/* Stats and Actions */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
@@ -622,28 +651,50 @@ function MarketplaceContent() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                        asChild
-                      >
-                        <Link href={
-                          (app.id === 1 ? '/marketplace/apps/legal-contract-analyzer' :
-                          app.id === 2 ? '/marketplace/apps/hipaa-medical-scribe' :
-                          app.id === 3 ? '/marketplace/apps/code-review-bot' :
-                          app.id === 9 ? '/marketplace/apps/pdf-notes-generator' :
-                          app.id === 10 ? '/marketplace/apps/simple-ai-chat' :
-                          app.id === 11 ? '/marketplace/apps/ai-video-generator' :
-                          '#') + 
-                          `?${new URLSearchParams({
-                            ...(searchQuery && { search: searchQuery }),
-                            ...(selectedCategory !== 'all' && { category: selectedCategory })
-                          }).toString()}`
-                        }>
-                          View Details
-                        </Link>
-                      </Button>
+                      {app.status === 'in_development' ? (
+                        <>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            disabled
+                            aria-disabled="true"
+                            title="Coming soon"
+                            className="opacity-60 cursor-not-allowed"
+                          >
+                            View Details
+                          </Button>
+                          <Link
+                            href="/roadmap"
+                            className="text-sm text-blue-500 hover:text-blue-600 underline underline-offset-4"
+                            aria-label={`View roadmap for ${app.name}`}
+                          >
+                            View roadmap
+                          </Link>
+                        </>
+                      ) : (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                          asChild
+                        >
+                          <Link href={
+                            (app.id === 1 ? '/marketplace/apps/legal-contract-analyzer' :
+                            app.id === 2 ? '/marketplace/apps/hipaa-medical-scribe' :
+                            app.id === 3 ? '/marketplace/apps/code-review-bot' :
+                            app.id === 9 ? '/marketplace/apps/pdf-notes-generator' :
+                            app.id === 10 ? '/marketplace/apps/simple-ai-chat' :
+                            app.id === 11 ? '/marketplace/apps/ai-video-generator' :
+                            '#') + 
+                            `?${new URLSearchParams({
+                              ...(searchQuery && { search: searchQuery }),
+                              ...(selectedCategory !== 'all' && { category: selectedCategory })
+                            }).toString()}`
+                          }>
+                            View Details
+                          </Link>
+                        </Button>
+                      )}
                       <Button 
                         size="sm"
                         onClick={() => handleInstallClick(app)}
@@ -651,6 +702,7 @@ function MarketplaceContent() {
                         className={`${isAppInstalled(app.id) ? 'bg-green-600 hover:bg-green-700' : ''} ${
                           app.status === 'in_development' ? 'opacity-50 cursor-not-allowed' : ''
                         }`}
+                        aria-disabled={installing[app.id] || subscriptionsLoading || app.status === 'in_development'}
                       >
                         {app.status === 'in_development' ? (
                           <>

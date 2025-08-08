@@ -341,9 +341,8 @@ export class RetryHandler {
       try {
         return await fn();
       } catch (error) {
-        lastError = error instanceof BaseSDKError 
-          ? error 
-          : this.convertToSDKError(error, context?.provider);
+        // Preserve original error (e.g., HTTPError) for provider-level mapping
+        lastError = (error as any);
 
         // Don't retry on last attempt
         if (attempt === this.config.maxRetries) {
@@ -351,7 +350,7 @@ export class RetryHandler {
         }
 
         // Check if error is retryable
-        if (!this.isRetryableError(lastError)) {
+        if (!this.isRetryableError(lastError as any)) {
           break;
         }
 
@@ -371,30 +370,31 @@ export class RetryHandler {
     }
 
     // All attempts failed, throw the last error
-    throw lastError;
+    throw lastError as any;
   }
 
   /**
    * Check if an error should trigger a retry
    */
-  private isRetryableError(error: SDKError): boolean {
+  private isRetryableError(error: any): boolean {
     // Don't retry authentication or validation errors
-    if (error.code === 'AUTHENTICATION_FAILED' || error.code === 'VALIDATION_ERROR') {
+    if (error && (error.code === 'AUTHENTICATION_FAILED' || error.code === 'VALIDATION_ERROR')) {
       return false;
     }
 
     // Retry rate limit errors
-    if (error.code === 'RATE_LIMIT_EXCEEDED') {
+    if (error && error.code === 'RATE_LIMIT_EXCEEDED') {
       return true;
     }
 
     // Retry server errors (5xx)
-    if (error.statusCode && error.statusCode >= 500) {
+    const status = error?.status || error?.statusCode;
+    if (status && status >= 500) {
       return true;
     }
 
     // Retry network/timeout errors
-    if (this.config.retryableErrors.includes(error.code)) {
+    if (error && this.config.retryableErrors.includes(error.code)) {
       return true;
     }
 

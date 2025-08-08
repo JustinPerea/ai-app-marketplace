@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-// import { AuthProvider } from "@/lib/auth/auth-context";
+import { AuthProvider } from "@/lib/auth/auth-context";
+import { MainLayout } from "@/components/layouts/main-layout";
 
 export const metadata: Metadata = {
   title: "AI App Marketplace - COSMARA",
@@ -18,7 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased">
-        {children}
+        <AuthProvider>
+          <MainLayout>
+            {children}
+          </MainLayout>
+        </AuthProvider>
       </body>
     </html>
   );

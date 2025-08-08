@@ -53,14 +53,15 @@ export const GET = withSimpleAuth(async (request, user) => {
 });
 
 // Helper function to validate API key with provider
-async function validateApiKeyWithProvider(provider: ApiProvider, apiKey: string): Promise<{
+async function validateApiKeyWithProvider(request: NextRequest, provider: ApiProvider, apiKey: string): Promise<{
   isValid: boolean;
   error?: string;
   model?: string;
 }> {
   try {
-    // Use existing validation endpoint through internal API call
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/test-provider`, {
+    // Use existing validation endpoint through internal API call using the current origin (supports non-default ports)
+    const origin = request.nextUrl.origin;
+    const response = await fetch(`${origin}/api/test-provider`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ provider, apiKey }),
@@ -102,7 +103,7 @@ export const POST = withSimpleAuth(async (request, user) => {
     const { name, provider, apiKey } = validationResult.data;
 
     // Validate API key with provider
-    const validation = await validateApiKeyWithProvider(provider, apiKey);
+    const validation = await validateApiKeyWithProvider(request, provider, apiKey);
     
     if (!validation.isValid) {
       return NextResponse.json(

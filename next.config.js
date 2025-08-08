@@ -1,3 +1,5 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -27,6 +29,14 @@ const nextConfig = {
   publicRuntimeConfig: {
     // This is available on both server and client side
   },
+  webpack: (config) => {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      '@byok-marketplace/sdk': path.resolve(__dirname, 'packages/sdk/dist')
+    };
+    return config;
+  }
 }
 
 module.exports = nextConfig

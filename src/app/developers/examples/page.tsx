@@ -1,6 +1,5 @@
 'use client';
 
-import { MainLayout } from '@/components/layouts/main-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -133,7 +132,7 @@ export default function ExamplesPage() {
   };
 
   return (
-    <MainLayout>
+      <>
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 sm:py-32">
         <div className="absolute inset-0 pointer-events-none"
@@ -798,6 +797,6 @@ Enter your message: stats
           </Card>
         </div>
       </section>
-    </MainLayout>
+      </>
   );
 }

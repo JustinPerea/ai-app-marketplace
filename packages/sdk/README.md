@@ -1,3 +1,182 @@
+BYOK AI Marketplace SDK
+
+A unified, provider-agnostic SDK for building AI apps on the Cosmara Marketplace. BYOK-first: your users bring their own API keys; you resolve them at runtime and call a single, consistent API across OpenAI, Anthropic/Claude, and Google Gemini.
+
+Install
+
+```bash
+npm install @byok-marketplace/sdk
+# or
+pnpm add @byok-marketplace/sdk
+```
+
+Quick start (BYOK)
+
+Use the resolver hook to fetch the signed-in user’s active key per provider at call time. No hardcoding or bundling keys in the app.
+
+```ts
+import { createChat } from '@byok-marketplace/sdk';
+
+const chat = createChat({
+  // Called before each request if the provider config lacks an apiKey
+  resolveApiKey: async (provider) => {
+    // Example: fetch from your backend (account-encrypted storage)
+    const res = await fetch(`/api/keys/active?provider=${provider}`, { credentials: 'include' });
+    if (!res.ok) return undefined; // SDK will surface auth errors downstream
+    const { apiKey } = await res.json();
+    return apiKey;
+  }
+});
+
+const answer = await chat.ask('Hello world!');
+console.log(answer);
+```
+
+Dev-only alternative (map):
+
+```ts
+import { createChat } from '@byok-marketplace/sdk';
+
+const chat = createChat({
+  apiKeys: {
+    openai: process.env.NEXT_PUBLIC_OPENAI_KEY!,
+    claude: process.env.NEXT_PUBLIC_ANTHROPIC_KEY!,
+    google: process.env.NEXT_PUBLIC_GOOGLE_KEY!
+  }
+});
+```
+
+Explicit provider selection
+
+Use convenience helpers to pin a provider/model while still benefiting from the unified API.
+
+```ts
+import { createChat } from '@byok-marketplace/sdk';
+import { openai, claude, gemini } from '@byok-marketplace/sdk/providers';
+
+const chatOpenAI = createChat({ provider: openai({ model: 'gpt-4o' }) });
+const chatClaude = createChat({ provider: claude({ model: 'claude-3-5-sonnet-20241022' }) });
+const chatGemini = createChat({ provider: gemini({ model: 'gemini-1.5-flash' }) });
+```
+
+Unified chat API
+
+```ts
+import { createChat } from '@byok-marketplace/sdk';
+
+const chat = createChat({ /* resolveApiKey or apiKeys */ });
+
+// Structured request
+const response = await chat.complete({
+  messages: [
+    { role: 'system', content: 'You are helpful.' },
+    { role: 'user', content: 'Write a haiku about the ocean.' }
+  ],
+  max_tokens: 200,
+  temperature: 0.7
+});
+
+console.log(response.choices[0].message.content);
+```
+
+Streaming
+
+```ts
+for await (const chunk of chat.stream({
+  messages: [{ role: 'user', content: 'Stream a response, please' }],
+  stream: true
+})) {
+  process.stdout.write(chunk.choices[0].delta.content ?? '');
+}
+```
+
+Convenience helpers
+
+```ts
+const text = await chat.ask('Quick answer, please');
+const convo = chat.conversation({ system: 'Be concise.' });
+await convo.say('Hello');
+await convo.say('Summarize this chat');
+```
+
+Provider selection, constraints, fallback
+
+Let the SDK pick the provider based on cost/latency/capabilities, with optional fallback.
+
+```ts
+import { createChat } from '@byok-marketplace/sdk';
+
+const chat = createChat({
+  enableFallback: true,
+  constraints: {
+    maxCost: 0.001,
+    requiredCapabilities: ['chatCompletion', 'toolUse'],
+    preferredProviders: ['claude']
+  }
+});
+```
+
+Error handling
+
+All providers map errors to consistent error types.
+
+```ts
+import { isAuthenticationError, isRateLimitError } from '@byok-marketplace/sdk/types';
+
+try {
+  const res = await chat.ask('hello');
+} catch (err: any) {
+  if (isAuthenticationError(err)) {
+    // Invalid/missing key; prompt user to connect provider
+  } else if (isRateLimitError(err)) {
+    // Show retry-after/backoff UI
+  } else {
+    console.error('SDK error', err);
+  }
+}
+```
+
+BYOK storage patterns
+
+- Logged-out (local): store keys client-side (LocalStorage/IndexedDB). The resolver reads from browser storage. Suitable for demos.
+- Signed-in (account encrypted): store keys in your backend, encrypted per account. The resolver fetches via your `/api/keys` endpoint.
+- Server-only flows: call the SDK on the server and resolve from secure server-side storage.
+
+Security tips
+
+- Never commit keys. Never ship a platform-wide key to browsers.
+- Always use HTTPS; redact logs; avoid printing keys.
+
+Health checks (optional)
+
+```ts
+import { checkProviderHealth } from '@byok-marketplace/sdk/providers';
+const health = await checkProviderHealth();
+console.log(health.openai, health.claude, health.google);
+```
+
+Images (OpenAI)
+
+```ts
+import { createOpenAIProvider } from '@byok-marketplace/sdk/providers';
+
+const provider = createOpenAIProvider({ apiKey: 'sk-...' , model: 'gpt-4o' });
+const images = await provider.generateImages({ prompt: 'A serene mountain lake' });
+```
+
+TypeScript
+
+All inputs/outputs are typed (`ChatCompletionRequest`, `ChatCompletionResponse`, `ProviderConfig`, etc.). No heavy deps; native providers use fetch.
+
+FAQ
+
+- Do I need to provide keys to the SDK directly?
+  - No. Prefer `resolveApiKey(provider)` to fetch the active user key per call. You can pass a dev-only `apiKeys` map locally.
+- Which providers are supported?
+  - OpenAI, Anthropic/Claude, Google Gemini (with room for more). Use `providers.getSupportedProviders()` if needed.
+
+For marketplace apps, wire your `/setup` and `/api/keys` screens to manage keys, then use `resolveApiKey` in the SDK calls. This keeps apps BYOK-compliant with a unified API surface.
+
 # AI Marketplace SDK 🚀
 
 **The only SDK with intelligent multi-provider orchestration for AI applications.**

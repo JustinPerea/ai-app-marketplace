@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ProviderRequiredNotice } from '@/components/ui/provider-required-notice';
 import { BackToMarketplace } from '@/components/ui/back-to-marketplace';
 // Using native select element since Select component doesn't exist
 import { 
@@ -341,18 +342,12 @@ export default function SimpleAIChatApp() {
                     ))}
                   </div>
 
-                  {/* API Key Alert */}
+                  {/* Provider required notice */}
                   {providers.filter(p => p.status === 'connected').length === 0 && (
-                    <Alert>
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>
-                        No API keys configured. Visit{' '}
-                        <a href="/setup" className="text-blue-600 hover:underline">
-                          Setup
-                        </a>{' '}
-                        to add your API keys.
-                      </AlertDescription>
-                    </Alert>
+                    <ProviderRequiredNotice
+                      providerIds={["OPENAI", "ANTHROPIC", "GOOGLE"]}
+                      message="No API keys configured."
+                    />
                   )}
                 </CardContent>
               </Card>

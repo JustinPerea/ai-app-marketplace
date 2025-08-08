@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -117,31 +116,26 @@ export default function DeveloperAnalyticsPage() {
 
   if (isLoading) {
     return (
-      <MainLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center h-64">
             <RefreshCw className="h-8 w-8 animate-spin text-gray-400" />
           </div>
         </div>
-      </MainLayout>
     );
   }
 
   if (!data) {
     return (
-      <MainLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900">No Analytics Data</h1>
             <p className="text-gray-600 mt-2">Publish your first app to see analytics data.</p>
           </div>
         </div>
-      </MainLayout>
     );
   }
 
   return (
-    <MainLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -408,6 +402,5 @@ export default function DeveloperAnalyticsPage() {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
   );
 }

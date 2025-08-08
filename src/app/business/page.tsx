@@ -1,4 +1,3 @@
-import { MainLayout } from '@/components/layouts/main-layout';
 import { ROICalculator } from '@/components/ui/roi-calculator';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -82,7 +81,7 @@ export default function BusinessPage() {
   ];
 
   return (
-    <MainLayout>
+      <>
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 sm:py-32">
         <div className="absolute inset-0 pointer-events-none" 
@@ -266,6 +265,6 @@ export default function BusinessPage() {
           </Card>
         </div>
       </section>
-    </MainLayout>
+      </>
   );
 }

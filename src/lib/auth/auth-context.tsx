@@ -25,6 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
+  const demoAuthEnabled = process.env.NEXT_PUBLIC_DEMO_AUTH === 'true';
   
   // Always call useRouter - React hooks must be called unconditionally
   const router = useRouter();
@@ -47,8 +48,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const data = await response.json();
         setUser(data.user);
       } else {
-        // For development, provide a fallback demo user if auth fails
-        console.log('Auth API not available, using demo user for development');
+        if (demoAuthEnabled) {
+          console.log('Auth API not available, using demo user (demo mode enabled)');
+          setUser({
+            id: 'demo-user-123',
+            email: 'demo@example.com',
+            name: 'Demo User',
+            plan: 'PRO',
+            roles: ['USER', 'DEVELOPER']
+          });
+        } else {
+          setUser(null);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch user:', error);
+      if (demoAuthEnabled) {
+        console.log('Using fallback demo user (demo mode enabled)');
         setUser({
           id: 'demo-user-123',
           email: 'demo@example.com',
@@ -56,18 +72,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           plan: 'PRO',
           roles: ['USER', 'DEVELOPER']
         });
+      } else {
+        setUser(null);
       }
-    } catch (error) {
-      console.error('Failed to fetch user:', error);
-      // For development, provide a fallback demo user
-      console.log('Using fallback demo user for development');
-      setUser({
-        id: 'demo-user-123',
-        email: 'demo@example.com',
-        name: 'Demo User',
-        plan: 'PRO',
-        roles: ['USER', 'DEVELOPER']
-      });
     } finally {
       setLoading(false);
     }
@@ -133,21 +140,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    // For development/testing: return a fallback context instead of throwing
-    console.warn('useAuth used outside of AuthProvider, using fallback');
-    return {
-      user: {
-        id: 'demo-user-123',
-        email: 'demo@example.com',
-        name: 'Demo User',
-        plan: 'PRO' as const,
-        roles: ['USER', 'DEVELOPER']
-      },
-      loading: false,
-      login: async () => false,
-      logout: async () => {},
-      refreshUser: async () => {}
-    };
+    const demoAuthEnabled = process.env.NEXT_PUBLIC_DEMO_AUTH === 'true';
+    console.warn('useAuth used outside of AuthProvider');
+    return demoAuthEnabled
+      ? {
+          user: {
+            id: 'demo-user-123',
+            email: 'demo@example.com',
+            name: 'Demo User',
+            plan: 'PRO' as const,
+            roles: ['USER', 'DEVELOPER']
+          },
+          loading: false,
+          login: async () => false,
+          logout: async () => {},
+          refreshUser: async () => {}
+        }
+      : {
+          user: null,
+          loading: false,
+          login: async () => false,
+          logout: async () => {},
+          refreshUser: async () => {}
+        };
   }
   return context;
 }

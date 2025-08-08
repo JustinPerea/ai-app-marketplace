@@ -1,13 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { MainLayout } from '@/components/layouts/main-layout';
+import { ProviderRequiredNotice } from '@/components/ui/provider-required-notice';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import Link from 'next/link';
+import { useAuth } from '@/lib/auth/auth-context';
 import { 
   ArrowRight, 
   ArrowLeft,
@@ -121,10 +124,16 @@ const steps = [
 
 export default function SubmitAppPage() {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<AppFormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    // Optional: guard submission if not signed in
+    // We keep the form visible but show a hint at the top when logged out
+  }, [user, loading]);
 
   const updateFormData = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -625,8 +634,13 @@ export default function SubmitAppPage() {
   };
 
   return (
-    <MainLayout>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Provider notice */}
+        {!loading && !user && (
+          <div className="mb-6">
+            <ProviderRequiredNotice providerIds={["OPENAI","ANTHROPIC","GOOGLE"]} message="You’ll need at least one provider connected to test your app. Go to Setup to connect keys." />
+          </div>
+        )}
         {/* Header */}
         <div className="mb-8 text-center">
           <Badge variant="secondary" className="mb-4">
@@ -641,16 +655,27 @@ export default function SubmitAppPage() {
           </p>
         </div>
 
+        {!loading && !user && (
+          <div className="mb-6">
+            <Alert className="border-blue-200 bg-blue-50">
+              <AlertDescription className="text-blue-800">
+                You must be signed in to submit an application.{' '}
+                <Link href="/auth/login" className="underline hover:no-underline">Sign in</Link> to continue.
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
+
         {/* Progress Steps */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
             {steps.map((step, index) => {
               const Icon = step.icon;
               const isActive = currentStep === step.id;
               const isCompleted = currentStep > step.id;
               
               return (
-                <div key={step.id} className="flex flex-col items-center">
+                <div key={step.id} className="flex flex-col items-center min-w-[84px]">
                   <div className={`
                     h-10 w-10 rounded-full flex items-center justify-center mb-2 transition-colors
                     ${isActive ? 'bg-blue-600 text-white' : 
@@ -710,6 +735,5 @@ export default function SubmitAppPage() {
           )}
         </div>
       </div>
-    </MainLayout>
   );
 }

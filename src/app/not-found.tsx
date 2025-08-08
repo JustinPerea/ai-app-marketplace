@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -15,7 +14,6 @@ import {
 
 export default function NotFound() {
   return (
-    <MainLayout>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         {/* Background stars */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -137,6 +135,6 @@ export default function NotFound() {
           </div>
         </div>
       </div>
-    </MainLayout>
+    
   );
 }

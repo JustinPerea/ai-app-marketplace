@@ -1,9 +1,7 @@
-import { MainLayout } from '@/components/layouts/main-layout';
 import { OllamaSetupWizard } from '@/components/ai/setup-wizard';
 
 export default function OllamaSetupPage() {
   return (
-    <MainLayout>
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto py-8">
           <div className="text-center mb-8">
@@ -48,6 +46,6 @@ export default function OllamaSetupPage() {
           </div>
         </div>
       </div>
-    </MainLayout>
+    
   );
 }

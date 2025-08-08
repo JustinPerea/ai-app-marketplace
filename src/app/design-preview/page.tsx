@@ -17,7 +17,6 @@
 'use client';
 
 import { useState } from 'react';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -73,7 +72,6 @@ export default function DesignPreviewPage() {
   ];
 
   return (
-    <MainLayout>
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Controls */}
         <div className="glass-card mb-8 flex flex-wrap items-center justify-between gap-4 p-6">
@@ -650,6 +648,6 @@ export default function DesignPreviewPage() {
           </div>
         </div>
       </div>
-    </MainLayout>
+    
   );
 }

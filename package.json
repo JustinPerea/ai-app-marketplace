@@ -32,6 +32,9 @@
     "format:check": "prettier --check .",
     "test": "jest",
     "test:watch": "jest --watch",
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed",
+    "e2e:report": "playwright show-report",
     "postinstall": "prisma generate",
     "test-endpoints": "curl -I http://localhost:3000 && curl -I http://localhost:3000/marketplace && curl -I http://localhost:3000/marketplace/apps/pdf-notes-generator",
     "pre-change-check": "npm run type-check && npm run health-check && npm run test-endpoints",
@@ -97,6 +100,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@jest/globals": "^30.0.5",
+    "@playwright/test": "^1.54.2",
     "@tailwindcss/postcss": "^4",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.19.9",
