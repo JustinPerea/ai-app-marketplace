@@ -1867,7 +1867,7 @@ export function CosmarcRefinedShowcase({ className = '' }: { className?: string 
           
           <div className="flex flex-col items-center">
             <div className="mb-4">
-              <CosmarcPortalRefined3Ring size={300} showLabel={true} variant="primary" />
+              <CosmarcPortal3Ring size={300} showLabel={true} variant="primary" />
             </div>
             <div className="text-center text-sm text-gray-300">
               <p className="font-medium text-purple-400">Alternative: 3-Ring System</p>
