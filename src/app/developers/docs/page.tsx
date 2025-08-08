@@ -258,6 +258,8 @@ export default function DeveloperDocsPage() {
             <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full glass-card">
               <a href="#quick-start" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Quick Start</a>
               <span className="text-text-secondary/40">•</span>
+                  <a href="#blueprint" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Blueprint</a>
+                  <span className="text-text-secondary/40">•</span>
               <a href="#features" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Features</a>
               <span className="text-text-secondary/40">•</span>
                   <a href="#examples" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Examples</a>
@@ -314,6 +316,86 @@ export default function DeveloperDocsPage() {
         </div>
       </section>
 
+      {/* Create an App - Blueprint */}
+      <section id="blueprint" className="py-16 relative z-10">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-h2 text-text-primary mb-4">Create an app (Blueprint)</h2>
+            <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
+              Minimal files to ship a working app page and BYOK-backed API route.
+            </p>
+          </div>
+
+          <div className="grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
+            <CosmicCard variant="glass" className="overflow-hidden">
+              <div className="mb-4">
+                <h3 className="flex items-center text-xl font-semibold text-text-primary mb-2">
+                  <Code2 className="h-5 w-5 mr-2 text-glass-gradient" />
+                  App page: app/apps/my-app/page.tsx
+                </h3>
+                <p className="text-text-secondary">Simple UI calling your API route</p>
+              </div>
+              <div className="glass-card bg-deep-space/80 p-4 rounded-lg font-mono text-sm overflow-x-auto border border-glass-border">
+                <pre className="text-stardust">{`import { useState } from 'react';
+
+export default function MyAppPage() {
+  const [out, setOut] = useState('');
+  async function run() {
+    const res = await fetch('/api/my-app', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ request: { messages: [{ role: 'user', content: 'Hello from app' }] } })
+    });
+    const data = await res.json();
+    setOut(JSON.stringify(data, null, 2));
+  }
+  return (
+    <div className="container mx-auto p-6">
+      <button onClick={run} className="px-4 py-2 rounded border">Run</button>
+      <pre className="mt-4 text-xs whitespace-pre-wrap">{out}</pre>
+    </div>
+  );
+}`}</pre>
+              </div>
+            </CosmicCard>
+
+            <CosmicCard variant="glass" className="overflow-hidden">
+              <div className="mb-4">
+                <h3 className="flex items-center text-xl font-semibold text-text-primary mb-2">
+                  <Code2 className="h-5 w-5 mr-2 text-glass-gradient" />
+                  API route: app/api/my-app/route.ts
+                </h3>
+                <p className="text-text-secondary">BYOK resolver + unified SDK call</p>
+              </div>
+              <div className="glass-card bg-deep-space/80 p-4 rounded-lg font-mono text-sm overflow-x-auto border border-glass-border">
+                <pre className="text-stardust">{`import { NextRequest, NextResponse } from 'next/server';
+import { createChat } from '@byok-marketplace/sdk';
+
+export async function POST(req: NextRequest) {
+  const chat = createChat({
+    resolveApiKey: async (provider) => {
+      const r = await fetch(process.env.APP_URL + '/api/keys/active?provider=' + provider, {
+        headers: { cookie: req.headers.get('cookie') || '' }
+      });
+      if (!r.ok) return undefined;
+      const { apiKey } = await r.json();
+      return apiKey;
+    }
+  });
+
+  const body = await req.json().catch(() => ({}));
+  const res = await chat.complete(body.request || { messages: [{ role: 'user', content: 'Hello' }] });
+  return NextResponse.json(res);
+}`}</pre>
+              </div>
+            </CosmicCard>
+          </div>
+
+          <div className="mt-8 text-center text-sm text-text-secondary">
+            Tip: For streaming, use the example in the Code Examples section (SSE) or the SDK streaming route.
+          </div>
+        </div>
+      </section>
       {/* Features Overview */}
       <section id="features" className="py-16 relative z-10">
         <div className="container mx-auto px-4">

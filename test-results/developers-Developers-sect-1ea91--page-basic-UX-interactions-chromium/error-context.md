@@ -1,0 +1,214 @@
+# Page snapshot
+
+```yaml
+- button "Skip to main content"
+- banner:
+  - navigation:
+    - link:
+      - /url: /
+      - img
+    - textbox "Search AI applications..."
+    - link "Marketplace":
+      - /url: /marketplace
+    - link "Business":
+      - /url: /business
+    - link "Developers":
+      - /url: /developers
+    - link "Setup":
+      - /url: /setup
+    - link "Dashboard":
+      - /url: /dashboard
+- main:
+  - text: Developer Portal
+  - navigation "Table of contents":
+    - link "Start":
+      - /url: "#start"
+    - text: •
+    - link "Setup":
+      - /url: "#setup"
+    - text: •
+    - link "Scaffold":
+      - /url: "#scaffold"
+    - text: •
+    - link "Tools":
+      - /url: "#tools"
+    - text: •
+    - link "Docs":
+      - /url: "#docs"
+    - text: •
+    - link "Publish":
+      - /url: "#publish"
+  - heading "Build the Future of AI Applications" [level=1]
+  - paragraph: Join thousands of developers building and monetizing AI applications on our platform. With our BYOK model, comprehensive SDK, and generous revenue sharing, success starts here.
+  - text: "NEW: Revenue Calculator"
+  - paragraph: Calculate your potential earnings with our 0% commission advantage. See how much you could make in your first year.
+  - link "Use AI Coding Tools":
+    - /url: /developers/ai-coding-tools
+  - link "Get Started":
+    - /url: /developers/getting-started
+  - link "Calculate ROI":
+    - /url: /developers/roi-calculator
+  - link "View Documentation":
+    - /url: /developers/docs
+  - heading "1. Sign in to your account" [level=3]
+  - paragraph: Unlock analytics and account-backed key storage.
+  - heading "2. Connect at least one provider" [level=3]
+  - paragraph:
+    - text: "Connect providers:"
+    - link "OpenAI":
+      - /url: /setup#openai
+    - text: ","
+    - link "Anthropic":
+      - /url: /setup#anthropic
+    - text: ","
+    - link "Google":
+      - /url: /setup#google
+  - heading "3. Create your first app" [level=3]
+  - paragraph: Scaffold a page and API route using our starter.
+  - link "Create a new app":
+    - /url: /developers/quick-start
+  - heading "Quick commands" [level=3]
+  - paragraph: Install, run, and a minimal API example
+  - button "Hide"
+  - text: Install + run
+  - button
+  - code: pnpm add @cosmara/sdk pnpm dev
+  - text: "Minimal API route: src/app/marketplace/my-app/api/route.ts"
+  - button
+  - code: "import { NextRequest, NextResponse } from 'next/server'; export async function POST(request: NextRequest) { try { const { input } = await request.json(); if (!input?.trim()) { return NextResponse.json({ error: 'Input is required' }, { status: 400 }); } return NextResponse.json({ result: 'Hello ' + input + '!' }); } catch (e) { return NextResponse.json({ error: 'Internal error' }, { status: 500 }); } }"
+  - text: Client call example
+  - button
+  - code: "const res = await fetch('/marketplace/my-app/api', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ input: 'world' }) }); const data = await res.json(); console.log(data.result);"
+  - heading "Everything You Need to Succeed" [level=2]
+  - paragraph: Our platform provides all the tools, infrastructure, and support you need to build and scale AI applications.
+  - heading "Revenue Sharing" [level=3]
+  - paragraph: 0% commission on your first $100K in revenue, then industry-leading rates
+  - heading "TypeScript SDK" [level=3]
+  - paragraph: Comprehensive SDK with multi-provider abstraction and type safety
+  - heading "BYOK Security" [level=3]
+  - paragraph: Users bring their own API keys, ensuring maximum security and cost transparency
+  - heading "Growing Ecosystem" [level=3]
+  - paragraph: 10K+ developers and 50K+ users discovering new AI applications daily
+  - heading "Analytics Dashboard" [level=3]
+  - paragraph: Real-time insights into usage, revenue, and user feedback
+  - heading "Instant Deployment" [level=3]
+  - paragraph: Deploy your applications instantly with our automated CI/CD pipeline
+  - heading "Get Started Today" [level=2]
+  - paragraph: Everything you need to start building, publishing, and monetizing AI applications.
+  - link "Getting Started Guide Learn how to build and publish your first AI application":
+    - /url: /developers/getting-started
+    - heading "Getting Started Guide" [level=3]
+    - paragraph: Learn how to build and publish your first AI application
+  - link "Hello World Scaffold Create two files and run":
+    - /url: /developers/hello-world
+    - heading "Hello World Scaffold" [level=3]
+    - paragraph: Create two files and run
+  - link "SDK Documentation Complete API reference and code examples":
+    - /url: /developers/docs
+    - heading "SDK Documentation" [level=3]
+    - paragraph: Complete API reference and code examples
+  - link "Submit Your App Publish your application to the marketplace":
+    - /url: /developers/submit
+    - heading "Submit Your App" [level=3]
+    - paragraph: Publish your application to the marketplace
+  - link "ROI Calculator Calculate your potential revenue from building apps on COSMARA":
+    - /url: /developers/roi-calculator
+    - heading "ROI Calculator" [level=3]
+    - paragraph: Calculate your potential revenue from building apps on COSMARA
+  - link "Developer Analytics Manage your apps, view analytics, and track revenue • Requires sign-in":
+    - /url: /auth/login?redirect=%2Fdashboard%2Fanalytics
+    - heading "Developer Analytics" [level=3]
+    - paragraph: Manage your apps, view analytics, and track revenue • Requires sign-in
+  - heading "Publish checklist" [level=3]
+  - paragraph: Ensure your app meets these requirements before submitting
+  - list:
+    - listitem: "BYOK compliant: app works with user-provided API keys (no hardcoded secrets)"
+    - listitem: Clear error handling and validation across UI and API routes
+    - listitem: Responsive UI using the cosmic design system and brand tokens
+    - listitem: "Performance: avoids blocking calls, handles loading states"
+    - listitem: "Documentation: short README or help text inside the app"
+    - listitem: "Assets: screenshots/logo and clear app description"
+    - listitem: Pricing/usage notes if applicable
+  - link "Go to Submit":
+    - /url: /developers/submit
+  - text: Need help?
+  - link "Docs":
+    - /url: /developers/docs
+  - text: •
+  - link "Roadmap":
+    - /url: /roadmap
+  - text: •
+  - link "Support":
+    - /url: mailto:support@cosmara.ai
+  - heading "Ready to Launch Your AI Application?" [level=2]
+  - paragraph: Join our developer community and start earning from day one with our generous revenue sharing model.
+  - link "Start Building":
+    - /url: /developers/getting-started
+  - link "Submit Your App":
+    - /url: /developers/submit
+- contentinfo:
+  - heading "Product" [level=3]
+  - list:
+    - listitem:
+      - link "Marketplace":
+        - /url: /marketplace
+    - listitem:
+      - link "Pricing":
+        - /url: /pricing
+    - listitem:
+      - link "Security":
+        - /url: /security
+    - listitem:
+      - link "Integrations":
+        - /url: /integrations
+  - heading "Developers" [level=3]
+  - list:
+    - listitem:
+      - link "Developer Portal":
+        - /url: /developers
+    - listitem:
+      - link "Documentation":
+        - /url: /docs
+    - listitem:
+      - link "SDK":
+        - /url: /sdk
+    - listitem:
+      - link "API Reference":
+        - /url: /api
+  - heading "Company" [level=3]
+  - list:
+    - listitem:
+      - link "About":
+        - /url: /about
+    - listitem:
+      - link "Blog":
+        - /url: /blog
+    - listitem:
+      - link "Careers":
+        - /url: /careers
+    - listitem:
+      - link "Contact":
+        - /url: /contact
+  - heading "Support" [level=3]
+  - list:
+    - listitem:
+      - link "Help Center":
+        - /url: /help
+    - listitem:
+      - link "Community":
+        - /url: /community
+    - listitem:
+      - link "Status":
+        - /url: /status
+    - listitem:
+      - link "Legal":
+        - /url: /legal
+  - paragraph: © 2025 AI App Marketplace. Built for the future of AI applications.
+  - link "Privacy":
+    - /url: /privacy
+  - link "Terms":
+    - /url: /terms
+  - link "Cookies":
+    - /url: /cookies
+  - paragraph: Third-party logos and product names are trademarks of their respective owners. OpenAI®, ChatGPT®, Anthropic®, Claude®, Google®, Gemini®, Cohere®, and Hugging Face® are trademarks of their respective companies. This platform is not affiliated with, endorsed by, or sponsored by these companies. The display of third-party logos indicates available integrations only.
+```

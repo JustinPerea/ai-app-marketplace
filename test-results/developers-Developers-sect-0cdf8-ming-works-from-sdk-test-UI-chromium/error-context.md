@@ -1,0 +1,96 @@
+# Page snapshot
+
+```yaml
+- button "Skip to main content"
+- banner:
+  - navigation:
+    - link:
+      - /url: /
+      - img
+    - textbox "Search AI applications..."
+    - link "Marketplace":
+      - /url: /marketplace
+    - link "Business":
+      - /url: /business
+    - link "Developers":
+      - /url: /developers
+    - link "Setup":
+      - /url: /setup
+    - link "Dashboard":
+      - /url: /dashboard
+- main:
+  - heading "SDK Test" [level=1]
+  - paragraph:
+    - text: See the streaming example in
+    - link "Developers → Docs → Code Examples":
+      - /url: /developers/docs#examples
+    - text: .
+  - button "Mock"
+  - button "Server (BYOK)"
+  - button "Stream SSE"
+- contentinfo:
+  - heading "Product" [level=3]
+  - list:
+    - listitem:
+      - link "Marketplace":
+        - /url: /marketplace
+    - listitem:
+      - link "Pricing":
+        - /url: /pricing
+    - listitem:
+      - link "Security":
+        - /url: /security
+    - listitem:
+      - link "Integrations":
+        - /url: /integrations
+  - heading "Developers" [level=3]
+  - list:
+    - listitem:
+      - link "Developer Portal":
+        - /url: /developers
+    - listitem:
+      - link "Documentation":
+        - /url: /docs
+    - listitem:
+      - link "SDK":
+        - /url: /sdk
+    - listitem:
+      - link "API Reference":
+        - /url: /api
+  - heading "Company" [level=3]
+  - list:
+    - listitem:
+      - link "About":
+        - /url: /about
+    - listitem:
+      - link "Blog":
+        - /url: /blog
+    - listitem:
+      - link "Careers":
+        - /url: /careers
+    - listitem:
+      - link "Contact":
+        - /url: /contact
+  - heading "Support" [level=3]
+  - list:
+    - listitem:
+      - link "Help Center":
+        - /url: /help
+    - listitem:
+      - link "Community":
+        - /url: /community
+    - listitem:
+      - link "Status":
+        - /url: /status
+    - listitem:
+      - link "Legal":
+        - /url: /legal
+  - paragraph: © 2025 AI App Marketplace. Built for the future of AI applications.
+  - link "Privacy":
+    - /url: /privacy
+  - link "Terms":
+    - /url: /terms
+  - link "Cookies":
+    - /url: /cookies
+  - paragraph: Third-party logos and product names are trademarks of their respective owners. OpenAI®, ChatGPT®, Anthropic®, Claude®, Google®, Gemini®, Cohere®, and Hugging Face® are trademarks of their respective companies. This platform is not affiliated with, endorsed by, or sponsored by these companies. The display of third-party logos indicates available integrations only.
+```
