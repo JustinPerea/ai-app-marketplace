@@ -11,7 +11,7 @@ async function main() {
   const steps = [
     { name: 'sdk-test GET mock', url: `${base}/api/sdk-test?mock=1` },
     { name: 'sdk-test POST mock', url: `${base}/api/sdk-test?mock=1`, method: 'POST', body: { request: { messages: [{ role: 'user', content: 'Hello' }] } } },
-    { name: 'provider health', url: `${base}/api/provider-health` },
+  { name: 'provider health', url: `${base}/api/provider-health${process.env.CLI_HEALTH_TOKEN ? `?token=${process.env.CLI_HEALTH_TOKEN}` : ''}` },
     { name: 'edge mock', url: `${base}/api/sdk-test-edge?mock=1` }
   ];
 
