@@ -53,6 +53,27 @@ export default function SDKTestPage() {
     }
   };
 
+  const callStreamSDK = async () => {
+    setLoading(true);
+    try {
+      setOutput('');
+      const es = new EventSource('/api/stream-sdk');
+      es.onmessage = (ev) => {
+        const data = ev.data ?? '';
+        setOutput((prev) => (prev ? prev + '\n' + data : data));
+        if (data === 'done') {
+          es.close();
+          setLoading(false);
+        }
+      };
+      es.onerror = () => {
+        es.close();
+        setLoading(false);
+      };
+    } finally {
+    }
+  };
+
   useEffect(() => {
     // no auto-call; let user choose
   }, []);
@@ -67,6 +88,7 @@ export default function SDKTestPage() {
         <button className="px-4 py-2 rounded border" onClick={callMock}>Mock</button>
         <button className="px-4 py-2 rounded border" onClick={callServer}>Server (BYOK)</button>
         <button className="px-4 py-2 rounded border" onClick={callStream}>Stream SSE</button>
+        <button className="px-4 py-2 rounded border" onClick={callStreamSDK}>Stream via SDK</button>
       </div>
       <pre className="glass-card p-4 rounded border text-sm whitespace-pre-wrap">{output}</pre>
     </div>
