@@ -29,14 +29,7 @@ const nextConfig = {
   publicRuntimeConfig: {
     // This is available on both server and client side
   },
-  webpack: (config) => {
-    config.resolve = config.resolve || {};
-    config.resolve.alias = {
-      ...(config.resolve.alias || {}),
-      '@byok-marketplace/sdk': path.resolve(__dirname, 'packages/sdk/dist')
-    };
-    return config;
-  }
+  // Keep local alias disabled since we use the published SDK
 }
 
 module.exports = nextConfig

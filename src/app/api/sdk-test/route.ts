@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createChat } from '@byok-marketplace/sdk';
+import { createClient, APIProvider } from '@cosmara-ai/community-sdk';
 
 async function resolveApiKeyFor(req: NextRequest, provider: string) {
   const origin = req.nextUrl.origin;
@@ -26,12 +26,23 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const chat = createChat({
-    resolveApiKey: (p) => resolveApiKeyFor(req, p)
+  // Resolve BYOK keys at request time and construct client
+  const [openaiKey, anthropicKey, googleKey] = await Promise.all([
+    resolveApiKeyFor(req, 'openai'),
+    resolveApiKeyFor(req, 'anthropic'),
+    resolveApiKeyFor(req, 'google')
+  ]);
+
+  const client = createClient({
+    apiKeys: {
+      openai: openaiKey,
+      anthropic: anthropicKey,
+      google: googleKey
+    }
   });
 
   try {
-    const res = await chat.complete({ messages: [{ role: 'user', content: 'Hello!' }] });
+    const res = await client.chat({ model: 'gpt-4o', messages: [{ role: 'user', content: 'Hello!' }] }, { provider: APIProvider.OPENAI });
     return NextResponse.json(res);
   } catch (error: any) {
     return NextResponse.json({ ok: false, error: error?.message, code: error?.code }, { status: error?.statusCode || 500 });
@@ -54,12 +65,23 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const chat = createChat({
-    resolveApiKey: (p) => resolveApiKeyFor(req, p)
+  const [openaiKey, anthropicKey, googleKey] = await Promise.all([
+    resolveApiKeyFor(req, 'openai'),
+    resolveApiKeyFor(req, 'anthropic'),
+    resolveApiKeyFor(req, 'google')
+  ]);
+
+  const client = createClient({
+    apiKeys: {
+      openai: openaiKey,
+      anthropic: anthropicKey,
+      google: googleKey
+    }
   });
 
   try {
-    const res = await chat.complete(body?.request || { messages: [{ role: 'user', content: 'Hello!' }] });
+    const request = body?.request || { model: 'gpt-4o', messages: [{ role: 'user', content: 'Hello!' }] };
+    const res = await client.chat(request, { provider: APIProvider.OPENAI });
     return NextResponse.json(res);
   } catch (error: any) {
     return NextResponse.json({ ok: false, error: error?.message, code: error?.code }, { status: error?.statusCode || 500 });

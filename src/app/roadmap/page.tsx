@@ -562,6 +562,7 @@ export default function RoadmapPage() {
   };
 
   return (
+    <>
       {/* Parallax stars background effect - same as landing page */}
       <SimpleStars starCount={50} parallaxSpeed={0.3} />
       {/* Hero Section */}
@@ -1049,5 +1050,6 @@ export default function RoadmapPage() {
         }
       `}</style>
     
+    </>
   );
 }
