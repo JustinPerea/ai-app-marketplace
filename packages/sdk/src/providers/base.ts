@@ -234,7 +234,7 @@ export abstract class BaseProvider {
       );
 
       return {
-        provider: this.provider,
+        provider: (this.provider === 'anthropic' ? 'claude' : this.provider) as ApiProvider,
         healthy: true,
         latency: Date.now() - startTime,
         capabilities: this.getCapabilities(),
@@ -242,7 +242,7 @@ export abstract class BaseProvider {
       };
     } catch (error) {
       return {
-        provider: this.provider,
+        provider: (this.provider === 'anthropic' ? 'claude' : this.provider) as ApiProvider,
         healthy: false,
         latency: Date.now() - startTime,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -302,7 +302,19 @@ export class ProviderRegistry {
     const key = `${config.provider}-${config.model}`;
     
     if (this.instances.has(key)) {
-      return this.instances.get(key)!;
+      const existing = this.instances.get(key)!;
+      // If an apiKey is explicitly provided, prefer a fresh instance to ensure
+      // provider-specific clients pick up new credentials immediately.
+      if ((config as any).apiKey) {
+        const factory = this.factories.get(config.provider);
+        if (!factory) {
+          throw new Error(`No factory registered for provider: ${config.provider}`);
+        }
+        const instance = factory.create(config);
+        this.instances.set(key, instance);
+        return instance;
+      }
+      return existing;
     }
 
     const factory = this.factories.get(config.provider);
@@ -344,11 +356,15 @@ export class ProviderRegistry {
     
     for (const [provider, factory] of this.factories) {
       try {
-        // Create a test instance with minimal config
+        // Create a test instance with minimal config using a sensible default model
+        const { DEFAULT_MODELS } = await import('../types');
+        const defaultModel = (DEFAULT_MODELS as any)[provider] || 'test';
+
         const testInstance = factory.create({
           provider,
-          model: 'test',
-          apiKey: 'test'
+          model: defaultModel,
+          apiKey: 'test',
+          timeout: 3000
         });
         
         results[provider] = await testInstance.healthCheck();

@@ -49,10 +49,11 @@ function decodeLocalStorageKey(encodedKey: string): string {
   }
 }
 
-// Helper function to validate API key with provider
-async function validateApiKeyWithProvider(provider: ApiProvider, apiKey: string): Promise<boolean> {
+// Helper function to validate API key with provider (uses current request origin)
+async function validateApiKeyWithProvider(request: NextRequest, provider: ApiProvider, apiKey: string): Promise<boolean> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/test-provider`, {
+    const origin = request.nextUrl.origin;
+    const response = await fetch(`${origin}/api/test-provider`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ provider, apiKey }),
@@ -139,7 +140,7 @@ export const POST = withSimpleAuth(async (request, user) => {
         const decryptedKey = decodeLocalStorageKey(localKey.encodedKey);
         
         // Validate the key still works
-        const isValid = await validateApiKeyWithProvider(provider, decryptedKey);
+        const isValid = await validateApiKeyWithProvider(request, provider, decryptedKey);
         if (!isValid) {
           failedKeys.push({
             id: localKey.id,

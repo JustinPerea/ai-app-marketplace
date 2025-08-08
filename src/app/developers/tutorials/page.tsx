@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { SimpleStars } from '@/components/ui/simple-stars';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { 
@@ -986,7 +985,7 @@ export default function TutorialsPage() {
   };
 
   return (
-    <MainLayout>
+      <>
       <SimpleStars starCount={50} parallaxSpeed={0.3} />
       
       {/* Hero Section */}
@@ -1353,6 +1352,6 @@ export default function TutorialsPage() {
           </Card>
         </div>
       </section>
-    </MainLayout>
+      </>
   );
 }

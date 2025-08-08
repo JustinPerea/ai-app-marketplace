@@ -1,5 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Simple in-memory rate limiter (dev-friendly)
+const RATE_LIMIT_PER_MINUTE = parseInt(process.env.NEXT_PUBLIC_CHAT_RATE_LIMIT || '20', 10);
+const rateLimitWindowMs = 60_000;
+const ipToTimestamps: Map<string, number[]> = new Map();
+
+function getClientIp(req: NextRequest): string {
+  const xff = req.headers.get('x-forwarded-for');
+  if (xff) return xff.split(',')[0].trim();
+  const realIp = req.headers.get('x-real-ip');
+  if (realIp) return realIp.trim();
+  return 'unknown';
+}
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const windowStart = now - rateLimitWindowMs;
+  const timestamps = ipToTimestamps.get(ip) || [];
+  const recent = timestamps.filter(ts => ts > windowStart);
+  if (recent.length >= RATE_LIMIT_PER_MINUTE) {
+    ipToTimestamps.set(ip, recent); // prune
+    return true;
+  }
+  recent.push(now);
+  ipToTimestamps.set(ip, recent);
+  return false;
+}
+
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -117,6 +144,15 @@ async function callOllama(messages: ChatMessage[], model: string) {
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limiting
+    const ip = getClientIp(req);
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please wait a moment and try again.' },
+        { status: 429 }
+      );
+    }
+
     const body: ChatRequest = await req.json();
     const { messages, provider, model } = body;
 
@@ -194,10 +230,11 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Chat API error:', error);
+    // Avoid logging potentially sensitive details
+    console.error('Chat API error');
     return NextResponse.json(
       { 
-        error: error instanceof Error ? error.message : 'An unexpected error occurred',
+        error: 'An unexpected error occurred',
         provider: '',
         model: '',
       },

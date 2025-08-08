@@ -47,6 +47,15 @@ function getDynamicStats() {
 
 export default function Home() {
   const dynamicStats = getDynamicStats();
+  const featuredApps: Array<{
+    name: string;
+    description: string;
+    rating: number;
+    installs: string;
+    category: string;
+    featured?: boolean;
+    logo?: string;
+  }> = [];
 
   return (
     <CosmicPageLayout starCount={50} parallaxSpeed={0.3} gradientOverlay="none">
@@ -323,117 +332,74 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Apps Section - Glass Design */}
-      <section className="py-20 relative">
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-section-header">
-              Featured AI Applications
-            </h2>
-            <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
-              Discover popular AI applications built by our developer community.
-            </p>
-          </div>
+      {/* Featured Apps Section - Render only when data is available */}
+      {featuredApps.length > 0 && (
+        <section className="py-20 relative">
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="text-center mb-16">
+              <h2 className="text-section-header">Featured AI Applications</h2>
+              <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
+                Discover popular AI applications built by our developer community.
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {[
-              {
-                name: "Smart Content Generator",
-                description: "Generate high-quality content for blogs, social media, and marketing campaigns.",
-                rating: 4.8,
-                installs: "5.2K",
-                category: "Content Creation",
-                featured: true,
-                logo: "📝" // Mock logo placeholder
-              },
-              {
-                name: "Code Assistant Pro",
-                description: "AI-powered code completion, debugging, and optimization for developers.",
-                rating: 4.9,
-                installs: "12.1K",
-                category: "Development",
-                featured: true,
-                logo: "⚡" // Mock logo placeholder
-              },
-              {
-                name: "Data Insights Engine",
-                description: "Analyze and visualize complex datasets with natural language queries.",
-                rating: 4.7,
-                installs: "3.8K",
-                category: "Analytics",
-                featured: false,
-                logo: "📊" // Mock logo placeholder
-              }
-            ].map((app, index) => (
-              <div key={index} className="glass-card p-6 group">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-start space-x-3 flex-1">
-                    {/* Mock App Logo */}
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style={{
-                      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2))',
-                      border: '1px solid rgba(255, 255, 255, 0.1)'
-                    }}>
-                      {app.logo}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-h3 mb-2 text-text-primary">{app.name}</h3>
-                      <div className="glass-base px-3 py-1 rounded-full border inline-flex items-center mb-3" 
-                           style={{ 
-                             background: 'rgba(59, 130, 246, 0.1)',
-                             borderColor: '#3B82F6'
-                           }}>
-                        <span className="text-sm font-medium text-text-primary">{app.category}</span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+              {featuredApps.map((app, index) => (
+                <div key={index} className="glass-card p-6 group">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-start space-x-3 flex-1">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style={{
+                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2))',
+                        border: '1px solid rgba(255, 255, 255, 0.1)'
+                      }} />
+                      <div className="flex-1">
+                        <h3 className="text-h3 mb-2 text-text-primary">{app.name}</h3>
+                        <div className="glass-base px-3 py-1 rounded-full border inline-flex items-center mb-3" 
+                             style={{ 
+                               background: 'rgba(59, 130, 246, 0.1)',
+                               borderColor: '#3B82F6'
+                             }}>
+                          <span className="text-sm font-medium text-text-primary">{app.category}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  {app.featured && (
-                    <div className="glass-base px-3 py-1 rounded-full border inline-flex items-center" 
-                         style={{ 
-                           background: 'rgba(255, 215, 0, 0.1)',
-                           borderColor: 'rgba(255, 215, 0, 0.4)'
-                         }}>
-                      <span className="text-sm font-medium" style={{ color: '#FFD700' }}>Featured</span>
+                  <p className="text-body-glass mb-6 leading-relaxed">{app.description}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-medium text-text-primary">{app.rating}</span>
+                      <span className="text-sm text-text-muted">({app.installs} installs)</span>
                     </div>
-                  )}
-                </div>
-                <p className="text-body-glass mb-6 leading-relaxed">
-                  {app.description}
-                </p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-1">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-medium text-text-primary">{app.rating}</span>
-                    <span className="text-sm text-text-muted">({app.installs} installs)</span>
+                    <button className="px-4 py-2 text-sm group-hover:scale-105 transition-transform rounded-lg font-medium border-2" 
+                            style={{ 
+                              background: 'rgba(59, 130, 246, 0.1)', 
+                              borderColor: '#3B82F6',
+                              color: '#3B82F6'
+                            }}>
+                      Explore
+                    </button>
                   </div>
-                  <button className="px-4 py-2 text-sm group-hover:scale-105 transition-transform rounded-lg font-medium border-2" 
-                          style={{ 
-                            background: 'rgba(59, 130, 246, 0.1)', 
-                            borderColor: '#3B82F6',
-                            color: '#3B82F6'
-                          }}>
-                    Explore
-                  </button>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <div className="text-center mt-12">
-            <button className="text-lg px-8 py-4 flex items-center justify-center space-x-2 mx-auto rounded-xl font-medium border-2 transition-all duration-300 hover:scale-105" 
-                    style={{ 
-                      background: 'rgba(59, 130, 246, 0.1)', 
-                      borderColor: '#3B82F6',
-                      color: '#3B82F6'
-                    }}>
-              <Link href="/marketplace" className="flex items-center space-x-2">
-                <span>View All Applications</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </button>
+            <div className="text-center mt-12">
+              <button className="text-lg px-8 py-4 flex items-center justify-center space-x-2 mx-auto rounded-xl font-medium border-2 transition-all duration-300 hover:scale-105" 
+                      style={{ 
+                        background: 'rgba(59, 130, 246, 0.1)', 
+                        borderColor: '#3B82F6',
+                        color: '#3B82F6'
+                      }}>
+                <Link href="/marketplace" className="flex items-center space-x-2">
+                  <span>View All Applications</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
 
       {/* Developer CTA - Glass Design */}

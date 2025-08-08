@@ -6,7 +6,6 @@ import { VisualConnectionGuide } from '@/components/features/connection-guides/v
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { SimpleStars } from '@/components/ui/simple-stars';
 import { 
   ArrowLeft, 
@@ -73,7 +72,6 @@ export default function ConnectionGuidesDemo() {
 
   if (currentView === 'success') {
     return (
-      <MainLayout>
         <SimpleStars starCount={50} parallaxSpeed={0.3} />
         <div className="relative py-8">
           {/* Cosmic background */}
@@ -239,13 +237,12 @@ export default function ConnectionGuidesDemo() {
             </div>
           </div>
         </div>
-      </MainLayout>
+      
     );
   }
 
   if (currentView === 'connecting') {
     return (
-      <MainLayout>
         <SimpleStars starCount={50} parallaxSpeed={0.3} />
         <div className="relative py-8">
           {/* Cosmic background */}
@@ -286,12 +283,11 @@ export default function ConnectionGuidesDemo() {
             />
           </div>
         </div>
-      </MainLayout>
+      
     );
   }
 
   return (
-    <MainLayout>
       <SimpleStars starCount={50} parallaxSpeed={0.3} />
       <div className="relative py-8">
         {/* Cosmic background */}
@@ -325,6 +321,6 @@ export default function ConnectionGuidesDemo() {
           />
         </div>
       </div>
-    </MainLayout>
+    
   );
 }

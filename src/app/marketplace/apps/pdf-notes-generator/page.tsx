@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { APIKeyManager } from '@/lib/api-keys';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -604,7 +603,6 @@ This sample showcases our competitive advantage: **intelligent multi-provider or
   const selectedStyleData = noteStyles.find(s => s.id === selectedStyle);
 
   return (
-    <MainLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Back Navigation with Breadcrumbs */}
         <BackToMarketplace 
@@ -1187,6 +1185,6 @@ This sample showcases our competitive advantage: **intelligent multi-provider or
           </div>
         </div>
       </div>
-    </MainLayout>
+    
   );
 }

@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -83,7 +82,6 @@ export default function DeveloperDashboardPage() {
   }, [router]);
 
   return (
-    <MainLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -286,6 +284,6 @@ export default function DeveloperDashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    
   );
 }

@@ -1,9 +1,14 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { APIKeyManager } from '@/lib/api-keys-hybrid';
 import { 
   ArrowRight, 
   Check, 
@@ -117,6 +122,12 @@ const resources = [
     icon: FileText
   },
   {
+    title: 'Hello World Scaffold',
+    description: 'Copy two files and run',
+    href: '/developers/hello-world',
+    icon: Code2
+  },
+  {
     title: 'Example Applications',
     description: 'Browse open-source examples',
     href: '/developers/examples',
@@ -137,6 +148,24 @@ const resources = [
 ];
 
 export default function GettingStartedPage() {
+  const [needsSetup, setNeedsSetup] = useState(false);
+  const [loadingNotice, setLoadingNotice] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const keys = await APIKeyManager.getAll();
+        const active = keys.filter((k: any) => k.isActive);
+        if (mounted) setNeedsSetup(active.length === 0);
+      } catch {
+        if (mounted) setNeedsSetup(true);
+      } finally {
+        if (mounted) setLoadingNotice(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
   return (
     <CosmicPageLayout starCount={30} parallaxSpeed={0.2} gradientOverlay="none">
       <div className="container mx-auto px-4 py-8 relative z-10">
@@ -160,6 +189,18 @@ export default function GettingStartedPage() {
             <Code2 className="h-3 w-3 mr-2" style={{ color: '#8B5CF6' }} />
             <span className="text-sm font-medium text-text-primary">Getting Started Guide</span>
           </div>
+        {/* Compact TOC */}
+        <nav aria-label="Table of contents" className="mb-4 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full glass-card">
+            <a href="#prerequisites" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Prerequisites</a>
+            <span className="text-text-secondary/40">•</span>
+            <a href="#steps" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Steps</a>
+            <span className="text-text-secondary/40">•</span>
+            <a href="#resources" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Resources</a>
+            <span className="text-text-secondary/40">•</span>
+            <a href="#next" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Next</a>
+          </div>
+        </nav>
           <h1 className="text-hero-glass mb-6">
             <span className="text-glass-gradient">Build Your First</span>
             <br />
@@ -168,9 +209,24 @@ export default function GettingStartedPage() {
           <p className="text-body-lg text-text-secondary mb-8 leading-relaxed max-w-3xl mx-auto">
             Follow this step-by-step guide to create, test, and publish your AI application to our marketplace.
           </p>
+          {loadingNotice ? (
+            <div className="max-w-2xl mx-auto">
+              <div className="h-12 w-full rounded-md bg-white/10 animate-pulse" />
+            </div>
+          ) : needsSetup && (
+            <div className="max-w-2xl mx-auto">
+              <Alert className="border-amber-200 bg-amber-50">
+                <AlertDescription className="text-amber-800">
+                  You haven’t connected any AI providers yet. Some steps require keys.{' '}
+                  <Link href="/setup" className="underline hover:no-underline">Go to Setup</Link>.
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
         </div>
 
         {/* Prerequisites */}
+        <section id="prerequisites">
         <Card className="glass-card mb-12">
           <CardHeader>
             <CardTitle className="flex items-center text-text-primary">
@@ -215,9 +271,10 @@ export default function GettingStartedPage() {
             </div>
           </CardContent>
         </Card>
+        </section>
 
         {/* Step-by-Step Guide */}
-        <div className="space-y-8 mb-12">
+        <section id="steps" className="space-y-8 mb-12">
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
@@ -275,12 +332,12 @@ export default function GettingStartedPage() {
               </Card>
             );
           })}
-        </div>
+        </section>
 
         {/* Resources */}
-        <div className="mb-12">
+        <section id="resources" className="mb-12">
           <h2 className="text-section-header mb-6">Additional Resources</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
             {resources.map((resource, index) => {
               const Icon = resource.icon;
               return (
@@ -306,9 +363,10 @@ export default function GettingStartedPage() {
               );
             })}
           </div>
-        </div>
+        </section>
 
         {/* Next Steps */}
+        <section id="next">
         <Card className="glass-card relative overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center text-text-primary">
@@ -355,6 +413,7 @@ export default function GettingStartedPage() {
             </div>
           </CardContent>
         </Card>
+        </section>
       </div>
     </CosmicPageLayout>
   );

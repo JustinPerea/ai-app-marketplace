@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
 import { CosmicPageHeader } from '@/components/ui/cosmic-page-header';
 import { CosmicCard } from '@/components/ui/cosmic-card';
@@ -10,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ProviderRequiredNotice } from '@/components/ui/provider-required-notice';
 import { 
   Play, 
   Video, 
@@ -24,6 +26,7 @@ import {
   Zap,
   Sparkles
 } from 'lucide-react';
+import { APIKeyManager } from '@/lib/api-keys-hybrid';
 
 interface VideoGeneration {
   id: string;
@@ -92,12 +95,9 @@ export default function AIVideoGeneratorApp() {
 
   const checkGoogleConnection = async () => {
     try {
-      const response = await fetch('/api/keys');
-      if (response.ok) {
-        const keys = await response.json();
-        const googleKey = keys.find((key: any) => key.provider === 'GOOGLE');
-        setIsGoogleConnected(!!googleKey);
-      }
+      const keys = await APIKeyManager.getAll();
+      const googleKey = keys.find((key: any) => key.provider === 'GOOGLE' && key.isActive);
+      setIsGoogleConnected(!!googleKey);
     } catch (error) {
       console.error('Failed to check Google connection:', error);
       setIsGoogleConnected(false);
@@ -236,15 +236,11 @@ export default function AIVideoGeneratorApp() {
 
         {/* Connection Status */}
         {!isGoogleConnected && (
-          <Alert className="mb-6 border-orange-500 bg-orange-500/10">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Google AI API key required for video generation. 
-              <Button variant="link" className="p-0 h-auto text-orange-400 underline ml-1">
-                Configure in Settings
-              </Button>
-            </AlertDescription>
-          </Alert>
+          <ProviderRequiredNotice
+            className="mb-6"
+            providerIds={["GOOGLE"]}
+            message="Google AI API key required for video generation."
+          />
         )}
 
         {error && (

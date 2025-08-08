@@ -121,12 +121,26 @@ export function Navigation() {
               <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
             ) : !user ? (
               <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm">
-                  <Link href="/auth/login" className="flex items-center">
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Sign In
-                  </Link>
-                </Button>
+                <Link
+                  href="/auth/login"
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center"
+                  aria-label="Sign in"
+                >
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/login?create=1"
+                  className="px-3 py-1.5 rounded-md text-sm font-medium"
+                  style={{
+                    background: 'linear-gradient(135deg, #8B5CF6, #7C3AED)',
+                    color: 'white',
+                    boxShadow: '0 2px 8px rgba(139, 92, 246, 0.25)'
+                  }}
+                  aria-label="Create account"
+                >
+                  Create account
+                </Link>
               </div>
             ) : (
               <DropdownMenu>

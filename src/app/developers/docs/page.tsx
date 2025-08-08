@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +9,8 @@ import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
 import { CosmicPageHeader } from '@/components/ui/cosmic-page-header';
 import { CosmicCard } from '@/components/ui/cosmic-card';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { APIKeyManager } from '@/lib/api-keys-hybrid';
 import { 
   ArrowRight, 
   Code2, 
@@ -182,6 +185,25 @@ console.log('Video URL:', video.url);`
 ];
 
 export default function DeveloperDocsPage() {
+  const [needsSetup, setNeedsSetup] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const keys = await APIKeyManager.getAll();
+        const active = keys.filter((k: any) => k.isActive);
+        if (mounted) setNeedsSetup(active.length === 0);
+      } catch {
+        if (mounted) setNeedsSetup(true);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
   return (
     <CosmicPageLayout gradientOverlay="purple" starCount={75} parallaxSpeed={0.4}>
       {/* Hero Section */}
@@ -196,6 +218,20 @@ export default function DeveloperDocsPage() {
               ]} 
             />
           </div>
+          {/* Compact TOC */}
+          <nav aria-label="Table of contents" className="text-center mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full glass-card">
+              <a href="#quick-start" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Quick Start</a>
+              <span className="text-text-secondary/40">•</span>
+              <a href="#features" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Features</a>
+              <span className="text-text-secondary/40">•</span>
+              <a href="#examples" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Examples</a>
+              <span className="text-text-secondary/40">•</span>
+              <a href="#api" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">API</a>
+              <span className="text-text-secondary/40">•</span>
+              <a href="#resources" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Resources</a>
+            </div>
+          </nav>
           <CosmicPageHeader
             icon={BookOpen}
             title="Build AI Apps with Multi-Provider Intelligence"
@@ -203,6 +239,20 @@ export default function DeveloperDocsPage() {
             badge="SDK Documentation"
             maxWidth="3xl"
           />
+          {loading ? (
+            <div className="max-w-3xl mx-auto mt-6">
+              <div className="h-12 w-full rounded-md bg-white/10 animate-pulse" />
+            </div>
+          ) : needsSetup && (
+            <div className="max-w-3xl mx-auto mt-6">
+              <Alert className="border-amber-200 bg-amber-50">
+                <AlertDescription className="text-amber-800">
+                  You haven’t connected any AI providers yet. Some examples may require keys.{' '}
+                  <Link href="/setup" className="underline hover:no-underline">Connect providers</Link>.
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
             <Button size="lg" className="glass-button-primary text-lg px-8 py-6 transition-all duration-300 hover:scale-105" asChild>
@@ -212,8 +262,14 @@ export default function DeveloperDocsPage() {
               </Link>
             </Button>
             <Button variant="outline" size="lg" className="glass-button-secondary text-lg px-8 py-6 transition-all duration-300 hover:scale-105" asChild>
-              <Link href="/developers/getting-started">
+              <Link href="/developers/hello-world">
                 Full Guide
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" className="glass-button-secondary text-lg px-8 py-6 transition-all duration-300 hover:scale-105" asChild>
+              <Link href="/developers/sdk/readme">
+                SDK README
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -222,7 +278,7 @@ export default function DeveloperDocsPage() {
       </section>
 
       {/* Features Overview */}
-      <section className="py-16 relative z-10">
+      <section id="features" className="py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-h2 text-text-primary mb-4">
@@ -233,7 +289,7 @@ export default function DeveloperDocsPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid gap-6 mb-12 [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
@@ -300,12 +356,32 @@ export default function DeveloperDocsPage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
+            <div className="mt-4 text-sm text-text-secondary">
+              Server-side BYOK resolver example:
+              <pre className="mt-2 glass-card bg-deep-space/80 p-3 rounded-lg font-mono text-xs overflow-x-auto border border-white/10">{`// /app/api/ai/complete/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { createChat } from '@byok-marketplace/sdk';
+
+export async function POST(req: NextRequest) {
+  const chat = createChat({
+    resolveApiKey: async (provider) => {
+      const r = await fetch(process.env.APP_URL + '/api/keys/active?provider=' + provider, { headers: { cookie: req.headers.get('cookie') || '' }});
+      if (!r.ok) return undefined;
+      const { apiKey } = await r.json();
+      return apiKey;
+    }
+  });
+  const body = await req.json();
+  const res = await chat.complete(body);
+  return NextResponse.json(res);
+}`}</pre>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Code Examples */}
-      <section className="py-16 relative z-10">
+      <section id="examples" className="py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-h2 text-text-primary mb-4">
@@ -316,7 +392,7 @@ export default function DeveloperDocsPage() {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
             {codeExamples.map((example, index) => (
               <CosmicCard key={index} variant="glass" className="overflow-hidden">
                 <div className="mb-4">
@@ -336,7 +412,7 @@ export default function DeveloperDocsPage() {
       </section>
 
       {/* API Reference */}
-      <section className="py-16 relative z-10">
+      <section id="api" className="py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-h2 text-text-primary mb-4">
@@ -386,7 +462,7 @@ export default function DeveloperDocsPage() {
             </div>
           </CosmicCard>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
             <CosmicCard variant="glass">
               <div className="mb-4">
                 <h3 className="flex items-center text-xl font-semibold text-text-primary mb-2">
@@ -457,7 +533,7 @@ export default function DeveloperDocsPage() {
       </section>
 
       {/* Resources & Links */}
-      <section className="py-16 relative z-10">
+      <section id="resources" className="py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-h2 text-text-primary mb-4">

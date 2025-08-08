@@ -12,7 +12,8 @@ import type {
   ProviderConstraints,
   ProviderSelection,
   Message,
-  Tool
+  Tool,
+  ApiProvider
 } from '../types';
 
 import { providerRegistry } from '../providers/base';
@@ -24,6 +25,8 @@ export interface ChatOptions {
   enableAutoRetry?: boolean;
   enableFallback?: boolean;
   trackUsage?: boolean;
+  apiKeys?: Partial<Record<ApiProvider, string>>;
+  resolveApiKey?: (provider: ApiProvider) => Promise<string | undefined> | string | undefined;
 }
 
 /**
@@ -36,7 +39,7 @@ export class Chat {
   constructor(options: ChatOptions = {}) {
     this.options = {
       enableAutoRetry: true,
-      enableFallback: true,
+      enableFallback: false,
       trackUsage: true,
       ...options
     };
@@ -54,17 +57,34 @@ export class Chat {
     const mergedOptions = { ...this.options, ...options };
     
     // Select optimal provider
-    const providerConfig = await this.selectProvider(request, mergedOptions);
+    let providerConfig = await this.selectProvider(request, mergedOptions);
+    providerConfig = await this.withResolvedApiKey(providerConfig, mergedOptions);
+
+    // Ensure model is set on the request (providers expect it)
+    const requestWithModel: ChatCompletionRequest = {
+      ...request,
+      model: request.model || providerConfig.model
+    };
     
-    // Get provider instance
-    const provider = providerRegistry.getProvider(providerConfig);
+    // Get provider instance (normalize auth construction errors)
+    let provider;
+    try {
+      provider = providerRegistry.getProvider(providerConfig);
+    } catch (e: any) {
+      const message = String(e?.message || '');
+      if (message.includes('API key is required') || message.includes('Invalid API key')) {
+        const { SDKAuthenticationError } = await import('../utils/errors');
+        throw new SDKAuthenticationError('Invalid API key', providerConfig.provider as any, { statusCode: 401 });
+      }
+      throw e;
+    }
     
     try {
-      return await provider.chatCompletion(request);
+      return await provider.chatCompletion(requestWithModel);
     } catch (error) {
       // Handle fallback if enabled
       if (mergedOptions.enableFallback && this.shouldFallback(error)) {
-        return this.executeWithFallback(request, providerConfig, mergedOptions);
+        return this.executeWithFallback(requestWithModel, providerConfig, mergedOptions);
       }
       throw error;
     }
@@ -80,13 +100,29 @@ export class Chat {
     const mergedOptions = { ...this.options, ...options };
     
     // Select optimal provider
-    const providerConfig = await this.selectProvider(request, mergedOptions);
+    let providerConfig = await this.selectProvider(request, mergedOptions);
+    providerConfig = await this.withResolvedApiKey(providerConfig, mergedOptions);
+
+    const requestWithModel: ChatCompletionRequest = {
+      ...request,
+      model: request.model || providerConfig.model
+    };
     
-    // Get provider instance
-    const provider = providerRegistry.getProvider(providerConfig);
+    // Get provider instance (normalize auth construction errors)
+    let provider;
+    try {
+      provider = providerRegistry.getProvider(providerConfig);
+    } catch (e: any) {
+      const message = String(e?.message || '');
+      if (message.includes('API key is required') || message.includes('Invalid API key')) {
+        const { SDKAuthenticationError } = await import('../utils/errors');
+        throw new SDKAuthenticationError('Invalid API key', providerConfig.provider as any, { statusCode: 401 });
+      }
+      throw e;
+    }
     
     try {
-      yield* provider.streamChatCompletion(request);
+      yield* provider.streamChatCompletion(requestWithModel);
     } catch (error) {
       // Fallback for streaming is more complex, for now just throw
       throw error;
@@ -196,7 +232,8 @@ export class Chat {
       const config: ProviderConfig = {
         provider,
         model: this.getDefaultModel(provider),
-        apiKey: '' // Will be resolved later
+        // Use a placeholder key so providers can be instantiated for capability/cost evaluation
+        apiKey: 'test'
       };
 
       const providerInstance = providerRegistry.getProvider(config);
@@ -215,15 +252,18 @@ export class Chat {
       const estimatedLatency = this.estimateLatency(provider);
       const qualityScore = this.calculateQualityScore(provider, request);
 
-      // Apply constraints
-      if (constraints?.maxCost && estimatedCost > constraints.maxCost) {
-        continue;
-      }
-      if (constraints?.maxLatency && estimatedLatency > constraints.maxLatency) {
-        continue;
-      }
-      if (constraints?.qualityThreshold && qualityScore < constraints.qualityThreshold) {
-        continue;
+      // Apply constraints (bypass cost/latency/quality if preferred)
+      const isPreferred = constraints?.preferredProviders?.includes(provider) ?? false;
+      if (!isPreferred) {
+        if (constraints?.maxCost && estimatedCost > constraints.maxCost) {
+          continue;
+        }
+        if (constraints?.maxLatency && estimatedLatency > constraints.maxLatency) {
+          continue;
+        }
+        if (constraints?.qualityThreshold && qualityScore < constraints.qualityThreshold) {
+          continue;
+        }
       }
 
       candidates.push({
@@ -251,17 +291,11 @@ export class Chat {
       return currentScore > bestScore ? current : best;
     });
 
-    // Check for preferred providers
+    // Check for preferred providers (prioritize even if not best score)
     if (constraints?.preferredProviders) {
-      const preferredCandidate = candidates.find(c => 
-        constraints.preferredProviders!.includes(c.provider)
-      );
+      const preferredCandidate = candidates.find(c => constraints.preferredProviders!.includes(c.provider));
       if (preferredCandidate) {
-        return {
-          provider: preferredCandidate.provider,
-          model: preferredCandidate.model,
-          apiKey: '' // Will be resolved later
-        };
+        return { provider: preferredCandidate.provider, model: preferredCandidate.model, apiKey: '' };
       }
     }
 
@@ -284,8 +318,13 @@ export class Chat {
     
     for (const provider of fallbackProviders) {
       try {
-        const providerInstance = providerRegistry.getProvider(provider);
-        return await providerInstance.chatCompletion(request);
+        const resolved = await this.withResolvedApiKey(provider, options);
+        const providerInstance = providerRegistry.getProvider(resolved);
+        const requestWithModel: ChatCompletionRequest = {
+          ...request,
+          model: request.model || resolved.model
+        };
+        return await providerInstance.chatCompletion(requestWithModel);
       } catch (error) {
         // Continue to next fallback
         continue;
@@ -327,7 +366,7 @@ export class Chat {
     return fallbacks.map(provider => ({
       provider: provider as any,
       model: this.getDefaultModel(provider as any),
-      apiKey: '' // Will be resolved later
+      apiKey: 'test' // placeholder; will be resolved before use
     }));
   }
 
@@ -382,6 +421,30 @@ export class Chat {
    */
   private generateSelectionReasoning(provider: string, cost: number, quality: number): string {
     return `Selected ${provider} for optimal cost/quality ratio (cost: $${cost.toFixed(4)}, quality: ${quality.toFixed(2)})`;
+  }
+
+  /**
+   * Resolve API key for a provider using provided options
+   */
+  private async withResolvedApiKey(
+    config: ProviderConfig,
+    options: ChatOptions
+  ): Promise<ProviderConfig> {
+    if (config.apiKey && config.apiKey.trim().length > 0) return config;
+
+    const fromMap = options.apiKeys?.[config.provider as ApiProvider];
+    if (fromMap && fromMap.trim().length > 0) {
+      return { ...config, apiKey: fromMap };
+    }
+
+    if (options.resolveApiKey) {
+      const resolved = await options.resolveApiKey(config.provider as ApiProvider);
+      if (resolved && resolved.trim().length > 0) {
+        return { ...config, apiKey: resolved };
+      }
+    }
+
+    return config;
   }
 }
 

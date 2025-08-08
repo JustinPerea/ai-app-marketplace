@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { CosmicPageLayout } from '@/components/layouts/cosmic-page-layout';
 import { CosmicPageHeader } from '@/components/ui/cosmic-page-header';
 import { CosmicCard } from '@/components/ui/cosmic-card';
@@ -11,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { SimpleStars } from '@/components/ui/simple-stars';
+import { useAuth } from '@/lib/auth/auth-context';
 import { 
   Plus, 
   CheckCircle,
@@ -40,6 +42,7 @@ export default function SetupPage() {
   const [testingProvider, setTestingProvider] = useState<string | null>(null);
   const [testResults, setTestResults] = useState<{[key: string]: { success: boolean; error?: string; testing: boolean }}>({});
   const [formTestResult, setFormTestResult] = useState<{ success: boolean; error?: string } | null>(null);
+  const { user, loading: authLoading } = useAuth();
   
   // Usage tracking hook
   const { trackEvent } = useUsageTracking();
@@ -201,9 +204,31 @@ export default function SetupPage() {
         <CosmicPageHeader 
           icon={Key}
           title="Connect Your Universe"
-          subtitle="Connect your API keys to unlock AI-powered applications. Your keys are stored securely and never shared."
+          subtitle={user
+            ? 'Connect your API keys to unlock AI-powered applications. Keys are stored in your account (encrypted) and available across devices.'
+            : 'Connect your API keys to unlock AI-powered applications. Not signed in: keys will be stored locally in this browser and are not synced.'}
           badge="AI Provider Setup"
         />
+
+        {/* Storage mode notice */}
+        {!authLoading && (
+          <div className="mb-6">
+            {user ? (
+              <Alert className="border-blue-200 bg-blue-50">
+                <AlertDescription className="text-blue-800">
+                  You are signed in. API keys will be saved to your account (encrypted) and can be used on any device you sign in with.
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <Alert className="border-amber-200 bg-amber-50">
+                <AlertDescription className="text-amber-800">
+                  You are not signed in. API keys will be stored locally in this browser only.{' '}
+                  <Link href="/auth/login" className="underline hover:no-underline">Sign in</Link> to enable secure account storage and sync across devices.
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        )}
 
         {/* Quick Stats - Cosmic glass design */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -240,8 +265,8 @@ export default function SetupPage() {
                 <DollarSign className="h-6 w-6 text-white" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-stardust-muted">Cost Savings</p>
-                <p className="text-2xl font-bold text-text-primary">70%</p>
+                <p className="text-sm font-medium text-stardust-muted">Storage Mode</p>
+                <p className="text-2xl font-bold text-text-primary">{user ? 'Account' : 'Local'}</p>
               </div>
             </div>
           </div>
@@ -360,7 +385,7 @@ export default function SetupPage() {
             {!showAddForm ? (
               <div className="space-y-4">
                 <p className="text-gray-600">Choose a provider to get started:</p>
-                <div className="grid md:grid-cols-3 gap-4">
+                <div className="grid md:grid-cols-3 gap-4" id="providers">
                   {availableProviders.map((provider) => {
                     const config = PROVIDER_CONFIGS[provider as keyof typeof PROVIDER_CONFIGS];
                     return (
@@ -372,6 +397,7 @@ export default function SetupPage() {
                           setForm(prev => ({ ...prev, name: `My ${config.name} Key` }));
                           setShowAddForm(true);
                         }}
+                        id={provider.toLowerCase()}
                       >
                         <div className="text-center">
                           <div className="mb-2">

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -256,7 +255,6 @@ export default function AIGuidePage() {
   const selectedUseCaseData = useCases.find(uc => uc.id === selectedUseCase);
 
   return (
-    <MainLayout>
       {/* Simple stars background with parallax scrolling */}
       <SimpleStars starCount={50} parallaxSpeed={0.3} />
       
@@ -577,6 +575,6 @@ export default function AIGuidePage() {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    
   );
 }

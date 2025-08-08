@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -137,7 +136,6 @@ export default function MyAppsPage() {
 
   if (loading) {
     return (
-      <MainLayout>
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
           <div className="max-w-6xl mx-auto">
             <div className="animate-pulse">
@@ -151,12 +149,10 @@ export default function MyAppsPage() {
             </div>
           </div>
         </div>
-      </MainLayout>
     );
   }
 
   return (
-    <MainLayout>
       {/* Simple stars background with parallax scrolling */}
       <SimpleStars starCount={50} parallaxSpeed={0.3} />
       
@@ -382,6 +378,6 @@ export default function MyAppsPage() {
           )}
         </div>
       </div>
-    </MainLayout>
+    
   );
 }

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { SimpleStars } from '@/components/ui/simple-stars';
 import { 
   Copy,
@@ -16,11 +16,52 @@ import {
   BookOpen,
   Terminal,
   Zap,
-  FileText
+  FileText,
+  ExternalLink
 } from 'lucide-react';
+
+type ToolId = 'cursor' | 'claude' | 'copilot' | 'windsurf';
+
+const TOOLS: Array<{
+  id: ToolId;
+  name: string;
+  tagline: string;
+  href: string;
+  badgeClass: string; // Tailwind class for accent
+}> = [
+  {
+    id: 'cursor',
+    name: 'Cursor',
+    tagline: 'Agentic IDE with inline edits, chat, and composer',
+    href: 'https://www.cursor.com',
+    badgeClass: 'bg-blue-600/15 text-blue-400 border-blue-400/30'
+  },
+  {
+    id: 'claude',
+    name: 'Claude Code',
+    tagline: 'Anthropic’s coding assistant with strong reasoning',
+    href: 'https://www.anthropic.com/claude',
+    badgeClass: 'bg-purple-600/15 text-purple-400 border-purple-400/30'
+  },
+  {
+    id: 'copilot',
+    name: 'GitHub Copilot Chat',
+    tagline: 'VS Code/JetBrains chat with deep codebase context',
+    href: 'https://github.com/features/copilot',
+    badgeClass: 'bg-emerald-600/15 text-emerald-400 border-emerald-400/30'
+  },
+  {
+    id: 'windsurf',
+    name: 'Windsurf',
+    tagline: 'Codeium’s agentic IDE with plan-and-apply',
+    href: 'https://codeium.com/windsurf',
+    badgeClass: 'bg-amber-600/15 text-amber-400 border-amber-400/30'
+  }
+];
 
 export default function ClaudeCodePage() {
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
+  const [activeTool, setActiveTool] = useState<ToolId>('cursor');
 
   const copyToClipboard = async (text: string, sectionId: string) => {
     try {
@@ -32,7 +73,7 @@ export default function ClaudeCodePage() {
     }
   };
 
-  const fullPrompt = `I want to build an AI application for the COSMARA AI App Marketplace. Here's everything you need to know:
+  const basePrompt = `I want to build an AI application for the COSMARA AI App Marketplace. Here's everything you need to know:
 
 ## PLATFORM OVERVIEW
 COSMARA is an AI App Marketplace with BYOK (Bring Your Own Keys) architecture that supports multiple AI providers:
@@ -77,9 +118,8 @@ import { Badge } from '@/components/ui/badge';
 export default function YourAppPage() {
   // Your app logic here
   return (
-    <MainLayout>
       {/* Your app UI here */}
-    </MainLayout>
+    
   );
 }
 \`\`\`
@@ -436,8 +476,42 @@ Make sure to:
 
 Let's start building!`;
 
+  const minimalPrompt = `You are an expert Next.js engineer. Using this repository, help me scaffold and ship a production-quality AI app for the COSMARA AI App Marketplace.
+
+Goals:
+- Create a new app page under src/app/marketplace/[my-app]/page.tsx with a simple UI
+- Add an API route under src/app/marketplace/[my-app]/api/route.ts that calls one provider (OpenAI/Anthropic/Google)
+- Use existing components (shadcn/ui) and follow the cosmic design
+- Read /src/lib and /src/app/api for existing patterns
+- Add clear error handling and provider-key checks (use /setup flow)
+
+Deliverables:
+1) Initial UI + endpoint
+2) Validation + error messages
+3) Short README instructions
+4) Notes on how to switch providers later`;
+
+  const activeToolData = TOOLS.find(t => t.id === activeTool)!;
+  const fullPrompt = basePrompt; // Base prompt works across tools; UI text adapts per tool
+
+  // Persist tool selection across visits
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('devToolChoice') as ToolId | null;
+      if (saved && TOOLS.some(t => t.id === saved)) {
+        setActiveTool(saved);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('devToolChoice', activeTool);
+    } catch {}
+  }, [activeTool]);
+
   return (
-    <MainLayout>
+    <>
       {/* Background Stars */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <SimpleStars />
@@ -453,24 +527,38 @@ Let's start building!`;
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="glass-base px-4 py-2 rounded-full border inline-flex items-center mb-6"
-                 style={{
-                   background: 'rgba(139, 92, 246, 0.1)',
-                   borderColor: 'rgba(139, 92, 246, 0.3)'
-                 }}>
-              <Bot className="h-3 w-3 mr-2" style={{ color: '#8B5CF6' }} />
-              <span className="text-sm font-medium text-text-primary">Claude Code Integration</span>
+            <div className={`glass-base px-4 py-2 rounded-full border inline-flex items-center mb-6 ${activeToolData.badgeClass}`}>
+              <Bot className="h-3 w-3 mr-2" />
+              <span className="text-sm font-medium text-text-primary">AI Coding Tools</span>
+            </div>
+
+            {/* Tool Switcher */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+              {TOOLS.map(tool => (
+                <button
+                  key={tool.id}
+                  onClick={() => setActiveTool(tool.id)}
+                  aria-pressed={activeTool === tool.id}
+                  className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${
+                    activeTool === tool.id
+                      ? `${tool.badgeClass}`
+                      : 'border-white/10 text-text-secondary hover:text-text-primary hover:border-white/20'
+                  }`}
+                >
+                  {tool.name}
+                </button>
+              ))}
             </div>
 
             <h1 className="text-hero-glass mb-6">
               <span className="text-glass-gradient">Build with</span>
               <br />
-              <span className="text-stardust-muted">Claude Code</span>
+              <span className="text-stardust-muted">{activeToolData.name}</span>
             </h1>
 
             <p className="text-body-lg text-text-secondary mb-8 leading-relaxed max-w-2xl mx-auto">
-              Copy the comprehensive prompt below and paste it into Claude Code to build your AI app 
-              with complete platform knowledge, architecture patterns, and working examples.
+              Copy the comprehensive prompt below and paste it into {activeToolData.name} to build your AI app
+              with platform context, architecture patterns, and working examples.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -487,15 +575,33 @@ Let's start building!`;
                 ) : (
                   <>
                     <Copy className="h-5 w-5 mr-2" />
-                    Copy Full Prompt
+                    Copy Full Prompt for {activeToolData.name}
+                  </>
+                )}
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="glass-button-secondary"
+                onClick={() => copyToClipboard(minimalPrompt, 'minimal-prompt')}
+              >
+                {copiedSection === 'minimal-prompt' ? (
+                  <>
+                    <CheckCircle className="h-5 w-5 mr-2" />
+                    Minimal Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-5 w-5 mr-2" />
+                    Copy Minimal Prompt
                   </>
                 )}
               </Button>
               <Button size="lg" variant="outline" className="glass-button-secondary" asChild>
-                <a href="/developers/examples">
-                  <BookOpen className="h-5 w-5 mr-2" />
-                  View Examples
-                </a>
+                <Link href={activeToolData.href} target="_blank" rel="noreferrer">
+                  <ExternalLink className="h-5 w-5 mr-2" />
+                  Open {activeToolData.name}
+                </Link>
               </Button>
             </div>
           </div>
@@ -528,12 +634,12 @@ Let's start building!`;
                 <div className="w-16 h-16 rounded-full bg-blue-600/10 flex items-center justify-center mx-auto mb-4">
                   <Bot className="h-8 w-8 text-blue-500" />
                 </div>
-                <CardTitle className="text-h3 text-text-primary">2. Paste to Claude</CardTitle>
+                <CardTitle className="text-h3 text-text-primary">2. Paste to {activeToolData.name}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-body text-text-secondary">
-                  Paste the prompt into Claude Code and describe your app idea. 
-                  Claude will have complete context to build properly.
+                  Paste the prompt into {activeToolData.name} and describe your app idea. 
+                  The assistant will have complete context to build properly.
                 </p>
               </CardContent>
             </Card>
@@ -565,28 +671,47 @@ Let's start building!`;
                 <div>
                   <CardTitle className="text-h2 text-text-primary flex items-center gap-3">
                     <Terminal className="h-6 w-6" />
-                    Complete Claude Code Prompt
+                    Complete {activeToolData.name} Prompt
                   </CardTitle>
                   <CardDescription className="text-body text-text-secondary">
-                    Copy this entire prompt and paste it into Claude Code to get started
+                    Copy this entire prompt and paste it into {activeToolData.name} to get started
                   </CardDescription>
                 </div>
-                <Button
-                  onClick={() => copyToClipboard(fullPrompt, 'main-prompt')}
-                  className="glass-button-primary"
-                >
-                  {copiedSection === 'main-prompt' ? (
-                    <>
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy Prompt
-                    </>
-                  )}
-                </Button>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => copyToClipboard(fullPrompt, 'main-prompt')}
+                    className="glass-button-primary"
+                  >
+                    {copiedSection === 'main-prompt' ? (
+                      <>
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy Prompt for {activeToolData.name}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="glass-button-secondary"
+                    onClick={() => copyToClipboard(minimalPrompt, 'main-minimal')}
+                  >
+                    {copiedSection === 'main-minimal' ? (
+                      <>
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Minimal Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy Minimal Prompt
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -595,6 +720,57 @@ Let's start building!`;
                   {fullPrompt}
                 </pre>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Quick setup for selected tool */}
+      <section className="py-10">
+        <div className="container mx-auto px-4">
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="text-h3 text-text-primary">Quick setup: {activeToolData.name}</CardTitle>
+              <CardDescription className="text-body text-text-secondary">Recommended steps to use this prompt effectively</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc pl-5 space-y-2 text-text-secondary">
+                {activeTool === 'cursor' && (
+                  <>
+                    <li>Install Cursor and sign in. Open this repository.</li>
+                    <li>Open Chat (Cmd+L) or Composer, paste the prompt, then describe your app.</li>
+                    <li>Use inline edits and diffs to apply changes; iterate in small steps.</li>
+                    <li>
+                      Read the docs:
+                      {' '}<Link href="https://docs.cursor.com" target="_blank" rel="noreferrer" className="underline">Cursor Docs</Link>
+                      {' '}·{' '}
+                      <Link href="https://www.cursor.com" target="_blank" rel="noreferrer" className="underline">Cursor Website</Link>
+                    </li>
+                  </>
+                )}
+                {activeTool === 'claude' && (
+                  <>
+                    <li>Open Claude (web or desktop) and start a new coding session.</li>
+                    <li>Paste the prompt; grant file access or paste relevant files when asked.</li>
+                    <li>Ask Claude to scaffold the app structure and implement endpoints.</li>
+                  </>
+                )}
+                {activeTool === 'copilot' && (
+                  <>
+                    <li>Open VS Code with GitHub Copilot Chat enabled.</li>
+                    <li>Open Command Palette (Cmd+Shift+P) → search “Copilot: Open Chat” and open the Chat view.</li>
+                    <li>Paste the prompt and provide repo context (files/paths or code blocks).</li>
+                    <li>Use Copilot Chat actions like “Explain this”, “Fix”, and “Generate tests”. Review diffs before accepting.</li>
+                  </>
+                )}
+                {activeTool === 'windsurf' && (
+                  <>
+                    <li>Open Windsurf and create a new session in your repo.</li>
+                    <li>Paste the prompt and let the agent plan; review the plan before apply.</li>
+                    <li>Apply in stages and keep commits small and descriptive.</li>
+                  </>
+                )}
+              </ul>
             </CardContent>
           </Card>
         </div>
@@ -668,11 +844,11 @@ Let's start building!`;
         <div className="container mx-auto px-4 relative z-10">
           <Card className="glass-card p-12 text-center">
             <h2 className="text-hero-glass mb-6">
-              Ready to Build with Claude Code?
+              Ready to Build with {activeToolData.name}?
             </h2>
             <p className="text-body-lg text-text-secondary max-w-2xl mx-auto mb-8">
               Copy the prompt above and start building your AI app with complete platform knowledge. 
-              Claude Code will guide you through every step of the development process.
+              Your AI coding assistant will guide you through each step of the process.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -689,7 +865,7 @@ Let's start building!`;
                 ) : (
                   <>
                     <Copy className="h-5 w-5 mr-2" />
-                    Copy Complete Prompt
+                    Copy Complete Prompt for {activeToolData.name}
                   </>
                 )}
               </Button>
@@ -703,6 +879,6 @@ Let's start building!`;
           </Card>
         </div>
       </section>
-    </MainLayout>
+    </>
   );
 }

@@ -19,14 +19,15 @@ export { OpenAIProvider, createOpenAIProvider, openAIFactory } from './openai';
 
 // Anthropic/Claude provider exports (native implementation)
 export { AnthropicProvider, createAnthropicProvider, anthropicFactory, claude } from './claude';
+export { AnthropicProvider as ClaudeProvider } from './claude';
 
 // Google Gemini provider exports (native implementation)
 export { GoogleProvider, createGoogleProvider, googleFactory, gemini } from './google';
 
-// Register all native providers
+// Register all native providers (including legacy alias 'claude')
 providerRegistry.register('openai', openAIFactory);
 providerRegistry.register('anthropic', anthropicFactory);
-providerRegistry.register('claude', anthropicFactory); // Alias for anthropic
+providerRegistry.register('claude', anthropicFactory); // alias
 providerRegistry.register('google', googleFactory);
 
 // Re-export types for external use

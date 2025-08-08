@@ -1,4 +1,3 @@
-import { MainLayout } from './main-layout';
 import { SimpleStars } from '@/components/ui/simple-stars';
 
 interface CosmicPageLayoutProps {
@@ -24,10 +23,10 @@ export function CosmicPageLayout({
   gradientOverlay = 'default' 
 }: CosmicPageLayoutProps) {
   return (
-    <MainLayout>
+    <>
       {/* Consistent cosmic stars background with parallax */}
       <SimpleStars starCount={starCount} parallaxSpeed={parallaxSpeed} />
-      
+
       {/* Consistent cosmic gradient overlay */}
       <div 
         className="fixed inset-0 pointer-events-none" 
@@ -36,11 +35,11 @@ export function CosmicPageLayout({
           zIndex: 1
         }}
       />
-      
+
       {/* Main content with proper z-index layering */}
       <div className="relative z-10">
         {children}
       </div>
-    </MainLayout>
+    </>
   );
 }

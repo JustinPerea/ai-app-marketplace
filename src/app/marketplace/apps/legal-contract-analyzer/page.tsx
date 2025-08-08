@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { MainLayout } from '@/components/layouts/main-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -497,7 +496,6 @@ export default function LegalContractAnalyzerPage() {
   };
 
   return (
-    <MainLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Navigation Header with Back Button and Breadcrumbs */}
         <AppDetailNavigation 
@@ -586,6 +584,6 @@ export default function LegalContractAnalyzerPage() {
         {/* Tab Content */}
         {renderTabContent()}
       </div>
-    </MainLayout>
+    
   );
 }
