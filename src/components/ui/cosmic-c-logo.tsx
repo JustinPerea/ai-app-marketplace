@@ -923,13 +923,7 @@ export function CosmarcPortalRefined2Ring({ size = 200, className = '', showLabe
   const textMPosition = textMLeftEdge;
   const estimatedCharWidth = fontSize * 0.4; // For display calculations
   
-  // DEBUG: Verify calculations (size=400)
-  console.log('Aurora Logo Debug - size:', size);
-  console.log('targetGap (should be 5.6px for size=400):', targetGap);
-  console.log('orangeRingLeftInnerEdge:', orangeRingLeftInnerEdge);
-  console.log('fontSize * 0.2 offset:', fontSize * 0.2);
-  console.log('textCPosition (final):', textCPosition);
-  console.log('Calculated gap (textCPosition - orangeRingLeftInnerEdge):', textCPosition - orangeRingLeftInnerEdge);
+  // Debug logs removed
   
   // For measurement display
   const textCLeftEdgePosition = textCPosition - (fontSize * 0.2); // Approximate left edge
