@@ -1,0 +1,32 @@
+name: API Checks
+
+on:
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: api-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  endpoints:
+    name: API endpoints
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci --no-audit --prefer-offline --fund=false
+      - name: Build app
+        run: npm run build
+      - name: Start app
+        run: npm start &
+      - name: Wait for app
+        run: npx wait-on http://localhost:3000 --timeout 60000
+      - name: Smoke check
+        run: npm run test-endpoints || true
+
+
