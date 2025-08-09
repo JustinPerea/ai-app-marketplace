@@ -7,8 +7,30 @@ on:
     branches: [ main, master ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: marketplace-platform/package.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./marketplace-platform
+
+      - name: Build Next.js
+        run: npm run build
+        working-directory: ./marketplace-platform
+
+  api_check:
+    runs-on: ubuntu-latest
+    needs: build
     env:
       CLI_HEALTH_TOKEN: ${{ secrets.CLI_HEALTH_TOKEN }}
       OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
@@ -22,6 +44,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: marketplace-platform/package.json
 
       - name: Install dependencies
         run: npm ci
@@ -48,12 +72,46 @@ jobs:
         working-directory: ./marketplace-platform
 
       - name: Provider health with transient keys (POST)
-        if: env.CLI_HEALTH_TOKEN != ''
+        if: ${{ env.CLI_HEALTH_TOKEN != '' }}
         run: |
           curl -s -X POST "http://localhost:3000/api/provider-health?token=${CLI_HEALTH_TOKEN}" \
             -H 'Content-Type: application/json' \
             -d "{\"openai\":\"${OPENAI_KEY}\",\"anthropic\":\"${ANTHROPIC_KEY}\",\"google\":\"${GOOGLE_KEY}\"}" | tee provider-health.json
           cat provider-health.json | jq -e '.ok == true'
+        working-directory: ./marketplace-platform
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: api_check
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: marketplace-platform/package.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./marketplace-platform
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+        working-directory: ./marketplace-platform
+
+      - name: Build Next.js
+        run: npm run build
+        working-directory: ./marketplace-platform
+
+      - name: Start Next.js server
+        run: npm run start &
+        working-directory: ./marketplace-platform
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000
         working-directory: ./marketplace-platform
 
       - name: Run Playwright tests
