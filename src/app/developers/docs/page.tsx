@@ -120,34 +120,32 @@ const features = [
 const codeExamples = [
   {
     title: 'Basic AI Request',
-    description: 'Simple text completion with automatic provider selection',
-    code: `import { createClient } from '@cosmara-ai/community-sdk';
+    description: 'Simple text completion using a specific provider',
+    code: `import { createClient, APIProvider } from '@cosmara-ai/community-sdk';
 
 const client = createClient({
-  apiKey: process.env.COSMARA_API_KEY
+  apiKeys: { openai: process.env.OPENAI_API_KEY }
 });
 
-const result = await client.chat.completions.create({
+const result = await client.chat({
+  model: 'gpt-4o',
   messages: [
     { role: 'user', content: 'Explain quantum computing' }
-  ],
-  model: 'gpt-4o',
-  strategy: 'balanced' // or 'cost_optimized', 'performance'
-});
+  ]
+}, { provider: APIProvider.OPENAI });
 
 console.log(result.choices[0].message.content);`
   },
   {
     title: 'Cost-Optimized Request',
     description: 'Achieve up to 99.5% savings with intelligent provider routing',
-    code: `const result = await client.chat.completions.create({
+    code: `const result = await client.chat({
+  model: 'gemini-1.5-flash',
   messages: [{ role: 'user', content: userQuery }],
-  model: 'gemini-1.5-flash', // Most cost-effective
-  strategy: 'cost_optimized',
   maxTokens: 1000
-});
+}, { provider: APIProvider.GOOGLE });
 
-console.log('Cost savings: 99.5% vs OpenAI GPT-4');`
+console.log('Used Gemini Flash for lower cost');`
   },
   {
     title: 'HIPAA-Compliant Processing',
@@ -307,11 +305,72 @@ export default function DeveloperDocsPage() {
               </Link>
             </Button>
             <Button variant="outline" size="lg" className="glass-button-secondary text-lg px-8 py-6 transition-all duration-300 hover:scale-105" asChild>
+              <Link href="https://www.npmjs.com/package/@cosmara-ai/community-sdk" target="_blank" rel="noopener noreferrer">
+                Download SDK
+                <Download className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" className="glass-button-secondary text-lg px-8 py-6 transition-all duration-300 hover:scale-105" asChild>
               <Link href="/developers/sdk/readme">
                 SDK README
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Download & Install */}
+      <section id="download" className="py-8 relative z-10">
+        <div className="container mx-auto px-4">
+          <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
+            <CosmicCard variant="glass">
+              <div className="mb-4">
+                <h3 className="flex items-center text-xl font-semibold text-text-primary mb-2">
+                  <Package className="h-5 w-5 mr-2 text-glass-gradient" />
+                  Install via package manager
+                </h3>
+                <p className="text-text-secondary text-sm">Pick one command:</p>
+              </div>
+              <div className="space-y-3">
+                <div className="glass-card bg-deep-space/80 p-3 rounded-lg font-mono text-sm border border-white/10">
+                  <pre className="text-stardust">{`npm i @cosmara-ai/community-sdk`}</pre>
+                </div>
+                <div className="glass-card bg-deep-space/80 p-3 rounded-lg font-mono text-sm border border-white/10">
+                  <pre className="text-stardust">{`yarn add @cosmara-ai/community-sdk`}</pre>
+                </div>
+                <div className="glass-card bg-deep-space/80 p-3 rounded-lg font-mono text-sm border border-white/10">
+                  <pre className="text-stardust">{`pnpm add @cosmara-ai/community-sdk`}</pre>
+                </div>
+                <div className="glass-card bg-deep-space/80 p-3 rounded-lg font-mono text-sm border border-white/10">
+                  <pre className="text-stardust">{`bun add @cosmara-ai/community-sdk`}</pre>
+                </div>
+              </div>
+            </CosmicCard>
+
+            <CosmicCard variant="glass">
+              <div className="mb-4">
+                <h3 className="flex items-center text-xl font-semibold text-text-primary mb-2">
+                  <Terminal className="h-5 w-5 mr-2 text-glass-gradient" />
+                  Quick curl tests
+                </h3>
+                <p className="text-text-secondary text-sm">Verify local endpoints after `npm run dev`:</p>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs text-text-secondary mb-1">SSE stream (hello world)</p>
+                  <div className="glass-card bg-deep-space/80 p-3 rounded-lg font-mono text-sm border border-white/10">
+                    <pre className="text-stardust">{`curl -N http://localhost:3000/api/sdk-stream`}</pre>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-text-secondary mb-1">Provider health (with CLI token)</p>
+                  <div className="glass-card bg-deep-space/80 p-3 rounded-lg font-mono text-sm border border-white/10">
+                    <pre className="text-stardust">{`curl -s -X POST "http://localhost:3000/api/provider-health?token=$CLI_HEALTH_TOKEN" -H "Content-Type: application/json" -d '{"openai":"$OPENAI_KEY","anthropic":"$ANTHROPIC_KEY","google":"$GOOGLE_KEY"}' | jq`}</pre>
+                  </div>
+                </div>
+              </div>
+            </CosmicCard>
           </div>
         </div>
       </section>
@@ -369,22 +428,25 @@ export default function MyAppPage() {
               </div>
               <div className="glass-card bg-deep-space/80 p-4 rounded-lg font-mono text-sm overflow-x-auto border border-glass-border">
                 <pre className="text-stardust">{`import { NextRequest, NextResponse } from 'next/server';
-import { createChat } from '@cosmara-ai/community-sdk';
+import { createClient, APIProvider } from '@cosmara-ai/community-sdk';
 
 export async function POST(req: NextRequest) {
-  const chat = createChat({
-    resolveApiKey: async (provider) => {
-      const r = await fetch(process.env.APP_URL + '/api/keys/active?provider=' + provider, {
-        headers: { cookie: req.headers.get('cookie') || '' }
-      });
-      if (!r.ok) return undefined;
-      const { apiKey } = await r.json();
-      return apiKey;
-    }
-  });
+  // Resolve BYOK keys per provider (for the signed-in user)
+  const [openai, anthropic, google] = await Promise.all([
+    fetch(process.env.APP_URL + '/api/keys/active?provider=openai', { headers: { cookie: req.headers.get('cookie') || '' }})
+      .then(r => r.ok ? r.json() : { apiKey: undefined }).then(j => j.apiKey),
+    fetch(process.env.APP_URL + '/api/keys/active?provider=anthropic', { headers: { cookie: req.headers.get('cookie') || '' }})
+      .then(r => r.ok ? r.json() : { apiKey: undefined }).then(j => j.apiKey),
+    fetch(process.env.APP_URL + '/api/keys/active?provider=google', { headers: { cookie: req.headers.get('cookie') || '' }})
+      .then(r => r.ok ? r.json() : { apiKey: undefined }).then(j => j.apiKey),
+  ]);
 
+  const client = createClient({ apiKeys: { openai, anthropic, google } });
   const body = await req.json().catch(() => ({}));
-  const res = await chat.complete(body.request || { messages: [{ role: 'user', content: 'Hello' }] });
+  const res = await client.chat(body.request || {
+    model: 'gpt-4o',
+    messages: [{ role: 'user', content: 'Hello' }]
+  }, { provider: APIProvider.OPENAI });
   return NextResponse.json(res);
 }`}</pre>
               </div>
@@ -479,20 +541,24 @@ export async function POST(req: NextRequest) {
               Server-side BYOK resolver example:
               <pre className="mt-2 glass-card bg-deep-space/80 p-3 rounded-lg font-mono text-xs overflow-x-auto border border-white/10">{`// /app/api/ai/complete/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { createChat } from '@byok-marketplace/sdk';
+import { createClient, APIProvider } from '@cosmara-ai/community-sdk';
 
 export async function POST(req: NextRequest) {
-  const chat = createChat({
-    resolveApiKey: async (provider) => {
-      const r = await fetch(process.env.APP_URL + '/api/keys/active?provider=' + provider, { headers: { cookie: req.headers.get('cookie') || '' }});
-      if (!r.ok) return undefined;
-      const { apiKey } = await r.json();
-      return apiKey;
-    }
-  });
-  const body = await req.json();
-  const res = await chat.complete(body);
-  return NextResponse.json(res);
+  const cookie = req.headers.get('cookie') || '';
+  const origin = process.env.APP_URL || 'http://localhost:3000';
+  const [openai, anthropic, google] = await Promise.all([
+    fetch(origin + '/api/keys/active?provider=openai', { headers: { cookie } }).then(r => r.ok ? r.json() : { apiKey: undefined }).then(j => j.apiKey),
+    fetch(origin + '/api/keys/active?provider=anthropic', { headers: { cookie } }).then(r => r.ok ? r.json() : { apiKey: undefined }).then(j => j.apiKey),
+    fetch(origin + '/api/keys/active?provider=google', { headers: { cookie } }).then(r => r.ok ? r.json() : { apiKey: undefined }).then(j => j.apiKey),
+  ]);
+
+  const client = createClient({ apiKeys: { openai, anthropic, google } });
+  const body = await req.json().catch(() => ({}));
+  const result = await client.chat(body.request || {
+    model: 'gpt-4o',
+    messages: [{ role: 'user', content: 'Hello' }]
+  }, { provider: APIProvider.OPENAI });
+  return NextResponse.json(result);
 }`}</pre>
             </div>
           </div>

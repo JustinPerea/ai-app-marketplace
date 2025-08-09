@@ -1,0 +1,11 @@
+{
+  "name": "cosmara-example-server",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "express": "^4.19.2",
+    "@cosmara-ai/community-sdk": "^1.0.1"
+  }
+}
+
+
