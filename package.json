@@ -53,6 +53,8 @@
     "notify:test": "source scripts/notifications.sh && test_notifications"
   },
   "dependencies": {
+    "react-markdown": "^9.0.1",
+    "remark-gfm": "^4.0.0",
     "@auth0/nextjs-auth0": "^4.8.0",
     "@cosmara-ai/community-sdk": "^1.0.1",
     "@google-cloud/kms": "^5.1.0",
