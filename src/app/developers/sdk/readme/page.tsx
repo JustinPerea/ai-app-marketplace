@@ -20,8 +20,18 @@ function CodeBlock({ inline, className, children }: { inline?: boolean; classNam
 export default function SDKReadmePage() {
   let content = '# SDK README\n\nFile not found.';
   try {
-    const readmePath = path.resolve(process.cwd(), 'packages/sdk/README.md');
-    content = fs.readFileSync(readmePath, 'utf8');
+    // Prefer the README from the installed npm package to avoid exposing local source
+    const nodeModulesReadme = path.resolve(
+      process.cwd(),
+      'node_modules/@cosmara-ai/community-sdk/README.md'
+    );
+    if (fs.existsSync(nodeModulesReadme)) {
+      content = fs.readFileSync(nodeModulesReadme, 'utf8');
+    } else {
+      // Fallback to local if present (e.g., in private dev)
+      const readmePath = path.resolve(process.cwd(), 'packages/sdk/README.md');
+      content = fs.readFileSync(readmePath, 'utf8');
+    }
   } catch (e) {
     // ignore; show fallback
   }
