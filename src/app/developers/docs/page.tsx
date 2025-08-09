@@ -372,6 +372,27 @@ export default function DeveloperDocsPage() {
               </div>
             </CosmicCard>
           </div>
+          {/* Examples quick links */}
+          <div className="mt-4 text-center text-xs text-text-secondary">
+            Examples: {' '}
+            <a
+              className="underline hover:text-text-primary"
+              href="https://github.com/JustinPerea/ai-app-marketplace/tree/main/examples/server"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Server (Express)
+            </a>
+            {' '}•{' '}
+            <a
+              className="underline hover:text-text-primary"
+              href="https://github.com/JustinPerea/ai-app-marketplace/tree/main/examples/edge-stream"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Edge streaming (SSE)
+            </a>
+          </div>
         </div>
       </section>
 
