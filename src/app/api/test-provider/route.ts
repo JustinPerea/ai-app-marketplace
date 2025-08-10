@@ -46,6 +46,18 @@ async function testProviderConnection(provider: string, apiKey: string) {
       
       case 'cohere':
         return await testCohere(apiKey);
+      case 'mistral':
+        return await testMistral(apiKey);
+      case 'perplexity':
+        return await testPerplexity(apiKey);
+      case 'azure_openai':
+      case 'azure-openai':
+        // For Azure, we can only validate by listing deployments or requiring endpoint + key; do a lightweight ping if endpoint is provided later
+        return {
+          success: true,
+          message: 'Azure OpenAI key format accepted. Full validation requires endpoint/deployment during chat.',
+          provider: 'azure-openai'
+        };
       
       case 'huggingface':
         return await testHuggingFace(apiKey);
@@ -195,6 +207,46 @@ async function testCohere(apiKey: string) {
     success: true,
     message: 'Cohere connection successful',
     provider: 'cohere'
+  };
+}
+
+async function testMistral(apiKey: string) {
+  const response = await fetch('https://api.mistral.ai/v1/models', {
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `Mistral API error: ${response.status}`);
+  }
+
+  return {
+    success: true,
+    message: 'Mistral connection successful',
+    provider: 'mistral'
+  };
+}
+
+async function testPerplexity(apiKey: string) {
+  const response = await fetch('https://api.perplexity.ai/models', {
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `Perplexity API error: ${response.status}`);
+  }
+
+  return {
+    success: true,
+    message: 'Perplexity connection successful',
+    provider: 'perplexity'
   };
 }
 

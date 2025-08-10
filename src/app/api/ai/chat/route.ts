@@ -35,7 +35,7 @@ interface ChatMessage {
 interface ChatRequest {
   messages: ChatMessage[];
   provider: string;
-  model: string;
+  model: string; // can be registry id or alias
 }
 
 // Get API key from localStorage (would be sent in headers in real implementation)
@@ -142,6 +142,106 @@ async function callOllama(messages: ChatMessage[], model: string) {
   return data.message?.content || 'No response generated';
 }
 
+async function callAzureOpenAI(
+  messages: ChatMessage[],
+  deployment: string,
+  endpoint: string,
+  apiKey: string
+) {
+  const url = `${endpoint.replace(/\/$/, '')}/openai/deployments/${deployment}/chat/completions?api-version=2024-10-21-preview`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'api-key': apiKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      messages,
+      temperature: 0.7,
+      max_tokens: 1000,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Azure OpenAI API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || 'No response generated';
+}
+
+async function callCohere(messages: ChatMessage[], model: string, apiKey: string) {
+  const userMessage = messages.find(m => m.role === 'user')?.content || messages[messages.length - 1]?.content || 'Hello';
+  const response = await fetch('https://api.cohere.ai/v1/chat', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      message: userMessage,
+      temperature: 0.7,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Cohere API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data?.text || data?.response || 'No response generated';
+}
+
+async function callMistral(messages: ChatMessage[], model: string, apiKey: string) {
+  const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature: 0.7,
+      max_tokens: 1000,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `Mistral API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || 'No response generated';
+}
+
+async function callPerplexity(messages: ChatMessage[], model: string, apiKey: string) {
+  const response = await fetch('https://api.perplexity.ai/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature: 0.7,
+      max_tokens: 1000,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `Perplexity API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || 'No response generated';
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Rate limiting
@@ -154,7 +254,8 @@ export async function POST(req: NextRequest) {
     }
 
     const body: ChatRequest = await req.json();
-    const { messages, provider, model } = body;
+    const { messages, provider } = body;
+    let { model } = body;
 
     if (!messages || !provider || !model) {
       return NextResponse.json(
@@ -169,6 +270,13 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Resolve model aliases via registry if available
+    try {
+      const { findModel } = await import('@/lib/ai/models');
+      const resolved = findModel(model);
+      if (resolved) model = resolved.id;
+    } catch {}
 
     let response: string;
 
@@ -209,6 +317,56 @@ export async function POST(req: NextRequest) {
         break;
       }
 
+      case 'AZURE_OPENAI': {
+        const apiKey = req.headers.get('x-azure-key');
+        const endpoint = req.headers.get('x-azure-endpoint');
+        const deployment = req.headers.get('x-azure-deployment') || model; // allow model to carry deployment name
+        if (!apiKey || !endpoint || !deployment) {
+          return NextResponse.json(
+            { error: 'Azure OpenAI requires x-azure-key, x-azure-endpoint, and x-azure-deployment (or provide deployment via model).' },
+            { status: 400 }
+          );
+        }
+        response = await callAzureOpenAI(messages, deployment, endpoint, apiKey);
+        break;
+      }
+
+      case 'COHERE': {
+        const apiKey = req.headers.get('x-cohere-key');
+        if (!apiKey) {
+          return NextResponse.json(
+            { error: 'Cohere API key not provided. Please add your API key in the Setup page.' },
+            { status: 401 }
+          );
+        }
+        response = await callCohere(messages, model, apiKey);
+        break;
+      }
+
+      case 'MISTRAL': {
+        const apiKey = req.headers.get('x-mistral-key');
+        if (!apiKey) {
+          return NextResponse.json(
+            { error: 'Mistral API key not provided. Please add your API key in the Setup page.' },
+            { status: 401 }
+          );
+        }
+        response = await callMistral(messages, model, apiKey);
+        break;
+      }
+
+      case 'PERPLEXITY': {
+        const apiKey = req.headers.get('x-perplexity-key');
+        if (!apiKey) {
+          return NextResponse.json(
+            { error: 'Perplexity API key not provided. Please add your API key in the Setup page.' },
+            { status: 401 }
+          );
+        }
+        response = await callPerplexity(messages, model, apiKey);
+        break;
+      }
+
       case 'LOCAL':
       case 'OLLAMA': {
         response = await callOllama(messages, model);
@@ -217,7 +375,7 @@ export async function POST(req: NextRequest) {
 
       default:
         return NextResponse.json(
-          { error: `Unsupported provider: ${provider}. Supported providers: OPENAI, ANTHROPIC, GOOGLE, LOCAL` },
+          { error: `Unsupported provider: ${provider}. Supported providers: OPENAI, ANTHROPIC, GOOGLE, AZURE_OPENAI, COHERE, MISTRAL, PERPLEXITY, OLLAMA` },
           { status: 400 }
         );
     }
