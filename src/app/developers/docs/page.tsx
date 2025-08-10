@@ -269,6 +269,13 @@ export default function DeveloperDocsPage() {
               <a href="#resources" className="text-xs sm:text-sm text-text-secondary hover:text-text-primary">Resources</a>
             </div>
           </nav>
+          <div className="mb-4 p-4 border border-white/10 rounded-lg bg-white/5">
+            <div className="text-sm">
+              <span className="font-medium">Latest Update — 8-10-25:</span>{' '}
+              See the full changelog and roadmap in{' '}
+              <Link className="underline" href="/developers/docs/changelog-2025-08-10">Changelog 8-10-25</Link>.
+            </div>
+          </div>
           <CosmicPageHeader
             icon={BookOpen}
             title="Build AI Apps with Multi-Provider Intelligence"
