@@ -89,7 +89,7 @@ COSMARA is an AI App Marketplace with BYOK (Bring Your Own Keys) architecture th
 - **Authentication**: Auth0 with development bypass mode
 - **Storage**: API keys encrypted in localStorage + Google Cloud KMS
 - **AI Integration**: Multi-provider routing with intelligent cost optimization
-- **SDK**: Use `@cosmara-ai/community-sdk` for provider-agnostic chat/completions
+- **SDK**: Use \`@cosmara-ai/community-sdk\` for provider-agnostic chat/completions
 
 ## REQUIRED APP STRUCTURE
 Your app must follow this structure:
@@ -443,7 +443,7 @@ Use these CSS classes for consistent styling:
 
 ## EXAMPLE APPS FOR REFERENCE
 Use these safe, repo-based references (no local paths):
-- In-app references: open `Developers → Examples` at `/developers/examples`
+- In-app references: open `Developers -> Examples` at `/developers/examples`
 - Repository examples directory:
   - `examples/quickstart-node` – 60-second Node hello world using `@cosmara-ai/community-sdk`
   - `examples/edge-stream` – SSE streaming example
