@@ -445,9 +445,9 @@ Use these CSS classes for consistent styling:
 Use these safe, repo-based references (no local paths):
 - In-app references: open \`Developers -> Examples\` at \`/developers/examples\`
 - Repository examples directory:
-  - `examples/quickstart-node` – 60-second Node hello world using `@cosmara-ai/community-sdk`
-  - `examples/edge-stream` – SSE streaming example
-  - `examples/server` – Express server example
+  - \`examples/quickstart-node\` – 60-second Node hello world using \`@cosmara-ai/community-sdk\`
+  - \`examples/edge-stream\` – SSE streaming example
+  - \`examples/server\` – Express server example
 
 ## APP SUBMISSION REQUIREMENTS
 1. **Functionality**: App must work with user's own API keys
