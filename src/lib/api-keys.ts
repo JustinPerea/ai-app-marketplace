@@ -266,6 +266,16 @@ export const PROVIDER_CONFIGS = {
       gpt4oMini: { input: 0.00015, output: 0.0006 }
     }
   },
+  AZURE_OPENAI: {
+    name: 'Azure OpenAI',
+    icon: 'OPENAI',
+    models: ['gpt-4o', 'gpt-4o-mini'],
+    keyFormat: 'azure-key-... (plus endpoint & deployment)',
+    signupUrl: 'https://portal.azure.com/',
+    docsUrl: 'https://learn.microsoft.com/azure/ai-services/openai/',
+    freeTier: { available: false, description: 'Azure subscription required', limitations: 'Requires resource endpoint and deployment' },
+    pricing: {}
+  },
   ANTHROPIC: {
     name: 'Anthropic',
     icon: 'ANTHROPIC',
@@ -299,5 +309,46 @@ export const PROVIDER_CONFIGS = {
       gemini15Flash: { input: 0.000075, output: 0.0003 }, // per 1K tokens
       gemini15Pro: { input: 0.00125, output: 0.005 }
     }
+  }
+  ,
+  COHERE: {
+    name: 'Cohere',
+    icon: 'COHERE',
+    models: ['command-r', 'command-r7b'],
+    keyFormat: 'cohere-... (Bearer)',
+    signupUrl: 'https://dashboard.cohere.com/api-keys',
+    docsUrl: 'https://docs.cohere.com/',
+    freeTier: { available: true, description: 'Free tier available', limitations: 'Throughput limits apply' },
+    pricing: {}
+  },
+  MISTRAL: {
+    name: 'Mistral',
+    icon: 'MISTRAL',
+    models: ['mistral-large-latest', 'ministral-8b'],
+    keyFormat: 'mistral-... (Bearer)',
+    signupUrl: 'https://console.mistral.ai/api-keys/',
+    docsUrl: 'https://docs.mistral.ai/api/',
+    freeTier: { available: true, description: 'Free tier available', limitations: 'Throughput limits apply' },
+    pricing: {}
+  },
+  PERPLEXITY: {
+    name: 'Perplexity',
+    icon: 'PERPLEXITY',
+    models: ['sonar-small-online', 'sonar-large-online'],
+    keyFormat: 'pplx-... (Bearer)',
+    signupUrl: 'https://www.perplexity.ai/settings/api',
+    docsUrl: 'https://docs.perplexity.ai/',
+    freeTier: { available: false, description: 'Paid usage', limitations: 'Subject to rate limits' },
+    pricing: {}
+  },
+  OLLAMA: {
+    name: 'Local (Ollama)',
+    icon: 'LOCAL',
+    models: ['llama3', 'phi3', 'qwen2'],
+    keyFormat: 'No key required',
+    signupUrl: 'https://ollama.ai/',
+    docsUrl: 'https://github.com/ollama/ollama',
+    freeTier: { available: true, description: 'Runs locally', limitations: 'Requires local runtime' },
+    pricing: {}
   }
 };
