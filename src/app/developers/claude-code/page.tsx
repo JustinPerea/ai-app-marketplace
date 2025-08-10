@@ -443,7 +443,7 @@ Use these CSS classes for consistent styling:
 
 ## EXAMPLE APPS FOR REFERENCE
 Use these safe, repo-based references (no local paths):
-- In-app references: open `Developers -> Examples` at `/developers/examples`
+- In-app references: open \`Developers -> Examples\` at \`/developers/examples\`
 - Repository examples directory:
   - `examples/quickstart-node` – 60-second Node hello world using `@cosmara-ai/community-sdk`
   - `examples/edge-stream` – SSE streaming example
