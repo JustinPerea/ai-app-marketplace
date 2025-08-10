@@ -252,7 +252,7 @@ export const PROVIDER_CONFIGS = {
   OPENAI: {
     name: 'OpenAI',
     icon: 'OPENAI',
-    models: ['gpt-4o', 'gpt-4o-mini', 'gpt-3.5-turbo'],
+    models: ['gpt-4o', 'gpt-4o-mini'],
     keyFormat: 'sk-...',
     signupUrl: 'https://platform.openai.com/api-keys',
     docsUrl: 'https://platform.openai.com/docs',
@@ -269,7 +269,7 @@ export const PROVIDER_CONFIGS = {
   ANTHROPIC: {
     name: 'Anthropic',
     icon: 'ANTHROPIC',
-    models: ['claude-3-sonnet', 'claude-3-haiku'],
+    models: ['claude-3-5-sonnet-20240620', 'claude-3-haiku-20240307'],
     keyFormat: 'sk-ant-...',
     signupUrl: 'https://console.anthropic.com/',
     docsUrl: 'https://docs.anthropic.com/',
@@ -286,7 +286,7 @@ export const PROVIDER_CONFIGS = {
   GOOGLE: {
     name: 'Google AI',
     icon: 'GOOGLE',
-    models: ['gemini-1.5-flash', 'gemini-1.5-pro'],
+    models: ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-veo-2'],
     keyFormat: 'AI...',
     signupUrl: 'https://aistudio.google.com/app/apikey',
     docsUrl: 'https://ai.google.dev/docs',
