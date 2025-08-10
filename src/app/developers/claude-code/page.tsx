@@ -91,11 +91,42 @@ COSMARA is an AI App Marketplace with BYOK (Bring Your Own Keys) architecture th
 - **AI Integration**: Multi-provider routing with intelligent cost optimization
 - **SDK**: Use \`@cosmara-ai/community-sdk\` for provider-agnostic chat/completions
 
+## SDK INSTALL
+Install the SDK (Node 20+):
+
+\`\`\`
+npm i @cosmara-ai/community-sdk
+\`\`\`
+
+## TAILWIND SETUP (POSTCSS)
+Install the PostCSS plugin and update PostCSS config to avoid build errors:
+
+1) Install (dev):
+\`\`\`
+npm i -D @tailwindcss/postcss
+\`\`\`
+
+2) Create/update \`postcss.config.js\` (or \`.mjs\`):
+\`\`\`js
+module.exports = {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+\`\`\`
+
+3) Ensure your global CSS includes Tailwind directives (e.g. \`src/app/globals.css\`):
+\`\`\`css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+\`\`\`
+
 ## REQUIRED APP STRUCTURE
 Your app must follow this structure:
 
 \`\`\`
-src/app/marketplace/[app-name]/
+src/app/marketplace/apps/[app-name]/
 ├── page.tsx          # Main app interface
 ├── api/
 │   └── route.ts      # API endpoint for AI processing
