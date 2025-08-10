@@ -184,6 +184,10 @@ export default function DevelopersPage() {
               <Code2 className="h-3 w-3 mr-2" style={{ color: '#FFD700' }} />
               <span className="text-sm font-medium text-text-primary">Developer Portal</span>
             </div>
+            {/* Latest update banner */}
+            <div className="mb-4 p-4 border border-white/10 rounded-lg bg-white/5 text-sm text-center">
+              Latest Update — 8-10-25: <Link className="underline" href="/developers/docs/changelog-2025-08-10">Changelog</Link>
+            </div>
             {/* Compact in-page TOC */}
             <nav aria-label="Table of contents" className="mb-6">
               <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full glass-card">
