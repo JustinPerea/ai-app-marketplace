@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ProviderRequiredNotice } from '@/components/ui/provider-required-notice';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
+import DeveloperValidator from '@/components/ui/developer-validator';
 import { useAuth } from '@/lib/auth/auth-context';
 import { 
   ArrowRight, 
@@ -704,6 +705,11 @@ export default function SubmitAppPage() {
             {renderStepContent()}
           </CardContent>
         </Card>
+
+        {/* Developer Validator */}
+        <div className="mb-8">
+          <DeveloperValidator />
+        </div>
 
         {/* Navigation */}
         <div className="flex justify-between">

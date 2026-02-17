@@ -32,6 +32,7 @@ import {
 import { APIKeyManager, PROVIDER_CONFIGS, type StoredAPIKey } from '@/lib/api-keys-hybrid';
 import { useUsageTracking } from '@/lib/hooks/useUsageAnalytics';
 import { ProviderLogo } from '@/components/ui/provider-logo';
+import ModelPicker from '@/components/ui/model-picker';
 
 // Remove duplicate interface definition since it's imported from hybrid manager
 
@@ -369,6 +370,11 @@ export default function SetupPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* Default model selection */}
+        <div className="mb-8">
+          <ModelPicker />
+        </div>
 
         {/* Add Provider Section */}
         <Card>

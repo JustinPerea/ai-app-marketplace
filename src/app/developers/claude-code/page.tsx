@@ -84,17 +84,49 @@ COSMARA is an AI App Marketplace with BYOK (Bring Your Own Keys) architecture th
 - **🎥 NEW: Video Generation** - Create videos from text descriptions using Gemini Veo AI
 
 ## TECHNICAL ARCHITECTURE
-- **Frontend**: Next.js 14+ with App Router, TypeScript, Tailwind CSS, shadcn/ui
+- **Frontend**: Next.js 15+ with App Router, TypeScript, Tailwind CSS, shadcn/ui
 - **Backend**: Next.js API routes with Prisma ORM
 - **Authentication**: Auth0 with development bypass mode
 - **Storage**: API keys encrypted in localStorage + Google Cloud KMS
 - **AI Integration**: Multi-provider routing with intelligent cost optimization
+- **SDK**: Use \`@cosmara-ai/community-sdk\` for provider-agnostic chat/completions
+
+## SDK INSTALL
+Install the SDK (Node 20+):
+
+\`\`\`
+npm i @cosmara-ai/community-sdk
+\`\`\`
+
+## TAILWIND SETUP (POSTCSS)
+Install the PostCSS plugin and update PostCSS config to avoid build errors:
+
+1) Install (dev):
+\`\`\`
+npm i -D @tailwindcss/postcss
+\`\`\`
+
+2) Create/update \`postcss.config.js\` (or \`.mjs\`):
+\`\`\`js
+module.exports = {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+\`\`\`
+
+3) Ensure your global CSS includes Tailwind directives (e.g. \`src/app/globals.css\`):
+\`\`\`css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+\`\`\`
 
 ## REQUIRED APP STRUCTURE
 Your app must follow this structure:
 
 \`\`\`
-src/app/marketplace/[app-name]/
+src/app/marketplace/apps/[app-name]/
 ├── page.tsx          # Main app interface
 ├── api/
 │   └── route.ts      # API endpoint for AI processing
@@ -441,11 +473,12 @@ Use these CSS classes for consistent styling:
 - \`bg-cosmic-gradient\` - Cosmic background gradients
 
 ## EXAMPLE APPS FOR REFERENCE
-Study these existing apps:
-1. **Simple AI Chat** (\`/marketplace/apps/simple-ai-chat\`) - Basic chat interface
-2. **PDF Notes Generator** (\`/marketplace/apps/pdf-notes-generator\`) - File processing  
-3. **Code Review Bot** (\`/marketplace/apps/code-review-bot\`) - Code analysis
-4. **🎥 AI Video Generator** (\`/marketplace/apps/ai-video-generator\`) - Gemini Veo video generation (NEW!)
+Use these safe, repo-based references (no local paths):
+- In-app references: open \`Developers -> Examples\` at \`/developers/examples\`
+- Repository examples directory:
+  - \`examples/quickstart-node\` – 60-second Node hello world using \`@cosmara-ai/community-sdk\`
+  - \`examples/edge-stream\` – SSE streaming example
+  - \`examples/server\` – Express server example
 
 ## APP SUBMISSION REQUIREMENTS
 1. **Functionality**: App must work with user's own API keys
